@@ -11,31 +11,20 @@ interface KpiCardsProps {
   setTierFilter: (tier: Stock['tier'] | null) => void;
 }
 
+type KpiCard = {
+  label: string;
+  val: string | number | undefined;
+  sub?: string;
+  color: string;
+  click?: () => void;
+};
+
 export function KpiCards({ stats, loading = false, tierFilter, setTierFilter }: KpiCardsProps): React.ReactElement | null {
   const t = useTranslations('kpi');
 
-  if (loading || !stats) {
-    return (
-      <div className="kpi-cards" data-tour="kpi-cards">
-        {[...Array(8)].map((_, i) => (
-          <div
-            key={i}
-            style={{
-              background: '#09131f',
-              padding: '14px 18px',
-              borderRight: '1px solid #132030',
-            }}
-          >
-            <div style={{ height: 10, background: '#1e3a52', borderRadius: 2, width: '60%', marginBottom: 8 }} />
-            <div style={{ height: 24, background: '#1e3a52', borderRadius: 2, width: '40%' }} />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  const cards = useMemo(
-    () => [
+  const cards = useMemo((): KpiCard[] | null => {
+    if (loading || !stats) return null;
+    return [
       { label: t('totalStocks'), val: stats.totalStocks, color: '#a8c8e8' },
       {
         label: t('redRisk'),
@@ -70,9 +59,28 @@ export function KpiCards({ stats, loading = false, tierFilter, setTierFilter }: 
         sub: t('idxMin'),
         color: stats.avgFloat < 15 ? '#E76F51' : '#2A9D8F',
       },
-    ],
-    [stats, t, tierFilter, setTierFilter]
-  );
+    ];
+  }, [loading, stats, t, tierFilter, setTierFilter]);
+
+  if (loading || !stats || !cards) {
+    return (
+      <div className="kpi-cards" data-tour="kpi-cards">
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={i}
+            style={{
+              background: '#09131f',
+              padding: '14px 18px',
+              borderRight: '1px solid #132030',
+            }}
+          >
+            <div style={{ height: 10, background: '#1e3a52', borderRadius: 2, width: '60%', marginBottom: 8 }} />
+            <div style={{ height: 24, background: '#1e3a52', borderRadius: 2, width: '40%' }} />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="kpi-cards" data-tour="kpi-cards">
