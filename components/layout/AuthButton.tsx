@@ -2,11 +2,16 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import { usePathname, useRouter } from '@/i18n/navigation';
+import { localizedPath } from '@/lib/i18n/localizedPath';
 import { useAuth } from '@/lib/hooks';
 import { THEME_COLORS } from '@/lib/constants';
 
 export function AuthButton(): React.ReactElement {
+  const t = useTranslations('auth');
+  const locale = useLocale();
+  const pathname = usePathname();
   const router = useRouter();
   const { user, status, signIn, signOut } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -39,7 +44,9 @@ export function AuthButton(): React.ReactElement {
   if (!user) {
     return (
       <button
-        onClick={() => signIn('google', { callbackUrl: '/' })}
+        onClick={() =>
+          signIn('google', { callbackUrl: localizedPath(locale, pathname || '/') })
+        }
         style={{
           background: '#fff',
           color: '#1a1a1a',
@@ -52,7 +59,7 @@ export function AuthButton(): React.ReactElement {
           whiteSpace: 'nowrap',
         }}
       >
-        Sign in with Google
+        {t('signIn')}
       </button>
     );
   }
@@ -102,7 +109,7 @@ export function AuthButton(): React.ReactElement {
           </span>
         )}
         <span style={{ maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {user.name ?? user.email ?? 'User'}
+          {user.name ?? user.email ?? t('userFallback')}
         </span>
       </button>
 
@@ -142,12 +149,12 @@ export function AuthButton(): React.ReactElement {
                 fontFamily: 'DM Sans, sans-serif',
               }}
             >
-              ⭐ Upgrade to Premium
+              {t('upgrade')}
             </button>
           )}
           <button
             onClick={() => {
-              signOut({ callbackUrl: '/' });
+              signOut({ callbackUrl: localizedPath(locale, '/') });
               setDropdownOpen(false);
             }}
             style={{
@@ -161,7 +168,7 @@ export function AuthButton(): React.ReactElement {
               cursor: 'pointer',
             }}
           >
-            Sign out
+            {t('signOut')}
           </button>
         </div>
       )}

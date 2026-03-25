@@ -1,32 +1,43 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useLocale, useMessages, useTranslations } from 'next-intl';
+import { usePathname, useRouter } from '@/i18n/navigation';
+import { localizedPath } from '@/lib/i18n/localizedPath';
 
 declare global {
   interface Window {
     snap: {
-      pay: (token: string, options: {
-        onSuccess?: (result: unknown) => void;
-        onPending?: (result: unknown) => void;
-        onError?: (result: unknown) => void;
-        onClose?: () => void;
-      }) => void;
+      pay: (
+        token: string,
+        options: {
+          onSuccess?: (result: unknown) => void;
+          onPending?: (result: unknown) => void;
+          onError?: (result: unknown) => void;
+          onClose?: () => void;
+        }
+      ) => void;
     };
   }
 }
 
-const FEATURES = [
-  'Risk Map — Interactive scatter plot of HHI vs Free Float for every stock',
-  'HHI Distribution — Ownership concentration analysis across all tiers',
-  'Governance Flags — Filter stocks by specific risk flags (LowFloat, Insider, etc.)',
-  'Full Screener — Unlimited access to all stocks in the sortable table',
-  'Owners Tab — See all institutional owners and their full portfolios',
-  'Stats Tab — Advanced aggregated statistics and cross-stock analytics',
-];
+type UpgradeMessages = {
+  features: string[];
+  errors: {
+    createFailed: string;
+    script: string;
+    paymentFailed: string;
+  };
+};
 
 export default function UpgradePage(): React.ReactElement {
+  const t = useTranslations('upgrade');
+  const messages = useMessages();
+  const upgradeBlock = messages.upgrade as unknown as UpgradeMessages;
+  const features = upgradeBlock.features ?? [];
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -67,20 +78,22 @@ export default function UpgradePage(): React.ReactElement {
 
       if (res.status === 401) {
         const { signIn } = await import('next-auth/react');
-        await signIn('google', { callbackUrl: '/upgrade' });
+        await signIn('google', {
+          callbackUrl: localizedPath(locale, pathname),
+        });
         return;
       }
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.error ?? 'Failed to create payment');
+        setError((data.error as string) ?? t('errors.createFailed'));
         return;
       }
 
       const { token } = await res.json();
 
       if (typeof window.snap?.pay !== 'function') {
-        setError('Payment script not loaded. Please refresh and try again.');
+        setError(t('errors.script'));
         return;
       }
 
@@ -93,14 +106,14 @@ export default function UpgradePage(): React.ReactElement {
           setStatus('pending');
         },
         onError: () => {
-          setError('Payment failed. Please try again.');
+          setError(t('errors.paymentFailed'));
         },
         onClose: () => {
           setIsLoading(false);
         },
       });
     } catch {
-      setError('Failed to create payment');
+      setError(t('errors.createFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -141,7 +154,7 @@ export default function UpgradePage(): React.ReactElement {
             marginBottom: 16,
           }}
         >
-          IDX · GOVERNANCE DASHBOARD
+          {t('eyebrow')}
         </div>
 
         {status === 'success' && (
@@ -156,11 +169,13 @@ export default function UpgradePage(): React.ReactElement {
               fontSize: 14,
             }}
           >
-            ✅ Payment successful! Your account has been upgraded to Premium. Please
-            refresh if features are still locked.
+            {t('success')}
             <button
               type="button"
-              onClick={() => (window.location.href = '/')}
+              onClick={() => {
+                router.push('/');
+                router.refresh();
+              }}
               style={{
                 display: 'block',
                 margin: '10px auto 0',
@@ -175,7 +190,7 @@ export default function UpgradePage(): React.ReactElement {
                 fontFamily: 'DM Sans, sans-serif',
               }}
             >
-              Refresh Now
+              {t('refreshNow')}
             </button>
           </div>
         )}
@@ -192,8 +207,7 @@ export default function UpgradePage(): React.ReactElement {
               fontSize: 14,
             }}
           >
-            ⏳ Payment is pending. We&apos;ll activate your account once it&apos;s
-            confirmed (usually within a few minutes).
+            {t('pending')}
           </div>
         )}
 
@@ -209,7 +223,7 @@ export default function UpgradePage(): React.ReactElement {
               fontSize: 14,
             }}
           >
-            ❌ Payment failed or was cancelled. Please try again.
+            {t('errorStatus')}
           </div>
         )}
 
@@ -223,7 +237,7 @@ export default function UpgradePage(): React.ReactElement {
             marginBottom: 8,
           }}
         >
-          Unlock Premium Access
+          {t('title')}
         </h1>
 
         <p
@@ -234,8 +248,7 @@ export default function UpgradePage(): React.ReactElement {
             marginBottom: 28,
           }}
         >
-          Get full access to all governance analytics features for IDX-listed
-          securities.
+          {t('subtitle')}
         </p>
 
         <ul
@@ -246,7 +259,7 @@ export default function UpgradePage(): React.ReactElement {
             margin: 0,
           }}
         >
-          {FEATURES.map((text, i) => (
+          {features.map((text, i) => (
             <li
               key={i}
               style={{
@@ -290,9 +303,7 @@ export default function UpgradePage(): React.ReactElement {
           >
             Rp 17.000
           </div>
-          <div style={{ fontSize: 12, color: '#6b8aad', marginTop: 4 }}>
-            Rp 15.000 plan + Rp 2.000 admin · per month
-          </div>
+          <div style={{ fontSize: 12, color: '#6b8aad', marginTop: 4 }}>{t('priceNote')}</div>
         </div>
 
         <button
@@ -321,11 +332,7 @@ export default function UpgradePage(): React.ReactElement {
             e.currentTarget.style.opacity = isLoading ? '0.85' : '1';
           }}
         >
-          {isSuccess
-            ? '✅ Upgrade Complete'
-            : isLoading
-              ? 'Creating transaction…'
-              : 'Pay with QRIS →'}
+          {isSuccess ? t('complete') : isLoading ? t('creating') : t('payQris')}
         </button>
 
         <div
@@ -338,7 +345,7 @@ export default function UpgradePage(): React.ReactElement {
             flexWrap: 'wrap',
           }}
         >
-          <span style={{ fontSize: 10, color: '#6b8aad' }}>Accepts:</span>
+          <span style={{ fontSize: 10, color: '#6b8aad' }}>{t('accepts')}</span>
           {['QRIS'].map((label) => (
             <span
               key={label}
@@ -381,7 +388,7 @@ export default function UpgradePage(): React.ReactElement {
             fontFamily: 'DM Sans, sans-serif',
           }}
         >
-          ← Back to Dashboard
+          {t('back')}
         </button>
       </div>
     </div>

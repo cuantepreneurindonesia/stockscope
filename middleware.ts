@@ -1,5 +1,9 @@
+import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { routing } from './i18n/routing';
+
+const intlMiddleware = createMiddleware(routing);
 
 /** Sliding window: max requests per IP per minute (single-instance / Edge best-effort). */
 const RATE_LIMIT_WINDOW_MS = 60_000;
@@ -30,33 +34,38 @@ function isRateLimited(ip: string): boolean {
 
 function pruneBuckets(): void {
   const now = Date.now();
-  if (buckets.size <= 10_000) return;
-  for (const [key, v] of buckets) {
-    if (now > v.resetAt) buckets.delete(key);
+  if (buckets.size > 10_000) {
+    for (const [key, v] of buckets) {
+      if (now > v.resetAt) buckets.delete(key);
+    }
   }
 }
 
-export function middleware(request: NextRequest): NextResponse {
+export default function middleware(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith('/api/auth')) {
-    return NextResponse.next();
-  }
-  if (pathname === '/api/payment/webhook') {
-    return NextResponse.next();
-  }
-  if (pathname === '/api/health') {
+  if (pathname.startsWith('/api')) {
+    if (pathname.startsWith('/api/auth')) {
+      return NextResponse.next();
+    }
+    if (pathname === '/api/payment/webhook') {
+      return NextResponse.next();
+    }
+    if (pathname === '/api/health') {
+      return NextResponse.next();
+    }
+
+    pruneBuckets();
+    const ip = getClientIp(request);
+    if (isRateLimited(ip)) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
     return NextResponse.next();
   }
 
-  pruneBuckets();
-  const ip = getClientIp(request);
-  if (isRateLimited(ip)) {
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
-  }
-  return NextResponse.next();
+  return intlMiddleware(request);
 }
 
 export const config = {
-  matcher: '/api/:path*',
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)', '/api/:path*'],
 };

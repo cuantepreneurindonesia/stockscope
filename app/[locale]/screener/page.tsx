@@ -1,18 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useLocale, useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { FilterPanel } from '@/components/screener/FilterPanel';
 import { ScreenerTable } from '@/components/screener/ScreenerTable';
+import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import type { EnrichedStock } from '@/lib/types/unified';
 
-export default function ScreenerPage() {
+export default function ScreenerPage(): React.ReactElement {
+  const t = useTranslations('screenerPage');
+  const locale = useLocale();
   const [stocks, setStocks] = useState<EnrichedStock[]>([]);
   const [sectors, setSectors] = useState<string[]>(['All']);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSector, setSelectedSector] = useState('All');
   const [selectedAiTier, setSelectedAiTier] = useState('');
@@ -22,15 +25,13 @@ export default function ScreenerPage() {
   const [sortBy, setSortBy] = useState('composite');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  // Fetch sectors on mount
   useEffect(() => {
     fetch('/api/screener/filters')
-      .then(res => res.json())
-      .then(data => setSectors(data.sectors || ['All']))
-      .catch(err => console.error('Failed to load sectors:', err));
+      .then((res) => res.json())
+      .then((data) => setSectors(data.sectors || ['All']))
+      .catch((err) => console.error('Failed to load sectors:', err));
   }, []);
 
-  // Fetch stocks when filters change
   useEffect(() => {
     const params = new URLSearchParams();
     if (searchQuery) params.append('search', searchQuery);
@@ -44,23 +45,33 @@ export default function ScreenerPage() {
 
     queueMicrotask(() => setLoading(true));
     fetch(`/api/stocks/enriched?${params.toString()}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         if (data.success) {
           setStocks(data.data);
           setError(null);
         } else {
-          setError(data.error || 'Failed to load stocks');
+          setError(data.error || t('loadError'));
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error fetching stocks:', err);
-        setError('Failed to load stocks');
+        setError(t('loadError'));
       })
       .finally(() => setLoading(false));
-  }, [searchQuery, selectedSector, selectedAiTier, selectedGovTier, minScore, maxScore, sortBy, sortOrder]);
+  }, [
+    searchQuery,
+    selectedSector,
+    selectedAiTier,
+    selectedGovTier,
+    minScore,
+    maxScore,
+    sortBy,
+    sortOrder,
+    locale,
+  ]);
 
-  const handleSort = (field: string) => {
+  const handleSort = (field: string): void => {
     if (sortBy === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
@@ -71,28 +82,55 @@ export default function ScreenerPage() {
 
   return (
     <div style={{ background: '#060d18', minHeight: '100vh' }}>
-      {/* Dark Header */}
-      <div style={{ padding: 'clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px) 14px', background: 'linear-gradient(180deg, #0d1e30 0%, #09131f 100%)', borderBottom: '1px solid #132030' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-          <Link 
-            href="/" 
+      <div
+        style={{
+          padding: 'clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px) 14px',
+          background: 'linear-gradient(180deg, #0d1e30 0%, #09131f 100%)',
+          borderBottom: '1px solid #132030',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '10px',
+          }}
+        >
+          <Link
+            href="/"
             style={{
               fontSize: 'clamp(0.875rem, 5vw, 1.375rem)',
               fontWeight: 700,
               color: '#e8f4f8',
               textDecoration: 'none',
-              transition: 'color 0.2s'
+              transition: 'color 0.2s',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#a8d8ea')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#e8f4f8')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#a8d8ea';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#e8f4f8';
+            }}
           >
-            🇮🇩 JCI Stock Screener
+            {t('brand')}
           </Link>
+          <LocaleSwitcher />
         </div>
       </div>
 
-      {/* Tab Nav */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid #132030', padding: 'clamp(12px, 4vw, 28px) 0', background: '#09131f', overflowX: 'auto', scrollbarWidth: 'none' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 0,
+          borderBottom: '1px solid #132030',
+          padding: 'clamp(12px, 4vw, 28px) 0',
+          background: '#09131f',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+        }}
+      >
         <Link
           href="/"
           style={{
@@ -110,12 +148,16 @@ export default function ScreenerPage() {
             minHeight: 44,
             textDecoration: 'none',
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#a8d8ea')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#6b8aad')}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#a8d8ea';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = '#6b8aad';
+          }}
         >
-          GOVERNANCE DASHBOARD
+          {t('navDashboard')}
         </Link>
         <div
           style={{
@@ -131,26 +173,31 @@ export default function ScreenerPage() {
             whiteSpace: 'nowrap',
             minHeight: 44,
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
           }}
         >
-          AI SCREENER
+          {t('navScreener')}
         </div>
       </div>
 
-      {/* Content Area */}
       <div style={{ padding: 'clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px)' }}>
-        {/* Section Label */}
-        <div style={{ fontSize: 9, letterSpacing: 2, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 16, textTransform: 'uppercase' }}>
-          AI STOCK SCREENER
+        <div
+          style={{
+            fontSize: 9,
+            letterSpacing: 2,
+            color: '#457b9d',
+            fontFamily: "'DM Mono', monospace",
+            marginBottom: 16,
+            textTransform: 'uppercase',
+          }}
+        >
+          {t('sectionLabel')}
         </div>
 
-        {/* Description */}
         <p style={{ fontSize: '0.875rem', color: '#a8c8e8', marginBottom: 24, lineHeight: 1.6 }}>
-          Institutional-grade analysis for Indonesian stocks powered by composite scoring algorithms.
+          {t('description')}
         </p>
 
-        {/* Filters */}
         <FilterPanel
           sectors={sectors}
           selectedSector={selectedSector}
@@ -167,14 +214,36 @@ export default function ScreenerPage() {
           onSearchChange={setSearchQuery}
         />
 
-        {/* Results Container */}
-        <div style={{ background: '#09131f', border: '1px solid #132030', borderRadius: 10, overflow: 'hidden' }}>
-          <div style={{ padding: 16, borderBottom: '1px solid #132030', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ fontSize: 9, letterSpacing: 2, color: '#457b9d', fontFamily: "'DM Mono', monospace", textTransform: 'uppercase' }}>
-              Results · {stocks.length} stocks
+        <div
+          style={{
+            background: '#09131f',
+            border: '1px solid #132030',
+            borderRadius: 10,
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              padding: 16,
+              borderBottom: '1px solid #132030',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <div
+              style={{
+                fontSize: 9,
+                letterSpacing: 2,
+                color: '#457b9d',
+                fontFamily: "'DM Mono', monospace",
+                textTransform: 'uppercase',
+              }}
+            >
+              {t('results', { count: stocks.length })}
             </div>
             {loading && (
-              <span style={{ fontSize: '0.75rem', color: '#6b8aad' }}>Loading...</span>
+              <span style={{ fontSize: '0.75rem', color: '#6b8aad' }}>{t('loading')}</span>
             )}
           </div>
 
@@ -192,13 +261,31 @@ export default function ScreenerPage() {
           )}
         </div>
 
-        {/* Footer Info */}
-        <div style={{ marginTop: 24, background: '#09131f', border: '1px solid #1e3a52', borderRadius: 10, padding: 16 }}>
-          <div style={{ fontSize: 9, letterSpacing: 2, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 12, textTransform: 'uppercase' }}>
-            SCORING METHODOLOGY
+        <div
+          style={{
+            marginTop: 24,
+            background: '#09131f',
+            border: '1px solid #1e3a52',
+            borderRadius: 10,
+            padding: 16,
+          }}
+        >
+          <div
+            style={{
+              fontSize: 9,
+              letterSpacing: 2,
+              color: '#457b9d',
+              fontFamily: "'DM Mono', monospace",
+              marginBottom: 12,
+              textTransform: 'uppercase',
+            }}
+          >
+            {t('methodology')}
           </div>
           <p style={{ fontSize: '0.875rem', color: '#a8c8e8', lineHeight: 1.6 }}>
-            Composite score combines: <strong>Fundamental (35%)</strong> · <strong>Technical (30%)</strong> · <strong>Sentiment (20%)</strong> · <strong>Liquidity (15%)</strong>
+            {t.rich('methodologyBody', {
+              strong: (chunks) => <strong>{chunks}</strong>,
+            })}
           </p>
         </div>
       </div>

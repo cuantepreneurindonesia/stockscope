@@ -6,9 +6,10 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
-import { TOUR_STEPS } from '@/lib/tourSteps';
+import { useTranslations } from 'next-intl';
+import { TOUR_STEP_DEFS } from '@/lib/tourSteps';
 
-export type { TourStep } from '@/lib/tourSteps';
+export type { TourStepDef } from '@/lib/tourSteps';
 
 export interface OnboardingTourProps {
   visible: boolean;
@@ -46,6 +47,7 @@ export function OnboardingTour({
   onSkip,
   onComplete,
 }: OnboardingTourProps): React.ReactElement | null {
+  const t = useTranslations('tour');
   const [currentStep, setCurrentStep] = useState(0);
   const [spotlightRect, setSpotlightRect] = useState<DOMRect | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{
@@ -56,8 +58,8 @@ export function OnboardingTour({
   } | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  const step = TOUR_STEPS[currentStep];
-  const isLastStep = currentStep === TOUR_STEPS.length - 1;
+  const step = TOUR_STEP_DEFS[currentStep];
+  const isLastStep = currentStep === TOUR_STEP_DEFS.length - 1;
 
   const getTargetElement = useCallback((): Element | null => {
     if (!step) return null;
@@ -152,15 +154,15 @@ export function OnboardingTour({
       return;
     }
     let next = currentStep + 1;
-    while (next < TOUR_STEPS.length) {
-      const nextEl = document.querySelector(TOUR_STEPS[next].selector);
+    while (next < TOUR_STEP_DEFS.length) {
+      const nextEl = document.querySelector(TOUR_STEP_DEFS[next].selector);
       if (nextEl) break;
       if (process.env.NODE_ENV === 'development') {
         console.warn(`[OnboardingTour] Skipping step ${next}: element not found`);
       }
       next++;
     }
-    if (next >= TOUR_STEPS.length) {
+    if (next >= TOUR_STEP_DEFS.length) {
       onSkip();
       return;
     }
@@ -171,7 +173,7 @@ export function OnboardingTour({
     if (currentStep <= 0) return;
     let prev = currentStep - 1;
     while (prev >= 0) {
-      const prevEl = document.querySelector(TOUR_STEPS[prev].selector);
+      const prevEl = document.querySelector(TOUR_STEP_DEFS[prev].selector);
       if (prevEl) break;
       prev--;
     }
@@ -194,7 +196,7 @@ export function OnboardingTour({
   useEffect(() => {
     if (!visible || !step) return;
     const el = getTargetElement();
-    if (!el && currentStep < TOUR_STEPS.length) {
+    if (!el && currentStep < TOUR_STEP_DEFS.length) {
       queueMicrotask(() => goNext());
     }
   }, [visible, step, currentStep, getTargetElement, goNext]);
@@ -202,7 +204,7 @@ export function OnboardingTour({
   if (!visible) return null;
 
   const targetEl = getTargetElement();
-  if (!targetEl && currentStep < TOUR_STEPS.length) {
+  if (!targetEl && currentStep < TOUR_STEP_DEFS.length) {
     return null;
   }
 
@@ -211,7 +213,10 @@ export function OnboardingTour({
       className="onboarding-tour"
       role="dialog"
       aria-modal="true"
-      aria-label={`Tour step ${currentStep + 1} of ${TOUR_STEPS.length}`}
+      aria-label={t('ariaProgress', {
+        current: currentStep + 1,
+        total: TOUR_STEP_DEFS.length,
+      })}
       style={{
         position: 'fixed',
         inset: 0,
@@ -288,9 +293,9 @@ export function OnboardingTour({
           onBlur={(e) => {
             e.currentTarget.style.outline = 'none';
           }}
-          aria-label="Skip tour"
+          aria-label={t('skipAria')}
         >
-          Skip Tour
+          {t('skip')}
         </button>
 
         {tooltipPosition && (
@@ -325,7 +330,7 @@ export function OnboardingTour({
             paddingRight: 70,
           }}
         >
-          {step?.title}
+          {step ? (t as (key: string) => string)(`steps.${step.id}.title`) : ''}
         </h3>
         <p
           style={{
@@ -337,7 +342,7 @@ export function OnboardingTour({
             lineHeight: 1.5,
           }}
         >
-          {step?.description}
+          {step ? (t as (key: string) => string)(`steps.${step.id}.description`) : ''}
         </p>
 
         {/* Step indicators */}
@@ -349,7 +354,7 @@ export function OnboardingTour({
             marginBottom: 16,
           }}
         >
-          {TOUR_STEPS.map((_, i) => (
+          {TOUR_STEP_DEFS.map((_, i) => (
             <div
               key={i}
               style={{
@@ -387,7 +392,7 @@ export function OnboardingTour({
                 e.currentTarget.style.outline = 'none';
               }}
             >
-              Back
+              {t('back')}
             </button>
           )}
           <button
@@ -412,7 +417,7 @@ export function OnboardingTour({
               e.currentTarget.style.outline = 'none';
             }}
           >
-            {isLastStep ? 'Get Started' : 'Next'}
+            {isLastStep ? t('done') : t('next')}
           </button>
         </div>
       </div>

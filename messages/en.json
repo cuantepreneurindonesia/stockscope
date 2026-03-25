@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "title": "Right to Information — Financial Transparency Hub",
+    "description": "A financial transparency hub exposing ownership concentration and governance metrics for listed securities in Indonesia."
+  },
+  "dashboard": {
+    "loadingTitle": "Loading data…",
+    "loadingSubtitle": "Fetching stocks from backend server…",
+    "errorTitle": "Error loading data",
+    "emptyTitle": "No stocks found",
+    "emptyHint": "Try adjusting your filters or search term",
+    "title": {
+      "tierRisk": "{tier} risk: {count} stocks of {total}",
+      "hhi": "{level} HHI: {count} stocks",
+      "flag": "{flag}: {count} stocks",
+      "default": "IDX governance dashboard — {count} stocks"
+    },
+    "premium": {
+      "riskMap": "Upgrade to Premium to unlock Risk Map",
+      "hhi": "Upgrade to Premium to unlock HHI",
+      "flags": "Upgrade to Premium to unlock Flags",
+      "stats": "Upgrade to Premium to unlock Stats"
+    }
+  },
+  "nav": {
+    "overview": "Overview",
+    "scatter": "Risk Map",
+    "hhi": "HHI",
+    "flags": "Flags",
+    "table": "Screener",
+    "owners": "Owners"
+  },
+  "header": {
+    "eyebrow": "IDX · Indonesia Stock Exchange",
+    "searchPlaceholder": "Search stock, issuer, or owner…",
+    "searchAria": "Search stocks by code, issuer name, or top owner",
+    "clearSearch": "Clear search",
+    "screener": "Screener",
+    "tourTitle": "Replay onboarding tour",
+    "tour": "Tour",
+    "clearFilters": "✕ Clear all filters",
+    "menuOpen": "Open navigation menu",
+    "presetRed": "Red risk",
+    "presetAmber": "Amber risk",
+    "presetGreen": "Green risk",
+    "presetHighHhi": "High HHI",
+    "presetLowFloat": "Low float",
+    "presetCriticalFloat": "Critical float",
+    "presetReset": "Reset",
+    "chipTier": "Tier: {tier} ×",
+    "chipHhi": "HHI: {level} ×",
+    "chipFlag": "Flag: {flag} ×"
+  },
+  "auth": {
+    "signIn": "Sign in with Google",
+    "upgrade": "⭐ Upgrade to Premium",
+    "signOut": "Sign out",
+    "userFallback": "User"
+  },
+  "kpi": {
+    "totalStocks": "TOTAL STOCKS",
+    "redRisk": "🔴 RED RISK",
+    "amberRisk": "🟡 AMBER RISK",
+    "greenRisk": "🟢 GREEN RISK",
+    "avgHhi": "AVG HHI",
+    "avgFloat": "AVG FREE FLOAT",
+    "pctOfTotal": "{pct}% of total",
+    "hhiHighConc": "High conc. >2,500",
+    "idxMin": "IDX min: 15%"
+  },
+  "tour": {
+    "ariaProgress": "Tour step {current} of {total}",
+    "skipAria": "Skip tour",
+    "skip": "Skip tour",
+    "back": "Back",
+    "next": "Next",
+    "done": "Get started",
+    "steps": {
+      "kpiCards": {
+        "title": "Key performance indicators",
+        "description": "Monitor your portfolio's health with real-time KPIs: total stocks, average concentration, and market signal."
+      },
+      "tabOverview": {
+        "title": "Overview tab",
+        "description": "Get a high-level view of your portfolio composition and risk distribution."
+      },
+      "tabScreener": {
+        "title": "Screener tool",
+        "description": "Filter and analyze stocks based on custom criteria."
+      },
+      "search": {
+        "title": "Search",
+        "description": "Quickly find specific stocks or companies in your portfolio."
+      },
+      "presets": {
+        "title": "Quick filters",
+        "description": "Use preset filters to instantly identify high-risk or concentrated positions."
+      }
+    }
+  },
+  "screenerPage": {
+    "brand": "🇮🇩 JCI Stock Screener",
+    "navDashboard": "Governance dashboard",
+    "navScreener": "AI screener",
+    "sectionLabel": "AI stock screener",
+    "description": "Institutional-grade analysis for Indonesian stocks powered by composite scoring algorithms.",
+    "results": "Results · {count} stocks",
+    "loading": "Loading…",
+    "methodology": "Scoring methodology",
+    "methodologyBody": "Composite score combines: <strong>Fundamental (35%)</strong> · <strong>Technical (30%)</strong> · <strong>Sentiment (20%)</strong> · <strong>Liquidity (15%)</strong>",
+    "loadError": "Failed to load stocks"
+  },
+  "filterPanel": {
+    "filters": "Filters",
+    "searchStock": "Search stock",
+    "searchPlaceholder": "Ticker or name…",
+    "sector": "Sector",
+    "allSectors": "All",
+    "aiTier": "AI score tier",
+    "tierAll": "All tiers",
+    "tier1": "Tier 1: STRONG BUY (80-100)",
+    "tier2": "Tier 2: BUY (65-79)",
+    "tier3": "Tier 3: WATCH (50-64)",
+    "tier4": "Tier 4: NEUTRAL (35-49)",
+    "tier5": "Tier 5: AVOID (0-34)",
+    "scoreRange": "Score range",
+    "min": "Min",
+    "max": "Max",
+    "govTier": "Governance concentration tier:",
+    "riskSuffix": "{tier} risk",
+    "legend": "AI score legend:",
+    "legendStrongBuy": "80-100: STRONG BUY",
+    "legendBuy": "65-79: BUY",
+    "legendWatch": "50-64: WATCH",
+    "legendNeutral": "35-49: NEUTRAL",
+    "legendAvoid": "0-34: AVOID"
+  },
+  "upgrade": {
+    "eyebrow": "IDX · governance dashboard",
+    "success": "✅ Payment successful! Your account has been upgraded to Premium. Please refresh if features are still locked.",
+    "refreshNow": "Refresh now",
+    "pending": "⏳ Payment is pending. We'll activate your account once it's confirmed (usually within a few minutes).",
+    "errorStatus": "❌ Payment failed or was cancelled. Please try again.",
+    "title": "Unlock Premium access",
+    "subtitle": "Get full access to all governance analytics features for IDX-listed securities.",
+    "priceNote": "Rp 15.000 plan + Rp 2.000 admin · per month",
+    "accepts": "Accepts:",
+    "payQris": "Pay with QRIS →",
+    "creating": "Creating transaction…",
+    "complete": "✅ Upgrade complete",
+    "back": "← Back to dashboard",
+    "errors": {
+      "createFailed": "Failed to create payment",
+      "script": "Payment script not loaded. Please refresh and try again.",
+      "paymentFailed": "Payment failed. Please try again."
+    },
+    "features": [
+      "Risk Map — Interactive scatter plot of HHI vs free float for every stock",
+      "HHI distribution — Ownership concentration analysis across all tiers",
+      "Governance flags — Filter stocks by specific risk flags (LowFloat, Insider, etc.)",
+      "Full screener — Unlimited access to all stocks in the sortable table",
+      "Owners tab — See all institutional owners and their full portfolios",
+      "Stats tab — Advanced aggregated statistics and cross-stock analytics"
+    ]
+  },
+  "errors": {
+    "notFoundTitle": "404",
+    "notFoundBody": "This page does not exist or has been moved.",
+    "notFoundCta": "Back to dashboard",
+    "boundaryTitle": "Something went wrong",
+    "boundaryBody": "An unexpected error occurred. You can try again or return to the dashboard.",
+    "tryAgain": "Try again"
+  }
+}

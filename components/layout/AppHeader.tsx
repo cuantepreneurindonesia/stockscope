@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useCallback } from 'react';
-import Link from 'next/link';
+import React, { useCallback, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import { TIER_COLORS } from '@/lib/constants';
 import { AuthButton } from './AuthButton';
 import type { Stock } from '@/lib/types';
@@ -39,6 +41,70 @@ export function AppHeader({
   setFlagFilter,
   onReplayTour,
 }: AppHeaderProps): React.ReactElement {
+  const t = useTranslations('header');
+
+  const presets = useMemo(
+    () =>
+      [
+        {
+          id: 'red',
+          label: t('presetRed'),
+          active: tierFilter === 'Red',
+          onClick: () => setTierFilter(tierFilter === 'Red' ? null : 'Red'),
+          color: '#E76F51',
+        },
+        {
+          id: 'amber',
+          label: t('presetAmber'),
+          active: tierFilter === 'Amber',
+          onClick: () => setTierFilter(tierFilter === 'Amber' ? null : 'Amber'),
+          color: '#E9C46A',
+        },
+        {
+          id: 'green',
+          label: t('presetGreen'),
+          active: tierFilter === 'Green',
+          onClick: () => setTierFilter(tierFilter === 'Green' ? null : 'Green'),
+          color: '#2A9D8F',
+        },
+        {
+          id: 'hhi',
+          label: t('presetHighHhi'),
+          active: hhiFilter === 'High',
+          onClick: () => setHhiFilter && setHhiFilter(hhiFilter === 'High' ? null : 'High'),
+          color: '#E76F51',
+        },
+        {
+          id: 'lowFloat',
+          label: t('presetLowFloat'),
+          active: flagFilter === 'LowFloat<15%',
+          onClick:
+            () =>
+              setFlagFilter &&
+              setFlagFilter(flagFilter === 'LowFloat<15%' ? null : 'LowFloat<15%'),
+          color: '#E9C46A',
+        },
+        {
+          id: 'criticalFloat',
+          label: t('presetCriticalFloat'),
+          active: flagFilter === 'CriticalFloat<5%',
+          onClick:
+            () =>
+              setFlagFilter &&
+              setFlagFilter(flagFilter === 'CriticalFloat<5%' ? null : 'CriticalFloat<5%'),
+          color: '#d62828',
+        },
+        {
+          id: 'reset',
+          label: t('presetReset'),
+          active: false,
+          onClick: clearFilters,
+          color: '#6b8aad',
+        },
+      ] as const,
+    [t, tierFilter, hhiFilter, flagFilter, setTierFilter, setHhiFilter, setFlagFilter, clearFilters]
+  );
+
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>): void => {
       setSearch(e.target.value);
@@ -50,7 +116,7 @@ export function AppHeader({
     <div className="app-header">
       <div className="header-row">
         <div>
-          <div className="header-eyebrow">IDX · BURSA EFEK INDONESIA</div>
+          <div className="header-eyebrow">{t('eyebrow')}</div>
           <h1 className="header-title">{dynamicTitle}</h1>
         </div>
         <div className="header-right">
@@ -71,8 +137,8 @@ export function AppHeader({
             <input
               value={search}
               onChange={handleSearchChange}
-              placeholder="Search stock, issuer, or owner…"
-              aria-label="Search stocks by code, issuer name, or top owner"
+              placeholder={t('searchPlaceholder')}
+              aria-label={t('searchAria')}
               className="search-input"
               style={{
                 border: `1px solid ${search ? '#457B9D' : '#1e3a52'}`,
@@ -89,7 +155,7 @@ export function AppHeader({
             {search && (
               <button
                 onClick={() => setSearch('')}
-                title="Clear search"
+                title={t('clearSearch')}
                 style={{
                   position: 'absolute',
                   right: 10,
@@ -131,13 +197,14 @@ export function AppHeader({
               e.currentTarget.style.color = '#a8c8e8';
             }}
           >
-            Screener
+            {t('screener')}
           </Link>
+          <LocaleSwitcher />
           {onReplayTour && (
             <button
               onClick={onReplayTour}
-              title="Replay onboarding tour"
-              aria-label="Replay onboarding tour"
+              title={t('tourTitle')}
+              aria-label={t('tourTitle')}
               style={{
                 background: '#132030',
                 border: '1px solid #457B9D',
@@ -149,7 +216,7 @@ export function AppHeader({
                 whiteSpace: 'nowrap',
               }}
             >
-              Tour
+              {t('tour')}
             </button>
           )}
           <AuthButton />
@@ -167,13 +234,13 @@ export function AppHeader({
                 whiteSpace: 'nowrap',
               }}
             >
-              ✕ Clear all filters
+              {t('clearFilters')}
             </button>
           )}
           <button
             className="hamburger-btn"
             onClick={() => setDrawerOpen(true)}
-            aria-label="Open navigation menu"
+            aria-label={t('menuOpen')}
             aria-expanded={drawerOpen}
           >
             ☰
@@ -182,15 +249,7 @@ export function AppHeader({
       </div>
 
       <div data-tour="presets" style={{ display: 'flex', gap: 8, flexWrap: 'nowrap', overflowX: 'auto', margin: '12px 0', paddingBottom: 4 }}>
-        {[
-          { id: 'red', label: 'Red Risk', active: tierFilter === 'Red', onClick: () => setTierFilter(tierFilter === 'Red' ? null : 'Red'), color: '#E76F51' },
-          { id: 'amber', label: 'Amber Risk', active: tierFilter === 'Amber', onClick: () => setTierFilter(tierFilter === 'Amber' ? null : 'Amber'), color: '#E9C46A' },
-          { id: 'green', label: 'Green Risk', active: tierFilter === 'Green', onClick: () => setTierFilter(tierFilter === 'Green' ? null : 'Green'), color: '#2A9D8F' },
-          { id: 'hhi', label: 'High HHI', active: hhiFilter === 'High', onClick: () => setHhiFilter && setHhiFilter(hhiFilter === 'High' ? null : 'High'), color: '#E76F51' },
-          { id: 'lowFloat', label: 'Low Float', active: flagFilter === 'LowFloat<15%', onClick: () => setFlagFilter && setFlagFilter(flagFilter === 'LowFloat<15%' ? null : 'LowFloat<15%'), color: '#E9C46A' },
-          { id: 'criticalFloat', label: 'Critical Float', active: flagFilter === 'CriticalFloat<5%', onClick: () => setFlagFilter && setFlagFilter(flagFilter === 'CriticalFloat<5%' ? null : 'CriticalFloat<5%'), color: '#d62828' },
-          { id: 'reset', label: 'Reset', active: false, onClick: clearFilters, color: '#6b8aad' },
-        ].map((p) => (
+        {presets.map((p) => (
           <button
             key={p.id}
             onClick={p.onClick}
@@ -229,7 +288,7 @@ export function AppHeader({
               }}
               onClick={() => setTierFilter(null)}
             >
-              Tier: {tierFilter} ×
+              {t('chipTier', { tier: tierFilter })}
             </span>
           )}
           {hhiFilter && setHhiFilter && (
@@ -245,7 +304,7 @@ export function AppHeader({
               }}
               onClick={() => setHhiFilter(null)}
             >
-              HHI: {hhiFilter} ×
+              {t('chipHhi', { level: hhiFilter })}
             </span>
           )}
           {flagFilter && setFlagFilter && (
@@ -261,7 +320,7 @@ export function AppHeader({
               }}
               onClick={() => setFlagFilter(null)}
             >
-              Flag: {flagFilter} ×
+              {t('chipFlag', { flag: flagFilter })}
             </span>
           )}
         </div>

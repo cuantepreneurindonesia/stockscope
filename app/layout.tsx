@@ -18,9 +18,7 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Right to Information - Financial Transparency Hub',
-  description:
-    'A financial transparency hub exposing ownership concentration and governance metrics for listed securities in Indonesia.',
+  title: 'Right to Information',
 };
 
 export const viewport: Viewport = {
@@ -36,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${dmMono.variable}`}>
+    <html lang="id" className={`${dmSans.variable} ${dmMono.variable}`} suppressHydrationWarning>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />

@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "title": "Right to Information — Pusat Transparansi Keuangan",
+    "description": "Pusat transparansi keuangan yang menampilkan konsentrasi kepemilikan dan metrik tata kelola untuk efek tercatat di Indonesia."
+  },
+  "dashboard": {
+    "loadingTitle": "Memuat data…",
+    "loadingSubtitle": "Mengambil data saham dari server…",
+    "errorTitle": "Gagal memuat data",
+    "emptyTitle": "Tidak ada saham yang cocok",
+    "emptyHint": "Coba ubah filter atau kata kunci pencarian",
+    "title": {
+      "tierRisk": "Risiko {tier}: {count} saham dari {total}",
+      "hhi": "HHI {level}: {count} saham",
+      "flag": "{flag}: {count} saham",
+      "default": "Dashboard tata kelola IDX — {count} saham"
+    },
+    "premium": {
+      "riskMap": "Upgrade ke Premium untuk membuka Peta Risiko",
+      "hhi": "Upgrade ke Premium untuk membuka HHI",
+      "flags": "Upgrade ke Premium untuk membuka Flags",
+      "stats": "Upgrade ke Premium untuk membuka Statistik"
+    }
+  },
+  "nav": {
+    "overview": "Ringkasan",
+    "scatter": "Peta risiko",
+    "hhi": "HHI",
+    "flags": "Flags",
+    "table": "Screener",
+    "owners": "Pemilik"
+  },
+  "header": {
+    "eyebrow": "IDX · Bursa Efek Indonesia",
+    "searchPlaceholder": "Cari saham, emiten, atau pemilik…",
+    "searchAria": "Cari saham berdasarkan kode, nama emiten, atau pemilik utama",
+    "clearSearch": "Hapus pencarian",
+    "screener": "Screener",
+    "tourTitle": "Putar ulang panduan",
+    "tour": "Panduan",
+    "clearFilters": "✕ Hapus semua filter",
+    "menuOpen": "Buka menu navigasi",
+    "presetRed": "Risiko merah",
+    "presetAmber": "Risiko kuning",
+    "presetGreen": "Risiko hijau",
+    "presetHighHhi": "HHI tinggi",
+    "presetLowFloat": "Float rendah",
+    "presetCriticalFloat": "Float kritis",
+    "presetReset": "Atur ulang",
+    "chipTier": "Tingkat: {tier} ×",
+    "chipHhi": "HHI: {level} ×",
+    "chipFlag": "Flag: {flag} ×"
+  },
+  "auth": {
+    "signIn": "Masuk dengan Google",
+    "upgrade": "⭐ Upgrade ke Premium",
+    "signOut": "Keluar",
+    "userFallback": "Pengguna"
+  },
+  "kpi": {
+    "totalStocks": "TOTAL SAHAM",
+    "redRisk": "🔴 RISIKO MERAH",
+    "amberRisk": "🟡 RISIKO KUNING",
+    "greenRisk": "🟢 RISIKO HIJAU",
+    "avgHhi": "RATA-RATA HHI",
+    "avgFloat": "RATA-RATA FREE FLOAT",
+    "pctOfTotal": "{pct}% dari total",
+    "hhiHighConc": "Kons. tinggi >2.500",
+    "idxMin": "Min IDX: 15%"
+  },
+  "tour": {
+    "ariaProgress": "Langkah panduan {current} dari {total}",
+    "skipAria": "Lewati panduan",
+    "skip": "Lewati panduan",
+    "back": "Kembali",
+    "next": "Lanjut",
+    "done": "Mulai",
+    "steps": {
+      "kpiCards": {
+        "title": "Indikator kinerja utama",
+        "description": "Pantau kesehatan portofolio dengan KPI real time: jumlah saham, konsentrasi rata-rata, dan sinyal pasar."
+      },
+      "tabOverview": {
+        "title": "Tab ringkasan",
+        "description": "Lihat gambaran besar komposisi portofolio dan distribusi risiko."
+      },
+      "tabScreener": {
+        "title": "Alat screener",
+        "description": "Saring dan analisis saham berdasarkan kriteria yang Anda tentukan."
+      },
+      "search": {
+        "title": "Pencarian",
+        "description": "Temukan saham atau perusahaan tertentu dengan cepat."
+      },
+      "presets": {
+        "title": "Filter cepat",
+        "description": "Gunakan prasetel untuk menemukan posisi berisiko tinggi atau terkonsentrasi."
+      }
+    }
+  },
+  "screenerPage": {
+    "brand": "🇮🇩 Screener Saham JCI",
+    "navDashboard": "Dashboard tata kelola",
+    "navScreener": "Screener AI",
+    "sectionLabel": "Screener saham AI",
+    "description": "Analisis setara institusi untuk saham Indonesia dengan algoritma skor komposit.",
+    "results": "Hasil · {count} saham",
+    "loading": "Memuat…",
+    "methodology": "Metodologi skor",
+    "methodologyBody": "Skor komposit menggabungkan: <strong>Fundamental (35%)</strong> · <strong>Teknikal (30%)</strong> · <strong>Sentimen (20%)</strong> · <strong>Likuiditas (15%)</strong>",
+    "loadError": "Gagal memuat saham"
+  },
+  "filterPanel": {
+    "filters": "Filter",
+    "searchStock": "Cari saham",
+    "searchPlaceholder": "Kode atau nama…",
+    "sector": "Sektor",
+    "allSectors": "Semua",
+    "aiTier": "Tingkat skor AI",
+    "tierAll": "Semua tingkat",
+    "tier1": "Tingkat 1: STRONG BUY (80-100)",
+    "tier2": "Tingkat 2: BUY (65-79)",
+    "tier3": "Tingkat 3: WATCH (50-64)",
+    "tier4": "Tingkat 4: NEUTRAL (35-49)",
+    "tier5": "Tingkat 5: AVOID (0-34)",
+    "scoreRange": "Rentang skor",
+    "min": "Min",
+    "max": "Maks",
+    "govTier": "Tingkat konsentrasi tata kelola:",
+    "riskSuffix": "Risiko {tier}",
+    "legend": "Legenda skor AI:",
+    "legendStrongBuy": "80-100: STRONG BUY",
+    "legendBuy": "65-79: BUY",
+    "legendWatch": "50-64: WATCH",
+    "legendNeutral": "35-49: NEUTRAL",
+    "legendAvoid": "0-34: AVOID"
+  },
+  "upgrade": {
+    "eyebrow": "IDX · dashboard tata kelola",
+    "success": "✅ Pembayaran berhasil! Akun Anda telah di-upgrade ke Premium. Segarkan halaman jika fitur masih terkunci.",
+    "refreshNow": "Segarkan sekarang",
+    "pending": "⏳ Pembayaran tertunda. Kami akan mengaktifkan akun setelah dikonfirmasi (biasanya dalam beberapa menit).",
+    "errorStatus": "❌ Pembayaran gagal atau dibatalkan. Silakan coba lagi.",
+    "title": "Buka akses Premium",
+    "subtitle": "Akses penuh ke semua analitik tata kelola untuk efek terdaftar di IDX.",
+    "priceNote": "Paket Rp 15.000 + admin Rp 2.000 · per bulan",
+    "accepts": "Menerima:",
+    "payQris": "Bayar dengan QRIS →",
+    "creating": "Membuat transaksi…",
+    "complete": "✅ Upgrade selesai",
+    "back": "← Kembali ke dashboard",
+    "errors": {
+      "createFailed": "Gagal membuat pembayaran",
+      "script": "Skrip pembayaran belum dimuat. Segarkan halaman dan coba lagi.",
+      "paymentFailed": "Pembayaran gagal. Silakan coba lagi."
+    },
+    "features": [
+      "Peta risiko — Scatter interaktif HHI vs free float untuk setiap saham",
+      "Distribusi HHI — Analisis konsentrasi kepemilikan di semua tingkat",
+      "Flags tata kelola — Saring saham menurut flag risiko (LowFloat, Insider, dll.)",
+      "Screener penuh — Akses tak terbatas ke semua saham di tabel",
+      "Tab pemilik — Lihat pemilik institusional dan portofolio lengkapnya",
+      "Tab statistik — Statistik agregat lanjutan dan analitik lintas saham"
+    ]
+  },
+  "errors": {
+    "notFoundTitle": "404",
+    "notFoundBody": "Halaman ini tidak ada atau telah dipindahkan.",
+    "notFoundCta": "Kembali ke dashboard",
+    "boundaryTitle": "Terjadi kesalahan",
+    "boundaryBody": "Terjadi kesalahan tak terduga. Anda bisa coba lagi atau kembali ke dashboard.",
+    "tryAgain": "Coba lagi"
+  }
+}

@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect } from 'react';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function Error({
   error,
@@ -10,6 +11,8 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }): React.ReactElement {
+  const t = useTranslations('errors');
+
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -30,10 +33,10 @@ export default function Error({
     >
       <div>
         <h1 style={{ fontSize: 'clamp(22px, 5vw, 28px)', fontWeight: 700, marginBottom: 12 }}>
-          Something went wrong
+          {t('boundaryTitle')}
         </h1>
         <p style={{ color: '#a8c8e8', marginBottom: 24, maxWidth: 400, lineHeight: 1.6 }}>
-          An unexpected error occurred. You can try again or return to the dashboard.
+          {t('boundaryBody')}
         </p>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
           <button
@@ -50,7 +53,7 @@ export default function Error({
               fontFamily: 'inherit',
             }}
           >
-            Try again
+            {t('tryAgain')}
           </button>
           <Link
             href="/"
@@ -65,7 +68,7 @@ export default function Error({
               textDecoration: 'none',
             }}
           >
-            Back to Dashboard
+            {t('notFoundCta')}
           </Link>
         </div>
       </div>

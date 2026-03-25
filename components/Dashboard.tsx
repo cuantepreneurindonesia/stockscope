@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { AppHeader, KpiCards, TabBar, MobileDrawer } from '@/components/layout';
 import { OnboardingTour } from '@/components/OnboardingTour';
 import {
@@ -16,18 +17,22 @@ import { useStockData, useAnalytics, useStockStatsExtended, usePlan } from '@/li
 import { BlurOverlay } from '@/components/ui';
 import type { DashboardFilters, Stock } from '@/lib/types';
 
-const NAV_TABS: [string, string][] = [
-  ['overview', 'Overview'],
-  ['scatter', 'Risk Map'],
-  ['hhi', 'HHI'],
-  ['flags', 'Flags'],
-  ['table', 'Screener'],
-  ['owners', 'Owners'],
-];
-
 const TOUR_STORAGE_KEY = 'tourCompleted';
 
 export function Dashboard(): React.ReactElement {
+  const tDash = useTranslations('dashboard');
+  const tNav = useTranslations('nav');
+  const NAV_TABS = useMemo<[string, string][]>(
+    () => [
+      ['overview', tNav('overview')],
+      ['scatter', tNav('scatter')],
+      ['hhi', tNav('hhi')],
+      ['flags', tNav('flags')],
+      ['table', tNav('table')],
+      ['owners', tNav('owners')],
+    ],
+    [tNav]
+  );
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [showTour, setShowTour] = useState(false);
 
@@ -140,25 +145,37 @@ export function Dashboard(): React.ReactElement {
 
   const dynamicTitle = useMemo(() => {
     if (filters.tier)
-      return `${filters.tier} Risk: ${stockData.filtered.length} stocks of ${stockData.RAW.length}`;
+      return tDash('title.tierRisk', {
+        tier: filters.tier,
+        count: stockData.filtered.length,
+        total: stockData.RAW.length,
+      });
     if (filters.hierarchyLevel)
-      return `${filters.hierarchyLevel} HHI: ${stockData.filtered.length} stocks`;
-    if (filters.flag) return `${filters.flag}: ${stockData.filtered.length} stocks`;
-    return `IDX Governance Dashboard — ${stockData.RAW.length} stocks`;
+      return tDash('title.hhi', {
+        level: filters.hierarchyLevel,
+        count: stockData.filtered.length,
+      });
+    if (filters.flag)
+      return tDash('title.flag', {
+        flag: filters.flag,
+        count: stockData.filtered.length,
+      });
+    return tDash('title.default', { count: stockData.RAW.length });
   }, [
     stockData.filtered.length,
     stockData.RAW.length,
     filters.tier,
     filters.hierarchyLevel,
     filters.flag,
+    tDash,
   ]);
 
   if (stockData.loading && stockData.RAW.length === 0) {
     return (
       <div className="app-root" style={{ background: '#060d18', minHeight: '100vh', color: '#e8f4f8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
-          <h2>Loading data...</h2>
-          <p style={{ color: '#a8c8e8' }}>Fetching stocks from backend server...</p>
+          <h2>{tDash('loadingTitle')}</h2>
+          <p style={{ color: '#a8c8e8' }}>{tDash('loadingSubtitle')}</p>
         </div>
       </div>
     );
@@ -168,7 +185,7 @@ export function Dashboard(): React.ReactElement {
     return (
       <div className="app-root" style={{ background: '#060d18', minHeight: '100vh', color: '#e8f4f8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
-          <h2>Error Loading Data</h2>
+          <h2>{tDash('errorTitle')}</h2>
           <p>{stockData.error}</p>
         </div>
       </div>
@@ -227,7 +244,7 @@ export function Dashboard(): React.ReactElement {
           )}
 
           {activeTab === 'scatter' && (
-            <BlurOverlay isBlurred={!isPremium} message="Upgrade to Premium to unlock Risk Map">
+            <BlurOverlay isBlurred={!isPremium} message={tDash('premium.riskMap')}>
               <RiskMapTab
                 filtered={stockData.filtered}
                 selectedStock={selectedStock}
@@ -239,7 +256,7 @@ export function Dashboard(): React.ReactElement {
           )}
 
           {activeTab === 'hhi' && (
-            <BlurOverlay isBlurred={!isPremium} message="Upgrade to Premium to unlock HHI">
+            <BlurOverlay isBlurred={!isPremium} message={tDash('premium.hhi')}>
               <HhiTab
                 stats={tabStats}
                 filtered={stockData.filtered}
@@ -251,7 +268,7 @@ export function Dashboard(): React.ReactElement {
           )}
 
           {activeTab === 'flags' && (
-            <BlurOverlay isBlurred={!isPremium} message="Upgrade to Premium to unlock Flags">
+            <BlurOverlay isBlurred={!isPremium} message={tDash('premium.flags')}>
               <FlagsTab
                 stats={tabStats}
                 flagCounts={flagCounts}
@@ -286,7 +303,7 @@ export function Dashboard(): React.ReactElement {
           )}
 
           {activeTab === 'stats' && (
-            <BlurOverlay isBlurred={!isPremium} message="Upgrade to Premium to unlock Stats">
+            <BlurOverlay isBlurred={!isPremium} message={tDash('premium.stats')}>
               <StatsTab
                 stats={stats}
                 stocks={stockData.filtered}
@@ -297,8 +314,8 @@ export function Dashboard(): React.ReactElement {
 
           {!stockData.loading && stockData.filtered.length === 0 && activeTab !== 'owners' && (
             <div style={{ textAlign: 'center', padding: '60px 20px', color: '#a8c8e8' }}>
-              <p style={{ fontSize: 16, marginBottom: 8 }}>No stocks found</p>
-              <p style={{ fontSize: 13 }}>Try adjusting your filters or search term</p>
+              <p style={{ fontSize: 16, marginBottom: 8 }}>{tDash('emptyTitle')}</p>
+              <p style={{ fontSize: 13 }}>{tDash('emptyHint')}</p>
             </div>
           )}
         </div>

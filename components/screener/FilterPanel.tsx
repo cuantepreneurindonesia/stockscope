@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 interface FilterPanelProps {
   sectors: string[];
   selectedSector: string;
@@ -31,23 +33,25 @@ export function FilterPanel({
   searchQuery,
   onSearchChange
 }: FilterPanelProps) {
+  const t = useTranslations('filterPanel');
+
   return (
     <div style={{ background: '#09131f', border: '1px solid #132030', borderRadius: 10, padding: 16, marginBottom: 24 }}>
       <div style={{ fontSize: 9, letterSpacing: 2, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 16, textTransform: 'uppercase' }}>
-        Filters
+        {t('filters')}
       </div>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 16 }}>
         {/* Search */}
         <div>
           <label style={{ display: 'block', fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 8, textTransform: 'uppercase' }}>
-            Search Stock
+            {t('searchStock')}
           </label>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Ticker or name..."
+            placeholder={t('searchPlaceholder')}
             style={{
               width: '100%',
               padding: '10px 12px',
@@ -75,7 +79,7 @@ export function FilterPanel({
         {/* Sector Filter */}
         <div>
           <label style={{ display: 'block', fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 8, textTransform: 'uppercase' }}>
-            Sector
+            {t('sector')}
           </label>
           <select
             value={selectedSector}
@@ -105,7 +109,7 @@ export function FilterPanel({
           >
             {sectors.map((sector) => (
               <option key={sector} value={sector} style={{ background: '#09131f', color: '#e8f4f8' }}>
-                {sector}
+                {sector === 'All' ? t('allSectors') : sector}
               </option>
             ))}
           </select>
@@ -114,7 +118,7 @@ export function FilterPanel({
         {/* AI Score Tier Filter */}
         <div>
           <label style={{ display: 'block', fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 8, textTransform: 'uppercase' }}>
-            AI Score Tier
+            {t('aiTier')}
           </label>
           <select
             value={selectedAiTier}
@@ -142,26 +146,26 @@ export function FilterPanel({
               e.currentTarget.style.boxShadow = '0 0 0 0 rgba(69, 123, 157, 0)';
             }}
           >
-            <option value="" style={{ background: '#09131f', color: '#e8f4f8' }}>All Tiers</option>
-            <option value="1" style={{ background: '#09131f', color: '#e8f4f8' }}>Tier 1: STRONG BUY (80-100)</option>
-            <option value="2" style={{ background: '#09131f', color: '#e8f4f8' }}>Tier 2: BUY (65-79)</option>
-            <option value="3" style={{ background: '#09131f', color: '#e8f4f8' }}>Tier 3: WATCH (50-64)</option>
-            <option value="4" style={{ background: '#09131f', color: '#e8f4f8' }}>Tier 4: NEUTRAL (35-49)</option>
-            <option value="5" style={{ background: '#09131f', color: '#e8f4f8' }}>Tier 5: AVOID (0-34)</option>
+            <option value="" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tierAll')}</option>
+            <option value="1" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tier1')}</option>
+            <option value="2" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tier2')}</option>
+            <option value="3" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tier3')}</option>
+            <option value="4" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tier4')}</option>
+            <option value="5" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tier5')}</option>
           </select>
         </div>
 
         {/* Score Range */}
         <div>
           <label style={{ display: 'block', fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 8, textTransform: 'uppercase' }}>
-            Score Range
+            {t('scoreRange')}
           </label>
           <div style={{ display: 'flex', gap: 8 }}>
             <input
               type="number"
               value={minScore}
               onChange={(e) => onMinScoreChange(e.target.value)}
-              placeholder="Min"
+              placeholder={t('min')}
               min="0"
               max="100"
               style={{
@@ -191,7 +195,7 @@ export function FilterPanel({
               type="number"
               value={maxScore}
               onChange={(e) => onMaxScoreChange(e.target.value)}
-              placeholder="Max"
+              placeholder={t('max')}
               min="0"
               max="100"
               style={{
@@ -222,7 +226,7 @@ export function FilterPanel({
 
       {/* Governance Tier Buttons */}
       <div style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #132030' }}>
-        <p style={{ fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 12, textTransform: 'uppercase' }}>Governance Concentration Tier:</p>
+        <p style={{ fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 12, textTransform: 'uppercase' }}>{t('govTier')}</p>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
           {(['Red', 'Amber', 'Green'] as const).map(tier => (
             <button
@@ -241,7 +245,7 @@ export function FilterPanel({
                 transition: 'all 0.2s'
               }}
             >
-              {tier} Risk
+              {t('riskSuffix', { tier })}
             </button>
           ))}
         </div>
@@ -249,22 +253,22 @@ export function FilterPanel({
 
       {/* Score Legend */}
       <div>
-        <p style={{ fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 12, textTransform: 'uppercase' }}>AI Score Legend:</p>
+        <p style={{ fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 12, textTransform: 'uppercase' }}>{t('legend')}</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, background: 'rgba(42, 157, 143, 0.1)', color: '#2a9d8f', border: '1px solid rgba(42, 157, 143, 0.3)' }}>
-            80-100: STRONG BUY
+            {t('legendStrongBuy')}
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, background: 'rgba(69, 123, 157, 0.1)', color: '#a8d8ea', border: '1px solid rgba(69, 123, 157, 0.3)' }}>
-            65-79: BUY
+            {t('legendBuy')}
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, background: 'rgba(233, 196, 106, 0.1)', color: '#e9c46a', border: '1px solid rgba(233, 196, 106, 0.3)' }}>
-            50-64: WATCH
+            {t('legendWatch')}
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, background: 'rgba(107, 138, 173, 0.1)', color: '#6b8aad', border: '1px solid rgba(107, 138, 173, 0.3)' }}>
-            35-49: NEUTRAL
+            {t('legendNeutral')}
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, background: 'rgba(231, 111, 81, 0.1)', color: '#e76f51', border: '1px solid rgba(231, 111, 81, 0.3)' }}>
-            0-34: AVOID
+            {t('legendAvoid')}
           </span>
         </div>
       </div>
