@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/config';
+// Premium free-tier cap (uncomment to restore):
+// import { getServerSession } from 'next-auth';
+// import { authOptions } from '@/lib/auth/config';
 import { fetchAllStocks } from '@/lib/services/stockService';
 import { filterStocks } from '@/lib/services/dataTransformService';
 import { enrichStocks } from '@/lib/services/enrichmentService';
-import { FREE_LIMIT } from '@/lib/auth/constants';
+// import { FREE_LIMIT } from '@/lib/auth/constants';
 import type { StockFilter } from '@/lib/types';
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    const isPaidTier = session?.user?.plan === 'premium';
+    // const session = await getServerSession(authOptions);
+    // const isPaidTier = session?.user?.plan === 'premium';
 
     const searchParams = request.nextUrl.searchParams;
 
@@ -25,13 +26,12 @@ export async function GET(request: NextRequest) {
     const maxScore = searchParams.get('maxScore') ? parseInt(searchParams.get('maxScore')!) : null;
     const sortBy = searchParams.get('sortBy') || 'code';
     const order = (searchParams.get('order') || 'asc') as 'asc' | 'desc';
-    let limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 50;
+    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 50;
     const skip = searchParams.get('skip') ? parseInt(searchParams.get('skip')!) : 0;
 
-    // Apply FREE_LIMIT cap for free users
-    if (!isPaidTier) {
-      limit = Math.min(limit, FREE_LIMIT);
-    }
+    // if (!isPaidTier) {
+    //   limit = Math.min(limit, FREE_LIMIT);
+    // }
 
     // 1. Fetch governance data from MongoDB
     let stocks = await fetchAllStocks(10000);

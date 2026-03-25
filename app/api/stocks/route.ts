@@ -5,10 +5,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Premium free-tier cap (uncomment to restore):
+// import { getServerSession } from 'next-auth';
 import { fetchStocks, countStocks } from '@/lib/services/stockService';
-import { authOptions } from '@/lib/auth/config';
-import { FREE_LIMIT } from '@/lib/auth/constants';
+// import { authOptions } from '@/lib/auth/config';
+// import { FREE_LIMIT } from '@/lib/auth/constants';
 import type { Stock, StockFilter, PaginatedResponse } from '@/lib/types';
 
 const STOCK_SORT_KEYS = new Set<keyof Stock>([
@@ -37,8 +38,8 @@ type StocksResponse = PaginatedResponse<Stock>;
 
 export async function GET(request: NextRequest): Promise<NextResponse<StocksResponse>> {
   try {
-    const session = await getServerSession(authOptions);
-    const plan = (session?.user as { plan?: 'free' | 'premium' })?.plan ?? 'free';
+    // const session = await getServerSession(authOptions);
+    // const plan = (session?.user as { plan?: 'free' | 'premium' })?.plan ?? 'free';
 
     const searchParams = request.nextUrl.searchParams;
 
@@ -47,10 +48,10 @@ export async function GET(request: NextRequest): Promise<NextResponse<StocksResp
     const hierarchyLevel = searchParams.get('hierarchyLevel');
     const flag = searchParams.get('flag');
     const search = searchParams.get('search');
-    let limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 10000);
-    if (plan === 'free') {
-      limit = Math.min(limit, FREE_LIMIT);
-    }
+    const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 10000);
+    // if (plan === 'free') {
+    //   limit = Math.min(limit, FREE_LIMIT);
+    // }
     const skip = parseInt(searchParams.get('skip') || '0', 10);
     const sortBy = parseSortBy(searchParams.get('sortBy'));
     const sortDir =

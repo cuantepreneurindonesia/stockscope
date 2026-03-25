@@ -4,24 +4,25 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+// Premium free-tier cap (uncomment to restore):
+// import { getServerSession } from 'next-auth';
 import { ownerQueries } from '@/lib/mongodb';
-import { authOptions } from '@/lib/auth/config';
-import { FREE_LIMIT } from '@/lib/auth/constants';
+// import { authOptions } from '@/lib/auth/config';
+// import { FREE_LIMIT } from '@/lib/auth/constants';
 import type { TopOwner, ApiResponse } from '@/lib/types';
 
 type OwnersResponse = ApiResponse<TopOwner[]>;
 
 export async function GET(request: NextRequest): Promise<NextResponse<OwnersResponse>> {
   try {
-    const session = await getServerSession(authOptions);
-    const plan = (session?.user as { plan?: 'free' | 'premium' })?.plan ?? 'free';
+    // const session = await getServerSession(authOptions);
+    // const plan = (session?.user as { plan?: 'free' | 'premium' })?.plan ?? 'free';
 
     const searchParams = request.nextUrl.searchParams;
-    let limit = Math.min(parseInt(searchParams.get('limit') || '100', 10), 1000);
-    if (plan === 'free') {
-      limit = Math.min(limit, FREE_LIMIT);
-    }
+    const limit = Math.min(parseInt(searchParams.get('limit') || '100', 10), 1000);
+    // if (plan === 'free') {
+    //   limit = Math.min(limit, FREE_LIMIT);
+    // }
     const detailed = searchParams.get('detailed') === 'true';
 
     // Fetch top owners (with or without portfolio)
