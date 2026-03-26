@@ -1,19 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import { FilterPanel } from '@/components/screener/FilterPanel';
 import { ScreenerTable } from '@/components/screener/ScreenerTable';
 import { ScreenerCardList } from '@/components/screener/ScreenerCardList';
-import { ViewToggle } from '@/components/screener/ViewToggle';
 import { SkeletonLoader } from '@/components/screener/SkeletonLoader';
-import { LoadingSpinner } from '@/components/screener/LoadingSpinner';
-import { LocaleSwitcher } from '@/components/LocaleSwitcher';
+import { TerminalHeader } from '@/components/layout/TerminalHeader';
+import { TerminalSidebar } from '@/components/layout/TerminalSidebar';
+import { ResultsHeader } from '@/components/screener/ResultsHeader';
 import type { EnrichedStock } from '@/lib/types/unified';
 
 export default function ScreenerPage(): React.ReactElement {
   const t = useTranslations('screenerPage');
+  const locale = useLocale();
   const loadErrorLabel = t('loadError');
   const [stocks, setStocks] = useState<EnrichedStock[]>([]);
   const [sectors, setSectors] = useState<string[]>(['All']);
@@ -98,233 +98,91 @@ export default function ScreenerPage(): React.ReactElement {
   };
 
   return (
-    <div style={{ background: '#060d18', minHeight: '100vh' }}>
-      <div
-        style={{
-          padding: 'clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px) 14px',
-          background: 'linear-gradient(180deg, #0d1e30 0%, #09131f 100%)',
-          borderBottom: '1px solid #132030',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '10px',
-          }}
-        >
-          <Link
-            href="/"
-            style={{
-              fontSize: 'clamp(0.875rem, 5vw, 1.375rem)',
-              fontWeight: 700,
-              color: '#e8f4f8',
-              textDecoration: 'none',
-              transition: 'color 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#a8d8ea';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#e8f4f8';
-            }}
-          >
-            {t('brand')}
-          </Link>
-          <LocaleSwitcher />
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          gap: 0,
-          borderBottom: '1px solid #132030',
-          padding: 'clamp(12px, 4vw, 28px) 0',
-          background: '#09131f',
-          overflowX: 'auto',
-          scrollbarWidth: 'none',
-        }}
-      >
-        <Link
-          href="/"
-          style={{
-            background: 'none',
-            border: 'none',
-            borderBottom: '2px solid transparent',
-            color: '#6b8aad',
-            padding: '12px 18px',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontFamily: "'DM Mono', monospace",
-            letterSpacing: 1,
-            transition: 'color 0.15s',
-            whiteSpace: 'nowrap',
-            minHeight: 44,
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#a8d8ea';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = '#6b8aad';
-          }}
-        >
-          {t('navDashboard')}
-        </Link>
-        <div
-          style={{
-            background: 'none',
-            borderBottom: '2px solid #457b9d',
-            color: '#a8d8ea',
-            padding: '12px 18px',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontFamily: "'DM Mono', monospace",
-            letterSpacing: 1,
-            transition: 'color 0.15s',
-            whiteSpace: 'nowrap',
-            minHeight: 44,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          {t('navScreener')}
-        </div>
-      </div>
-
-      <div style={{ padding: 'clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px)' }}>
-        <div
-          style={{
-            fontSize: 9,
-            letterSpacing: 2,
-            color: '#457b9d',
-            fontFamily: "'DM Mono', monospace",
-            marginBottom: 16,
-            textTransform: 'uppercase',
-          }}
-        >
-          {t('sectionLabel')}
-        </div>
-
-        <p style={{ fontSize: '0.875rem', color: '#a8c8e8', marginBottom: 24, lineHeight: 1.6 }}>
-          {t('description')}
-        </p>
-
-        <FilterPanel
-          sectors={sectors}
-          selectedSector={selectedSector}
-          onSectorChange={setSelectedSector}
-          selectedAiTier={selectedAiTier}
-          onAiTierChange={setSelectedAiTier}
-          selectedGovTier={selectedGovTier}
-          onGovTierChange={setSelectedGovTier}
-          minScore={minScore}
-          onMinScoreChange={setMinScore}
-          maxScore={maxScore}
-          onMaxScoreChange={setMaxScore}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
-
-        <div
-          style={{
-            background: '#09131f',
-            border: '1px solid #132030',
-            borderRadius: 10,
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              padding: 16,
-              borderBottom: '1px solid #132030',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div
-              style={{
-                fontSize: 9,
-                letterSpacing: 2,
-                color: '#457b9d',
-                fontFamily: "'DM Mono', monospace",
-                textTransform: 'uppercase',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8
-              }}
-            >
-              {loading ? (
-                <>
-                  <LoadingSpinner size={14} />
-                  <span>{t('loading')}</span>
-                </>
-              ) : (
-                t('results', { count: stocks.length })
-              )}
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              {!loading && stocks.length > 0 && (
-                <span style={{ fontSize: '0.75rem', color: '#6b8aad' }}>
-                  {searchQuery || selectedSector !== 'All' || selectedAiTier || selectedGovTier || minScore || maxScore 
-                    ? t('filtered') 
-                    : t('showing')}
-                </span>
-              )}
-              <ViewToggle view={view} onChange={setView} />
+    <div className="min-h-screen bg-surface-container-lowest flex flex-col">
+      {/* Terminal Header */}
+      <TerminalHeader locale={locale} />
+      
+      {/* Main Content Area with Sidebar */}
+      <div className="flex flex-1">
+        {/* Terminal Sidebar */}
+        <TerminalSidebar locale={locale} />
+        
+        {/* Content Area (Filter + Results) */}
+        <div className="flex-1 flex gap-6 p-6 overflow-hidden">
+          {/* Filter Panel Column */}
+          <div className="w-80 flex-shrink-0 hidden lg:block">
+            <div className="sticky top-24">
+              <FilterPanel
+                sectors={sectors}
+                selectedSector={selectedSector}
+                onSectorChange={setSelectedSector}
+                selectedAiTier={selectedAiTier}
+                onAiTierChange={setSelectedAiTier}
+                selectedGovTier={selectedGovTier}
+                onGovTierChange={setSelectedGovTier}
+                minScore={minScore}
+                onMinScoreChange={setMinScore}
+                maxScore={maxScore}
+                onMaxScoreChange={setMaxScore}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+              />
             </div>
           </div>
 
-          {error ? (
-            <div style={{ padding: 32, textAlign: 'center', color: '#e76f51', fontSize: '0.875rem' }}>
-              {error}
+          {/* Results Column */}
+          <div className="flex-1 min-w-0">
+            {/* Mobile Filter (Full Width) */}
+            <div className="lg:hidden mb-6">
+              <FilterPanel
+                sectors={sectors}
+                selectedSector={selectedSector}
+                onSectorChange={setSelectedSector}
+                selectedAiTier={selectedAiTier}
+                onAiTierChange={setSelectedAiTier}
+                selectedGovTier={selectedGovTier}
+                onGovTierChange={setSelectedGovTier}
+                minScore={minScore}
+                onMinScoreChange={setMinScore}
+                maxScore={maxScore}
+                onMaxScoreChange={setMaxScore}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
+              />
             </div>
-          ) : loading ? (
-            <SkeletonLoader rows={5} columns={7} />
-          ) : view === 'cards' ? (
-            <ScreenerCardList stocks={stocks} />
-          ) : (
-            <ScreenerTable
-              stocks={stocks}
-              onSort={handleSort}
-              sortBy={sortBy}
-              sortOrder={sortOrder}
+
+            {/* Results Header */}
+            <ResultsHeader
+              view={view}
+              onViewChange={setView}
+              totalResults={stocks.length}
             />
-          )}
-        </div>
 
-        <div
-          style={{
-            marginTop: 24,
-            background: '#09131f',
-            border: '1px solid #1e3a52',
-            borderRadius: 10,
-            padding: 16,
-          }}
-        >
-          <div
-            style={{
-              fontSize: 9,
-              letterSpacing: 2,
-              color: '#457b9d',
-              fontFamily: "'DM Mono', monospace",
-              marginBottom: 12,
-              textTransform: 'uppercase',
-            }}
-          >
-            {t('methodology')}
+            {/* Results Content */}
+            <div className="mt-6">
+              {error ? (
+                <div className="text-center py-16">
+                  <span className="material-symbols-outlined text-6xl text-error/40 mb-4 block">
+                    error
+                  </span>
+                  <p className="font-headline text-sm uppercase tracking-widest text-error">
+                    {error}
+                  </p>
+                </div>
+              ) : loading ? (
+                <SkeletonLoader rows={5} columns={7} />
+              ) : view === 'cards' ? (
+                <ScreenerCardList stocks={stocks} />
+              ) : (
+                <ScreenerTable
+                  stocks={stocks}
+                  onSort={handleSort}
+                  sortBy={sortBy}
+                  sortOrder={sortOrder}
+                />
+              )}
+            </div>
           </div>
-          <p style={{ fontSize: '0.875rem', color: '#a8c8e8', lineHeight: 1.6 }}>
-            {t.rich('methodologyBody', {
-              strong: (chunks) => <strong>{chunks}</strong>,
-            })}
-          </p>
         </div>
       </div>
     </div>
