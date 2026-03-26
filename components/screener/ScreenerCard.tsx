@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { FlagPill } from '@/components/ui';
 import type { EnrichedStock } from '@/lib/types/unified';
 
 interface ScreenerCardProps {
@@ -10,326 +9,215 @@ interface ScreenerCardProps {
 
 export function ScreenerCard({ stock }: ScreenerCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const isPositive = (stock.change ?? 0) >= 0;
 
-  // Map governance tier to RTI colors
-  const getGovTierStyle = (tier: string) => {
-    const tierColors: Record<string, { color: string; bg: string }> = {
-      'Red': { color: '#E76F51', bg: 'rgba(231, 111, 81, 0.12)' },
-      'Amber': { color: '#E9C46A', bg: 'rgba(233, 196, 106, 0.12)' },
-      'Green': { color: '#2A9D8F', bg: 'rgba(42, 157, 143, 0.12)' }
+  // Tier badge colors
+  const getTierColor = (tier: string) => {
+    const tierLower = tier?.toLowerCase() || '';
+    const colors: Record<string, string> = {
+      'green': 'bg-primary/10 text-primary border-primary/20',
+      'amber': 'bg-tertiary/10 text-tertiary border-tertiary/20',
+      'red': 'bg-error/10 text-error border-error/20',
+      'strong buy': 'bg-primary/10 text-primary border-primary/20',
+      'buy': 'bg-primary/10 text-primary border-primary/20',
+      'watch': 'bg-tertiary/10 text-tertiary border-tertiary/20',
+      'neutral': 'bg-on-surface-variant/10 text-on-surface-variant border-on-surface-variant/20',
+      'avoid': 'bg-error/10 text-error border-error/20',
     };
-    return tierColors[tier] || { color: '#6b8aad', bg: 'rgba(107, 138, 173, 0.12)' };
+    return colors[tierLower] || 'bg-on-surface-variant/10 text-on-surface-variant border-on-surface-variant/20';
   };
-
-  const govTierStyle = getGovTierStyle(stock.tier);
-
-  // Get score color
-  const getScoreColor = (value: number | undefined) => {
-    if (!value) return '#6b8aad';
-    if (value >= 80) return '#2a9d8f';
-    if (value >= 65) return '#457b9d';
-    if (value >= 50) return '#e9c46a';
-    return '#e76f51';
-  };
-
-  const scoreColor = getScoreColor(stock.scores?.composite);
 
   const formatPrice = (price: number | undefined) => {
     if (!price) return '—';
     return price.toLocaleString('id-ID');
   };
 
+  const formatPercent = (num: number | null | undefined): string => {
+    if (num == null) return '—';
+    const sign = num >= 0 ? '+' : '';
+    return `${sign}${num.toFixed(2)}%`;
+  };
+
+  const score = stock.scores?.composite ?? 0;
+  const scoreColor = score >= 70 ? 'bg-primary' : score >= 40 ? 'bg-tertiary' : 'bg-error';
+  const scoreGlow = score >= 70 ? 'shadow-[0_0_8px_rgba(78,222,163,0.4)]' : score >= 40 ? 'shadow-[0_0_8px_rgba(255,185,95,0.4)]' : 'shadow-[0_0_8px_rgba(255,180,171,0.3)]';
+
   return (
-    <div
-      style={{
-        background: '#09131f',
-        border: '1px solid #1e3a52',
-        borderRadius: 8,
-        padding: 16,
-        transition: 'all 0.2s ease',
-        cursor: 'pointer'
-      }}
+    <div 
+      className={`
+        bg-surface-container 
+        rounded-lg 
+        p-4 
+        cursor-pointer 
+        transition-all 
+        duration-200 
+        hover:bg-surface-container-high
+        border-l-4
+        ${isPositive ? 'border-primary' : 'border-error'}
+        ${isExpanded ? 'ring-1 ring-primary/20' : ''}
+      `}
       onClick={() => setIsExpanded(!isExpanded)}
     >
-      {/* Header Row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-        {/* Ticker and Issuer */}
-        <div style={{ flex: 1 }}>
-          <div style={{ 
-            fontFamily: "'DM Mono', monospace", 
-            fontWeight: 700, 
-            color: '#a8d8ea', 
-            fontSize: '1.125rem',
-            marginBottom: 4
-          }}>
+      {/* Header: Ticker + Gov Tier */}
+      <div className="flex justify-between items-start mb-3">
+        <div className="flex-1">
+          <div className="font-label text-lg font-bold text-on-surface mb-1">
             {stock.code}
           </div>
-          <div style={{ 
-            fontSize: '0.875rem', 
-            color: '#a8c8e8',
-            lineHeight: 1.4
-          }}>
+          <div className="font-body text-xs text-on-surface-variant line-clamp-2">
             {stock.issuer}
           </div>
         </div>
+        
+        {/* Governance Tier Badge */}
+        <span className={`
+          ${getTierColor(stock.tier)} 
+          px-2 py-1 
+          rounded-full 
+          text-[10px] 
+          font-label 
+          font-bold 
+          uppercase 
+          tracking-wider 
+          border 
+          ml-2
+          flex-shrink-0
+        `}>
+          {stock.tier}
+        </span>
+      </div>
 
-        {/* Gov Tier Badge */}
-        <div style={{ marginLeft: 12 }}>
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              background: govTierStyle.bg,
-              color: govTierStyle.color,
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              border: `2px solid ${govTierStyle.color}66`
-            }}
-            title={stock.tier}
-          >
-            {stock.tier[0]}
+      {/* Price + Change */}
+      <div className="flex justify-between items-end mb-4 pb-4 border-b border-outline-variant/10">
+        <div>
+          <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+            Price
+          </div>
+          <div className="font-label text-xl font-semibold text-on-surface tabular-nums">
+            {formatPrice(stock.price)}
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+            Change
+          </div>
+          <div className={`
+            font-label 
+            text-lg 
+            font-bold 
+            tabular-nums
+            ${isPositive ? 'text-primary' : 'text-error'}
+          `}>
+            {formatPercent(stock.change)}
+          </div>
+        </div>
+      </div>
+
+      {/* AI Score Bar */}
+      <div className="mb-3">
+        <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">
+          AI Score
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
+            <div 
+              className={`h-full ${scoreColor} ${scoreGlow} transition-all duration-500`}
+              style={{ width: `${Math.min(Math.max(score, 0), 100)}%` }}
+            />
+          </div>
+          <span className="font-label text-xs tabular-nums text-on-surface-variant min-w-[2rem] text-right">
+            {score.toFixed(0)}
           </span>
         </div>
       </div>
 
-      {/* Price and Change Row */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: 12,
-        paddingBottom: 12,
-        borderBottom: '1px solid #132030'
-      }}>
-        <div>
-          <div style={{ 
-            fontSize: '0.625rem', 
-            fontFamily: "'DM Mono', monospace",
-            color: '#6b8aad', 
-            textTransform: 'uppercase',
-            letterSpacing: 1,
-            marginBottom: 4
-          }}>
-            Price
-          </div>
-          <div style={{ 
-            fontSize: '1.25rem', 
-            fontWeight: 600, 
-            color: '#e8f4f8'
-          }}>
-            {formatPrice(stock.price)}
-          </div>
+      {/* AI Tier Badge */}
+      {stock.aiTier && (
+        <div className="mb-3">
+          <span className={`
+            ${getTierColor(stock.aiTier.label)}
+            px-3 py-1.5
+            rounded-full
+            text-xs
+            font-label
+            font-semibold
+            uppercase
+            tracking-wider
+            border
+            inline-block
+          `}>
+            {stock.aiTier.label}
+          </span>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ 
-            fontSize: '0.625rem', 
-            fontFamily: "'DM Mono', monospace",
-            color: '#6b8aad', 
-            textTransform: 'uppercase',
-            letterSpacing: 1,
-            marginBottom: 4
-          }}>
-            Change
-          </div>
-          <div style={{ 
-            fontSize: '1.125rem', 
-            fontWeight: 700,
-            color: stock.change && stock.change >= 0 ? '#2a9d8f' : '#e76f51'
-          }}>
-            {stock.change ? (stock.change >= 0 ? '+' : '') + stock.change.toFixed(2) + '%' : '—'}
-          </div>
-        </div>
-      </div>
-
-      {/* AI Score and Tier Row */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: isExpanded ? 12 : 0 }}>
-        {/* AI Score */}
-        <div style={{ flex: 1 }}>
-          <div style={{ 
-            fontSize: '0.625rem', 
-            fontFamily: "'DM Mono', monospace",
-            color: '#6b8aad', 
-            textTransform: 'uppercase',
-            letterSpacing: 1,
-            marginBottom: 6
-          }}>
-            AI Score
-          </div>
-          <div style={{
-            height: 24,
-            background: 'rgba(69, 123, 157, 0.08)',
-            borderRadius: 4,
-            overflow: 'hidden',
-            border: '1px solid #1e3a52',
-            position: 'relative'
-          }}>
-            <div
-              style={{
-                height: '100%',
-                width: `${stock.scores?.composite || 0}%`,
-                background: `linear-gradient(90deg, ${scoreColor}, ${scoreColor}dd)`,
-                transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                boxShadow: `0 0 8px ${scoreColor}44`
-              }}
-            />
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              right: 8,
-              height: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              fontSize: '0.75rem',
-              fontFamily: "'DM Mono', monospace",
-              fontWeight: 700,
-              color: scoreColor
-            }}>
-              {stock.scores?.composite || '—'}
-            </div>
-          </div>
-        </div>
-
-        {/* AI Tier */}
-        <div>
-          <div style={{ 
-            fontSize: '0.625rem', 
-            fontFamily: "'DM Mono', monospace",
-            color: '#6b8aad', 
-            textTransform: 'uppercase',
-            letterSpacing: 1,
-            marginBottom: 6
-          }}>
-            Tier
-          </div>
-          {stock.aiTier ? (
-            <span
-              style={{
-                display: 'inline-block',
-                padding: '4px 12px',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-                borderRadius: 4,
-                background: stock.aiTier.bg,
-                color: stock.aiTier.color,
-                border: `1px solid ${stock.aiTier.color}44`,
-                whiteSpace: 'nowrap'
-              }}
-            >
-              T{stock.aiTier.level}
-            </span>
-          ) : (
-            <span style={{ color: '#6b8aad' }}>—</span>
-          )}
-        </div>
-      </div>
+      )}
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div style={{
-          paddingTop: 12,
-          borderTop: '1px solid #132030',
-          animation: 'fadeIn 0.2s ease-in'
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
-            {/* Sector */}
+        <div className="pt-4 mt-4 border-t border-outline-variant/10 space-y-3 animate-in fade-in duration-200">
+          {/* Technical Grid */}
+          <div className="grid grid-cols-2 gap-3">
             {stock.sector && (
               <div>
-                <div style={{ 
-                  fontSize: '0.625rem', 
-                  fontFamily: "'DM Mono', monospace",
-                  color: '#6b8aad', 
-                  textTransform: 'uppercase',
-                  letterSpacing: 1,
-                  marginBottom: 4
-                }}>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
                   Sector
                 </div>
-                <div style={{ fontSize: '0.875rem', color: '#e8f4f8' }}>
+                <div className="font-body text-sm text-on-surface">
                   {stock.sector}
                 </div>
               </div>
             )}
 
-            {/* HHI */}
-            {stock.hhi && (
+            {stock.hhi !== undefined && (
               <div>
-                <div style={{ 
-                  fontSize: '0.625rem', 
-                  fontFamily: "'DM Mono', monospace",
-                  color: '#6b8aad', 
-                  textTransform: 'uppercase',
-                  letterSpacing: 1,
-                  marginBottom: 4
-                }}>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
                   HHI
                 </div>
-                <div style={{ 
-                  fontSize: '0.875rem', 
-                  fontWeight: 600,
-                  color: stock.hhi < 1500 ? '#2a9d8f' : stock.hhi <= 2500 ? '#e9c46a' : '#e76f51'
-                }}>
+                <div className="font-label text-sm font-semibold text-on-surface tabular-nums">
                   {stock.hhi.toFixed(0)}
                 </div>
               </div>
             )}
 
-            {/* P/E */}
-            {stock.pe && (
+            {stock.pe !== undefined && (
               <div>
-                <div style={{ 
-                  fontSize: '0.625rem', 
-                  fontFamily: "'DM Mono', monospace",
-                  color: '#6b8aad', 
-                  textTransform: 'uppercase',
-                  letterSpacing: 1,
-                  marginBottom: 4
-                }}>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
                   P/E
                 </div>
-                <div style={{ fontSize: '0.875rem', color: '#e8f4f8' }}>
+                <div className="font-label text-sm font-semibold text-on-surface tabular-nums">
                   {stock.pe.toFixed(1)}
                 </div>
               </div>
             )}
 
-            {/* ROE */}
-            {stock.roe && (
+            {stock.roe !== undefined && (
               <div>
-                <div style={{ 
-                  fontSize: '0.625rem', 
-                  fontFamily: "'DM Mono', monospace",
-                  color: '#6b8aad', 
-                  textTransform: 'uppercase',
-                  letterSpacing: 1,
-                  marginBottom: 4
-                }}>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
                   ROE %
                 </div>
-                <div style={{ fontSize: '0.875rem', color: '#e8f4f8' }}>
+                <div className="font-label text-sm font-semibold text-on-surface tabular-nums">
                   {stock.roe.toFixed(1)}
                 </div>
               </div>
             )}
 
-            {/* Dividend Yield */}
-            {stock.dividendYield && (
+            {stock.dividendYield !== undefined && (
               <div>
-                <div style={{ 
-                  fontSize: '0.625rem', 
-                  fontFamily: "'DM Mono', monospace",
-                  color: '#6b8aad', 
-                  textTransform: 'uppercase',
-                  letterSpacing: 1,
-                  marginBottom: 4
-                }}>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
                   Div Yield %
                 </div>
-                <div style={{ fontSize: '0.875rem', color: '#e8f4f8' }}>
+                <div className="font-label text-sm font-semibold text-on-surface tabular-nums">
                   {stock.dividendYield.toFixed(2)}
+                </div>
+              </div>
+            )}
+
+            {stock.volume !== undefined && (
+              <div>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+                  Volume
+                </div>
+                <div className="font-label text-sm font-semibold text-on-surface tabular-nums">
+                  {(stock.volume / 1000000).toFixed(1)}M
                 </div>
               </div>
             )}
@@ -338,19 +226,17 @@ export function ScreenerCard({ stock }: ScreenerCardProps) {
           {/* Flags */}
           {stock.flags && stock.flags.length > 0 && (
             <div>
-              <div style={{ 
-                fontSize: '0.625rem', 
-                fontFamily: "'DM Mono', monospace",
-                color: '#6b8aad', 
-                textTransform: 'uppercase',
-                letterSpacing: 1,
-                marginBottom: 6
-              }}>
+              <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">
                 Flags
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                {stock.flags.map(flag => (
-                  <FlagPill key={flag} flag={flag} />
+              <div className="flex flex-wrap gap-2">
+                {stock.flags.map((flag, idx) => (
+                  <span 
+                    key={idx}
+                    className="px-2 py-1 rounded-full bg-tertiary/10 text-tertiary text-xs font-label border border-tertiary/20"
+                  >
+                    {flag}
+                  </span>
                 ))}
               </div>
             </div>
@@ -359,14 +245,16 @@ export function ScreenerCard({ stock }: ScreenerCardProps) {
       )}
 
       {/* Expand/Collapse Indicator */}
-      <div style={{
-        marginTop: 8,
-        textAlign: 'center',
-        fontSize: '0.75rem',
-        color: '#6b8aad',
-        fontFamily: "'DM Mono', monospace"
-      }}>
-        {isExpanded ? '▲ Tap to collapse' : '▼ Tap for details'}
+      <div className="mt-3 text-center">
+        <span className={`
+          material-symbols-outlined 
+          text-sm 
+          text-on-surface-variant 
+          transition-all 
+          ${isExpanded ? 'rotate-180' : ''}
+        `}>
+          expand_more
+        </span>
       </div>
     </div>
   );

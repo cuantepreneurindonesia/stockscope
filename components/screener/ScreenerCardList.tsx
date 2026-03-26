@@ -10,26 +10,22 @@ interface ScreenerCardListProps {
 export function ScreenerCardList({ stocks }: ScreenerCardListProps) {
   if (stocks.length === 0) {
     return (
-      <div style={{
-        padding: 48,
-        textAlign: 'center',
-        color: '#6b8aad',
-        fontSize: '0.875rem'
-      }}>
-        No stocks found matching your criteria
+      <div className="text-center py-16">
+        <span className="material-symbols-outlined text-6xl text-on-surface-variant/20 mb-4 block">
+          search_off
+        </span>
+        <p className="font-headline text-sm uppercase tracking-widest text-on-surface-variant">
+          No stocks found
+        </p>
+        <p className="font-body text-sm text-on-surface-variant/60 mt-2">
+          Try adjusting your filters
+        </p>
       </div>
     );
   }
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-        gap: 16,
-        padding: '0 16px'
-      }}
-    >
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {stocks.map((stock) => (
         <ScreenerCard key={stock.code} stock={stock} />
       ))}
