@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stockscope | Advanced Screener</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for terminal feel */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #070d1f; }
+        ::-webkit-scrollbar-thumb { background: #2e3447; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4edea3; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "secondary": "#b7c8e1",
+                "tertiary-container": "#e29100",
+                "on-tertiary": "#472a00",
+                "on-error": "#690005",
+                "surface-bright": "#33394c",
+                "on-secondary-fixed": "#0b1c30",
+                "inverse-surface": "#dce1fb",
+                "on-primary-fixed-variant": "#005236",
+                "outline": "#86948a",
+                "surface-container-low": "#151b2d",
+                "surface-container": "#191f31",
+                "surface-variant": "#2e3447",
+                "on-primary-fixed": "#002113",
+                "primary-container": "#10b981",
+                "error-container": "#93000a",
+                "tertiary-fixed-dim": "#ffb95f",
+                "tertiary": "#ffb95f",
+                "on-secondary-container": "#a9bad3",
+                "error": "#ffb4ab",
+                "on-tertiary-fixed": "#2a1700",
+                "outline-variant": "#3c4a42",
+                "on-primary": "#003824",
+                "inverse-primary": "#006c49",
+                "inverse-on-surface": "#2a3043",
+                "secondary-fixed-dim": "#b7c8e1",
+                "tertiary-fixed": "#ffddb8",
+                "on-error-container": "#ffdad6",
+                "on-background": "#dce1fb",
+                "background": "#0c1324",
+                "surface-tint": "#4edea3",
+                "secondary-fixed": "#d3e4fe",
+                "on-surface-variant": "#bbcabf",
+                "surface-container-highest": "#2e3447",
+                "surface": "#0c1324",
+                "on-tertiary-container": "#523200",
+                "on-secondary-fixed-variant": "#38485d",
+                "on-secondary": "#213145",
+                "secondary-container": "#3a4a5f",
+                "surface-dim": "#0c1324",
+                "surface-container-high": "#23293c",
+                "surface-container-lowest": "#070d1f",
+                "on-tertiary-fixed-variant": "#653e00",
+                "primary-fixed-dim": "#4edea3",
+                "primary": "#4edea3",
+                "primary-fixed": "#6ffbbe",
+                "on-primary-container": "#00422b",
+                "on-surface": "#dce1fb"
+              },
+              fontFamily: {
+                "headline": ["Manrope"],
+                "body": ["Inter"],
+                "label": ["Space Grotesk"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- Top Navigation Shell -->
+<header class="bg-[#070d1f] text-[#4edea3] font-['Manrope'] antialiased border-b border-white/10 flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-[#4edea3]">Stockscope</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-[#bbcabf] hover:text-white transition-colors" href="#">Dashboard</a>
+<a class="text-[#4edea3] border-b-2 border-[#4edea3] pb-2" href="#">Screener</a>
+<a class="text-[#bbcabf] hover:text-white transition-colors" href="#">Watchlist</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-[#bbcabf] hover:bg-white/5 transition-all p-2 rounded-lg" data-icon="language">language</button>
+<div class="h-8 w-8 rounded-full bg-surface-variant flex items-center justify-center text-xs font-bold text-primary border border-primary/20">JD</div>
+</div>
+</header>
+<div class="flex flex-col md:flex-row min-h-screen">
+<!-- Sidebar Shell (Desktop Only) -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-68px)] w-64 bg-[#0c1324] border-r border-white/5 font-['Manrope'] text-sm tracking-wide sticky top-[68px]">
+<div class="p-6">
+<div class="text-[#4edea3] font-black text-xs uppercase tracking-widest mb-1">Stockscope</div>
+<div class="text-[#bbcabf] text-[10px] opacity-60">Terminal v1.0</div>
+</div>
+<nav class="flex-1 px-4 space-y-2">
+<a class="flex items-center gap-3 text-[#bbcabf] px-4 py-3 hover:bg-white/5 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 bg-[#4edea3]/10 text-[#4edea3] rounded-lg px-4 py-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="filter_alt">filter_alt</span>
+<span>Screener</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col md:flex-row bg-background">
+<!-- Filter Panel (Left/Sticky) -->
+<section class="w-full md:w-[320px] bg-surface-container-low p-6 border-r border-outline-variant/10 sticky top-[68px] h-fit md:h-[calc(100vh-68px)] overflow-y-auto">
+<div class="space-y-8">
+<div>
+<h2 class="font-headline text-lg font-bold text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="tune">tune</span>
+                            Parameters
+                        </h2>
+<!-- Search -->
+<div class="relative group mb-6">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors text-sm" data-icon="search">search</span>
+<input class="w-full bg-surface-container-highest border-b border-outline-variant/20 focus:border-primary focus:ring-0 text-on-surface text-sm pl-10 py-3 transition-all placeholder:text-on-surface-variant/40" placeholder="Search Ticker..." type="text"/>
+</div>
+<!-- Basic Selects -->
+<div class="space-y-4">
+<div>
+<label class="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">Market Sector</label>
+<select class="w-auto min-w-full bg-surface-container-highest border-none text-on-surface text-sm rounded-lg py-2.5 px-4 focus:ring-1 focus:ring-primary/50 cursor-pointer">
+<option>All Sectors</option>
+<option>Technology</option>
+<option>Healthcare</option>
+<option>Financials</option>
+<option>Energy</option>
+</select>
+</div>
+<div>
+<label class="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">AI Efficiency Tier</label>
+<select class="w-full bg-surface-container-highest border-none text-on-surface text-sm rounded-lg py-2.5 px-4 focus:ring-1 focus:ring-primary/50 cursor-pointer">
+<option>Alpha (Top 5%)</option>
+<option>Beta (Mid 20%)</option>
+<option>Gamma (Neutral)</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Advanced (Collapsible Concept) -->
+<div class="pt-6 border-t border-outline-variant/10">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant">Advanced</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="expand_more">expand_more</span>
+</div>
+<div class="space-y-6">
+<!-- Range -->
+<div>
+<label class="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-4">Stockscore Range</label>
+<div class="flex gap-3 items-center">
+<input class="w-full bg-surface-container-highest border-none text-on-surface text-xs rounded py-2 px-3 text-center placeholder:text-on-surface-variant/30" placeholder="Min" type="number"/>
+<span class="text-on-surface-variant">—</span>
+<input class="w-full bg-surface-container-highest border-none text-on-surface text-xs rounded py-2 px-3 text-center placeholder:text-on-surface-variant/30" placeholder="Max" type="number"/>
+</div>
+</div>
+<!-- Governance Segmented -->
+<div>
+<label class="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-4">Governance Rating</label>
+<div class="grid grid-cols-3 gap-1 bg-surface-container-highest p-1 rounded-lg">
+<button class="bg-primary text-on-primary text-[10px] font-bold py-2 rounded-md transition-all">GREEN</button>
+<button class="text-tertiary text-[10px] font-bold py-2 rounded-md hover:bg-white/5 transition-all">AMBER</button>
+<button class="text-error text-[10px] font-bold py-2 rounded-md hover:bg-white/5 transition-all">RED</button>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container font-headline font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-primary transition-all active:scale-95 shadow-lg shadow-primary/10 mt-8">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+                        Run Screener
+                    </button>
+</div>
+</section>
+<!-- Results Container (Right) -->
+<section class="flex-1 bg-surface-container-lowest min-h-screen">
+<!-- Results Header -->
+<div class="p-6 md:p-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-outline-variant/5">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-bold rounded uppercase tracking-tighter">Live Market</span>
+<span class="text-on-surface-variant text-xs">• Total Results: 1,248</span>
+</div>
+<h1 class="text-3xl md:text-5xl font-headline font-extrabold tracking-tight text-on-surface">Screening Matrix</h1>
+</div>
+<div class="flex items-center gap-1 bg-surface-container p-1 rounded-lg">
+<button class="p-2 bg-surface-variant text-primary rounded-md">
+<span class="material-symbols-outlined" data-icon="list">list</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+</button>
+</div>
+</div>
+<!-- Table View -->
+<div class="overflow-x-auto">
+<table class="w-full border-collapse text-left">
+<thead>
+<tr class="bg-surface-container-low/50 border-b border-outline-variant/10">
+<th class="px-6 py-4 font-headline text-[10px] font-bold uppercase tracking-widest text-on-surface-variant cursor-pointer hover:text-primary transition-colors">Asset <span class="material-symbols-outlined text-[12px] align-middle" data-icon="unfold_more">unfold_more</span></th>
+<th class="px-6 py-4 font-headline text-[10px] font-bold uppercase tracking-widest text-on-surface-variant cursor-pointer hover:text-primary transition-colors">Sector</th>
+<th class="px-6 py-4 font-headline text-[10px] font-bold uppercase tracking-widest text-on-surface-variant text-right cursor-pointer hover:text-primary transition-colors">Last Price</th>
+<th class="px-6 py-4 font-headline text-[10px] font-bold uppercase tracking-widest text-on-surface-variant text-right cursor-pointer hover:text-primary transition-colors">24H Chg</th>
+<th class="px-6 py-4 font-headline text-[10px] font-bold uppercase tracking-widest text-on-surface-variant text-right cursor-pointer hover:text-primary transition-colors">Alpha Score</th>
+<th class="px-6 py-4 font-headline text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5">
+<!-- Row 1 -->
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-primary rounded-full"></div>
+<div>
+<div class="font-label font-bold text-on-surface tracking-tight">NVDA.O</div>
+<div class="text-[10px] text-on-surface-variant opacity-60">NVIDIA Corp.</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-xs text-on-surface-variant">Technology / Semiconductors</td>
+<td class="px-6 py-5 text-right font-label text-sm font-medium text-on-surface">$1,224.40</td>
+<td class="px-6 py-5 text-right font-label text-sm text-primary font-bold">+4.82%</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-block px-3 py-1 bg-primary/10 text-primary font-label font-bold text-xs rounded-full">98.4</span>
+</td>
+<td class="px-6 py-5">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="add_circle">add_circle</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-error rounded-full"></div>
+<div>
+<div class="font-label font-bold text-on-surface tracking-tight">TSLA.O</div>
+<div class="text-[10px] text-on-surface-variant opacity-60">Tesla, Inc.</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-xs text-on-surface-variant">Consumer Cyclical / Auto</td>
+<td class="px-6 py-5 text-right font-label text-sm font-medium text-on-surface">$174.95</td>
+<td class="px-6 py-5 text-right font-label text-sm text-error font-bold">-2.15%</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-block px-3 py-1 bg-surface-container text-on-surface-variant font-label font-bold text-xs rounded-full">42.1</span>
+</td>
+<td class="px-6 py-5">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="add_circle">add_circle</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-tertiary rounded-full"></div>
+<div>
+<div class="font-label font-bold text-on-surface tracking-tight">AAPL.O</div>
+<div class="text-[10px] text-on-surface-variant opacity-60">Apple Inc.</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-xs text-on-surface-variant">Technology / Hardware</td>
+<td class="px-6 py-5 text-right font-label text-sm font-medium text-on-surface">$192.25</td>
+<td class="px-6 py-5 text-right font-label text-sm text-on-surface-variant font-bold">0.00%</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-block px-3 py-1 bg-tertiary/10 text-tertiary font-label font-bold text-xs rounded-full">76.8</span>
+</td>
+<td class="px-6 py-5">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="add_circle">add_circle</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-5">
+<div class="flex items-center gap-3">
+<div class="w-2 h-8 bg-primary rounded-full"></div>
+<div>
+<div class="font-label font-bold text-on-surface tracking-tight">MSFT.O</div>
+<div class="text-[10px] text-on-surface-variant opacity-60">Microsoft Corporation</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-xs text-on-surface-variant">Technology / Software</td>
+<td class="px-6 py-5 text-right font-label text-sm font-medium text-on-surface">$424.52</td>
+<td class="px-6 py-5 text-right font-label text-sm text-primary font-bold">+1.12%</td>
+<td class="px-6 py-5 text-right">
+<span class="inline-block px-3 py-1 bg-primary/10 text-primary font-label font-bold text-xs rounded-full">91.2</span>
+</td>
+<td class="px-6 py-5">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="add_circle">add_circle</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Card View (Mobile Concept/Alternate) -->
+<div class="md:hidden p-6 grid grid-cols-1 gap-4">
+<div class="bg-surface-container p-4 rounded-xl border-l-4 border-primary">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h4 class="font-label font-bold text-lg">NVDA.O</h4>
+<p class="text-[10px] text-on-surface-variant">NVIDIA Corp.</p>
+</div>
+<div class="text-primary font-label font-bold">+4.82%</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<p class="text-[10px] uppercase text-on-surface-variant">Price</p>
+<p class="font-label">$1,224.40</p>
+</div>
+<div>
+<p class="text-[10px] uppercase text-on-surface-variant">Score</p>
+<p class="font-label text-primary">98.4</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative Light Source (Glassmorphism Anchor) -->
+<div class="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+</section>
+</main>
+</div>
+<!-- Ticker Tape (Signature Footer) -->
+<footer class="bg-[#070d1f] border-t border-white/5 font-['Space_Grotesk'] text-[10px] uppercase tracking-widest py-8">
+<div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-[#bbcabf] text-center md:text-left">
+                © 2024 Stockscope Terminal. All regulatory data delayed by 15 mins.
+            </p>
+<div class="flex gap-8">
+<a class="text-[#bbcabf]/60 hover:text-[#4edea3] transition-colors" href="#">Terms</a>
+<a class="text-[#bbcabf]/60 hover:text-[#4edea3] transition-colors" href="#">Privacy</a>
+<a class="text-[#bbcabf]/60 hover:text-[#4edea3] transition-colors" href="#">Disclosures</a>
+</div>
+</div>
+</footer>
+<!-- FAB (Suppressed based on screen intent - Screener requires focused tool, not floating action) -->
+</body></html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stockscope Terminal | Detail Panel</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "secondary": "#b7c8e1",
+            "tertiary-container": "#e29100",
+            "on-tertiary": "#472a00",
+            "on-error": "#690005",
+            "surface-bright": "#33394c",
+            "on-secondary-fixed": "#0b1c30",
+            "inverse-surface": "#dce1fb",
+            "on-primary-fixed-variant": "#005236",
+            "outline": "#86948a",
+            "surface-container-low": "#151b2d",
+            "surface-container": "#191f31",
+            "surface-variant": "#2e3447",
+            "on-primary-fixed": "#002113",
+            "primary-container": "#10b981",
+            "error-container": "#93000a",
+            "tertiary-fixed-dim": "#ffb95f",
+            "tertiary": "#ffb95f",
+            "on-secondary-container": "#a9bad3",
+            "error": "#ffb4ab",
+            "on-tertiary-fixed": "#2a1700",
+            "outline-variant": "#3c4a42",
+            "on-primary": "#003824",
+            "inverse-primary": "#006c49",
+            "inverse-on-surface": "#2a3043",
+            "secondary-fixed-dim": "#b7c8e1",
+            "tertiary-fixed": "#ffddb8",
+            "on-error-container": "#ffdad6",
+            "on-background": "#dce1fb",
+            "background": "#0c1324",
+            "surface-tint": "#4edea3",
+            "secondary-fixed": "#d3e4fe",
+            "on-surface-variant": "#bbcabf",
+            "surface-container-highest": "#2e3447",
+            "surface": "#0c1324",
+            "on-tertiary-container": "#523200",
+            "on-secondary-fixed-variant": "#38485d",
+            "on-secondary": "#213145",
+            "secondary-container": "#3a4a5f",
+            "surface-dim": "#0c1324",
+            "surface-container-high": "#23293c",
+            "surface-container-lowest": "#070d1f",
+            "on-tertiary-fixed-variant": "#653e00",
+            "primary-fixed-dim": "#4edea3",
+            "primary": "#4edea3",
+            "primary-fixed": "#6ffbbe",
+            "on-primary-container": "#00422b",
+            "on-surface": "#dce1fb"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Inter"],
+            "label": ["Space Grotesk"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #070d1f; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #2e3447; border-radius: 10px; }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- Main Layout Wrapper -->
+<div class="flex h-screen overflow-hidden">
+<!-- Left Navigation Shell (SideNavBar) -->
+<aside class="hidden md:flex flex-col h-screen border-r border-white/5 bg-[#0c1324] w-64">
+<div class="p-6">
+<div class="text-[#4edea3] font-black font-headline tracking-tighter text-2xl">Stockscope</div>
+<div class="text-on-surface-variant/50 font-label text-[10px] uppercase tracking-widest mt-1">Terminal v1.0</div>
+</div>
+<nav class="flex-1 px-4 space-y-2 mt-4">
+<a class="flex items-center gap-3 text-[#bbcabf] px-4 py-3 hover:bg-white/5 transition-all duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label uppercase tracking-wider text-xs">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 bg-[#4edea3]/10 text-[#4edea3] rounded-lg px-4 py-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="filter_alt">filter_alt</span>
+<span class="font-label uppercase tracking-wider text-xs">Screener</span>
+</a>
+</nav>
+<div class="p-6 mt-auto">
+<div class="bg-surface-container rounded-xl p-4 border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">JD</div>
+<div class="overflow-hidden">
+<p class="text-xs font-bold truncate">John Doe</p>
+<p class="text-[10px] text-on-surface-variant truncate">Pro Tier</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Content Canvas -->
+<main class="flex-1 relative flex overflow-hidden">
+<!-- Primary Data Canvas (Blurred Background Content) -->
+<div class="flex-1 p-8 overflow-y-auto custom-scrollbar opacity-40 grayscale-[0.5]">
+<header class="flex justify-between items-end mb-12">
+<div>
+<h1 class="text-4xl font-headline font-extrabold tracking-tight">Market Analytics</h1>
+<p class="text-on-surface-variant mt-2 font-body">Deep-liquidity analysis and governance risk modeling.</p>
+</div>
+<div class="flex gap-4">
+<div class="bg-surface-container-high px-4 py-2 rounded-lg border border-outline-variant/10 font-label text-sm text-primary">USD / REAL-TIME</div>
+</div>
+</header>
+<!-- Placeholder Bento Grid to show context -->
+<div class="grid grid-cols-12 gap-6">
+<div class="col-span-8 h-96 bg-surface-container rounded-xl border border-outline-variant/10"></div>
+<div class="col-span-4 h-96 bg-surface-container rounded-xl border border-outline-variant/10"></div>
+<div class="col-span-12 h-64 bg-surface-container rounded-xl border border-outline-variant/10"></div>
+</div>
+</div>
+<!-- RIGHT RAIL: Stock Detail Panel (The Active Focus) -->
+<div class="w-[420px] h-full bg-surface-container-low border-l border-white/10 flex flex-col shadow-2xl relative z-10">
+<!-- Header Section -->
+<div class="p-6 border-b border-white/5">
+<div class="flex justify-between items-start mb-4">
+<div>
+<div class="font-label text-3xl font-bold tracking-tighter text-on-surface">NVDA</div>
+<div class="font-headline text-on-surface-variant text-sm mt-0.5">Nvidia Corporation</div>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/5 text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined text-xl" data-icon="close">close</span>
+</button>
+</div>
+<div class="flex items-center gap-3">
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold tracking-widest border border-primary/20 flex items-center gap-1.5 uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+              AI Tier: Alpha
+            </span>
+<span class="text-on-surface-variant/40 text-[10px] font-label uppercase">Last Updated: 2m ago</span>
+</div>
+</div>
+<!-- Scrollable Analytics Body -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
+<!-- Price & Summary Section -->
+<section>
+<div class="flex justify-between items-baseline">
+<span class="font-label text-4xl font-bold text-on-surface">$874.32</span>
+<span class="font-label text-primary font-bold text-sm">+2.41%</span>
+</div>
+<div class="h-24 mt-4 w-full relative overflow-hidden rounded-lg">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent"></div>
+<img class="w-full h-full object-cover opacity-60" data-alt="minimalist fluorescent green line chart showing upward stock market trend on a dark navy background with subtle grid lines" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDndqy3Z5TnEAlfzyavHfpQI_z6XiYfSMZIBCS_hCzU8cOvW48RWf5h_q7uPay1_anN4qNX7FZLS6rEY5LiOuwoRk5bUUKAoxNUwuUeOXnpxg-3-QC_JjOZaYyL3snAbFuNOVgoB2vWwfWeCYzlpFXWHgts7PbzzY6wFSuI0NeZAX__jmOTHaHpwd0OtfzG96ZRGG1Pw7wvocxHEAUQth63DLF3VHOHhRU0xYuUCfWrfWTL1Vr3WO7bgs30OU_xhGblrLRMSSddkNU"/>
+</div>
+</section>
+<!-- Core Metrics (Micro-bars) -->
+<section class="space-y-4">
+<h3 class="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant/60">Risk Distribution Metrics</h3>
+<!-- Metric Item: HHI -->
+<div class="space-y-2 group">
+<div class="flex justify-between items-center">
+<span class="font-label text-xs text-on-surface-variant">HHI Concentration</span>
+<span class="font-label text-xs font-bold text-on-surface">0.142</span>
+</div>
+<div class="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[15%] rounded-full shadow-[0_0_8px_rgba(78,222,163,0.4)]"></div>
+</div>
+<p class="text-[10px] text-on-surface-variant/40 leading-tight">Low concentration risk detected among top holders.</p>
+</div>
+<!-- Metric Item: Free Float -->
+<div class="space-y-2 group">
+<div class="flex justify-between items-center">
+<span class="font-label text-xs text-on-surface-variant">Free Float %</span>
+<span class="font-label text-xs font-bold text-on-surface">88.4%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[88%] rounded-full shadow-[0_0_8px_rgba(78,222,163,0.4)]"></div>
+</div>
+</div>
+<!-- Metric Item: C1 -->
+<div class="space-y-2 group">
+<div class="flex justify-between items-center">
+<span class="font-label text-xs text-on-surface-variant">C1 Inst. Density</span>
+<span class="font-label text-xs font-bold text-on-surface">42.1</span>
+</div>
+<div class="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[65%] rounded-full shadow-[0_0_8px_rgba(255,185,95,0.4)]"></div>
+</div>
+</div>
+<!-- Metric Item: C3 -->
+<div class="space-y-2 group">
+<div class="flex justify-between items-center">
+<span class="font-label text-xs text-on-surface-variant">C3 Retail Velocity</span>
+<span class="font-label text-xs font-bold text-on-surface">12.8</span>
+</div>
+<div class="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-error w-[12%] rounded-full shadow-[0_0_8px_rgba(255,180,171,0.4)]"></div>
+</div>
+</div>
+</section>
+<!-- Governance Flags -->
+<section class="space-y-4">
+<h3 class="font-headline text-xs font-bold uppercase tracking-widest text-on-surface-variant/60">Governance Flags</h3>
+<div class="flex flex-wrap gap-2">
+<div class="px-3 py-1.5 bg-surface-container-highest border border-primary/20 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label text-[10px] font-bold text-primary uppercase">Audit Passed</span>
+</div>
+<div class="px-3 py-1.5 bg-surface-container-highest border border-tertiary/20 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-sm" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<span class="font-label text-[10px] font-bold text-tertiary uppercase">Officer Turn</span>
+</div>
+<div class="px-3 py-1.5 bg-surface-container-highest border border-white/5 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="gavel">gavel</span>
+<span class="font-label text-[10px] font-bold text-on-surface-variant uppercase">Proxy Clean</span>
+</div>
+</div>
+</section>
+<!-- Executive Summary -->
+<section class="p-4 bg-surface-container rounded-xl border border-outline-variant/5">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="auto_awesome">auto_awesome</span>
+<h4 class="font-headline text-xs font-bold text-on-surface">AI Summary</h4>
+</div>
+<p class="text-xs text-on-surface-variant leading-relaxed font-body">
+                NVDA shows high institutional resilience despite recent C3 retail volatility. Governance flags are within acceptable thresholds for long-term holding. Liquidity remains optimal.
+             </p>
+</section>
+</div>
+<!-- Footer Actions -->
+<div class="p-6 bg-surface-container-lowest border-t border-white/5 space-y-3">
+<button class="w-full bg-primary text-on-primary font-headline font-bold py-3 rounded-lg active:scale-95 transition-all text-sm uppercase tracking-widest">
+            Execute Buy Order
+          </button>
+<button class="w-full bg-transparent border border-outline-variant/30 text-on-surface-variant font-headline font-bold py-3 rounded-lg active:scale-95 transition-all text-sm uppercase tracking-widest">
+            Add to Watchlist
+          </button>
+</div>
+</div>
+</main>
+</div>
+<!-- Global Footer -->
+<footer class="fixed bottom-0 left-0 right-0 bg-[#070d1f] border-t border-white/5 z-50">
+<div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center py-3 gap-4">
+<div class="font-['Space_Grotesk'] text-[10px] uppercase tracking-widest text-[#bbcabf]/60">
+        © 2024 Stockscope Terminal. All regulatory data delayed by 15 mins.
+      </div>
+<div class="flex gap-6">
+<a class="font-['Space_Grotesk'] text-[10px] uppercase tracking-widest text-[#bbcabf]/60 hover:text-[#4edea3] transition-colors" href="#">Terms</a>
+<a class="font-['Space_Grotesk'] text-[10px] uppercase tracking-widest text-[#bbcabf]/60 hover:text-[#4edea3] transition-colors" href="#">Privacy</a>
+<a class="font-['Space_Grotesk'] text-[10px] uppercase tracking-widest text-[#bbcabf]/60 hover:text-[#4edea3] transition-colors" href="#">Disclosures</a>
+</div>
+</div>
+</footer>
+<!-- Ticker Tape (Signature Component) -->
+<div class="fixed bottom-12 left-0 right-0 h-8 bg-surface-container-lowest/80 backdrop-blur-md border-t border-white/5 flex items-center overflow-hidden z-40">
+<div class="flex whitespace-nowrap gap-8 animate-marquee font-label text-[10px] tracking-widest text-on-surface-variant/80 px-4">
+<span class="flex items-center gap-2"><b class="text-on-surface">AAPL</b> $182.41 <span class="text-error">▼ 0.4%</span></span>
+<span class="flex items-center gap-2"><b class="text-on-surface">TSLA</b> $175.05 <span class="text-primary">▲ 1.2%</span></span>
+<span class="flex items-center gap-2"><b class="text-on-surface">MSFT</b> $415.10 <span class="text-primary">▲ 0.8%</span></span>
+<span class="flex items-center gap-2"><b class="text-on-surface">GOOGL</b> $152.22 <span class="text-error">▼ 1.1%</span></span>
+<span class="flex items-center gap-2"><b class="text-on-surface">AMZN</b> $178.15 <span class="text-primary">▲ 2.3%</span></span>
+<span class="flex items-center gap-2"><b class="text-on-surface">META</b> $496.22 <span class="text-primary">▲ 0.5%</span></span>
+</div>
+</div>
+<style>
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      display: inline-flex;
+      animation: marquee 30s linear infinite;
+    }
+  </style>
+</body></html>
