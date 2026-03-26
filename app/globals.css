@@ -1,163 +1,203 @@
 @import "tailwindcss";
 
-:root {
-  --bg-primary: #060d18;
-  --bg-alt: #0d1e30;
-  --bg-content: #09131f;
-  --bg-card-alt: #060d18;
-  --text-primary: #e8f4f8;
-  --text-secondary: #a8c8e8;
-  --text-tertiary: #6b8aad;
-  --border-primary: #1e3a52;
-  --border-alt: #132030;
-  --accent-blue: #457b9d;
-  --tier-red: #e76f51;
-  --tier-amber: #e9c46a;
-  --tier-green: #2a9d8f;
+/* ─── Design tokens ─── */
+@theme {
+  /* Base backgrounds */
+  --color-base-900: #0A0B0D;
+  --color-base-800: #111318;
+  --color-base-700: #1A1D26;
+  --color-base-600: #1E2130;
+  --color-base-500: #2A2D3A;
+  --color-base-400: #3A3D4A;
+
+  /* Accent */
+  --color-accent: #00C805;
+  --color-accent-dim: #00C80520;
+  --color-accent-hover: #00E006;
+
+  /* Bull / Bear */
+  --color-bull: #00C805;
+  --color-bull-bg: #00C80515;
+  --color-bear: #FF3B30;
+  --color-bear-bg: #FF3B3015;
+
+  /* Neutrals */
+  --color-neutral: #8A8FA8;
+
+  /* Ink (text) */
+  --color-ink-primary: #FFFFFF;
+  --color-ink-secondary: #8A8FA8;
+  --color-ink-muted: #4A4F66;
+
+  /* Chart palette */
+  --color-chart-1: #00C805;
+  --color-chart-2: #3B82F6;
+  --color-chart-3: #F59E0B;
+  --color-chart-4: #8B5CF6;
+  --color-chart-5: #EC4899;
+  --color-chart-6: #06B6D4;
+
+  /* Tier colours (keep for backward compat) */
+  --color-tier-red: #E76F51;
+  --color-tier-amber: #E9C46A;
+  --color-tier-green: #2A9D8F;
+
+  /* Typography */
+  --font-sans: var(--font-inter), Inter, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.25s ease both;
+  --animate-slide-up: slideUp 0.3s ease both;
+  --animate-shimmer: shimmer 1.5s ease-in-out infinite;
+  --animate-pulse-dot: pulseDot 2s ease-in-out infinite;
+  --animate-flash-green: flashGreen 0.8s ease both;
+  --animate-flash-red: flashRed 0.8s ease both;
 }
 
-@theme inline {
-  --color-background: var(--bg-primary);
-  --color-foreground: var(--text-primary);
-  --font-sans: var(--font-dm-sans);
-  --font-mono: var(--font-dm-mono);
+/* ─── Keyframes ─── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+@keyframes flashGreen {
+  0%   { background-color: rgb(0 200 5 / 0.15); }
+  100% { background-color: transparent; }
+}
+@keyframes flashRed {
+  0%   { background-color: rgb(255 59 48 / 0.15); }
+  100% { background-color: transparent; }
 }
 
-* {
-  @apply border-[#132030];
-}
-
+/* ─── Base resets ─── */
 html {
-  @apply scroll-smooth;
+  scroll-behavior: smooth;
 }
 
 body {
-  @apply bg-[#060d18] text-[#e8f4f8] antialiased;
+  background-color: #0A0B0D;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+::selection {
+  background-color: #00C80520;
+  color: #00C805;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0A0B0D; }
+::-webkit-scrollbar-thumb { background: #2A2D3A; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #3A3D4A; }
+
+/* ─── Utility classes ─── */
+@layer components {
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.025em;
+  }
+  .ticker-label {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+}
+
+/* ─── Shimmer gradient helper ─── */
+@layer utilities {
+  .shimmer-bg {
+    background: linear-gradient(90deg, #1A1D26 25%, #1E2130 50%, #1A1D26 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+}
+
+/* ─── App shell ─── */
 .app-root {
   overflow-x: hidden;
 }
 
-/* Header */
-.app-header {
-  padding: clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px) 14px;
-  background: linear-gradient(180deg, #0d1e30 0%, #09131f 100%);
-  border-bottom: 1px solid #132030;
-}
-
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.header-title {
-  font-size: clamp(0.875rem, 5vw, 1.375rem);
-  margin: 0;
-  font-weight: 700;
-  color: #e8f4f8;
-}
-
-.header-eyebrow {
-  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
-  letter-spacing: 3px;
-  color: #457b9d;
-  font-family: 'DM Mono', monospace;
-  margin-bottom: 4px;
-}
-
-.header-right {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-/* Search */
-.search-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-input {
-  background: #0d1e30;
-  border-radius: 20px;
-  color: #e8f4f8;
-  padding: 8px 34px 8px 32px;
-  font-size: 0.75rem;
-  outline: none;
-  transition: border-color 0.2s;
-  width: clamp(140px, 40vw, 260px);
-}
-
-/* Hamburger button */
-.hamburger-btn {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: 1px solid #1e3a52;
-  color: #a8c8e8;
-  border-radius: 6px;
-  width: 44px;
-  height: 44px;
-  font-size: 1.25rem;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-/* Tab nav — desktop */
-.tab-nav-desktop {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid #132030;
-  padding-left: clamp(12px, 4vw, 28px);
-  background: #09131f;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.tab-nav-desktop::-webkit-scrollbar {
-  display: none;
-}
-
-/* Content area */
+/* ─── Responsive layout helpers ─── */
 .content-area {
   padding: clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px);
 }
 
-/* KPI cards */
-.kpi-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1px;
-  background: #132030;
-  border-bottom: 1px solid #132030;
-}
-
-/* Overview two-column grid */
 .overview-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
 }
 
-/* Mobile drawer */
+/* ─── Mobile hamburger ─── */
+.hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid #2A2D3A;
+  color: #8A8FA8;
+  border-radius: 6px;
+  width: 44px;
+  height: 44px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s;
+}
+.hamburger-btn:hover {
+  border-color: #3A3D4A;
+  color: #FFFFFF;
+}
+
+/* ─── Tab nav (desktop) ─── */
+.tab-nav-desktop {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #1A1D26;
+  padding-left: clamp(12px, 4vw, 28px);
+  background: #111318;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tab-nav-desktop::-webkit-scrollbar { display: none; }
+
+/* ─── KPI cards grid ─── */
+.kpi-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: #1A1D26;
+  border-bottom: 1px solid #1A1D26;
+}
+
+/* ─── Mobile drawer ─── */
 .drawer-overlay {
   display: none;
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
 }
-
-.drawer-overlay.open {
-  display: block;
-}
+.drawer-overlay.open { display: block; }
 
 .mobile-drawer {
   position: fixed;
@@ -166,8 +206,8 @@ body {
   bottom: 0;
   z-index: 201;
   width: min(280px, 85vw);
-  background: #0d1e30;
-  border-right: 1px solid #1e3a52;
+  background: #111318;
+  border-right: 1px solid #1E2130;
   padding: 24px 0;
   transform: translateX(-100%);
   transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
@@ -175,18 +215,15 @@ body {
   flex-direction: column;
   overflow-y: auto;
 }
-
-.mobile-drawer.open {
-  transform: translateX(0);
-}
+.mobile-drawer.open { transform: translateX(0); }
 
 .drawer-close {
   align-self: flex-end;
   margin-right: 20px;
   margin-bottom: 16px;
   background: none;
-  border: 1px solid #1e3a52;
-  color: #a8c8e8;
+  border: 1px solid #2A2D3A;
+  color: #8A8FA8;
   border-radius: 6px;
   width: 44px;
   height: 44px;
@@ -195,83 +232,46 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: border-color 0.15s, color 0.15s;
 }
+.drawer-close:hover { border-color: #3A3D4A; color: #FFFFFF; }
 
 .drawer-nav-btn {
   background: none;
   border: none;
   text-align: left;
   padding: 14px 24px;
-  font-size: 0.9375rem;
-  font-family: 'DM Mono', monospace;
-  letter-spacing: 0.5px;
+  font-size: 0.875rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, color 0.15s;
   min-height: 52px;
   display: flex;
   align-items: center;
   border-left: 3px solid transparent;
+  color: #4A4F66;
 }
-
 .drawer-nav-btn.active {
-  color: #a8d8ea;
-  background: #132030;
-  border-left-color: #457b9d;
+  color: #00C805;
+  background: #1A1D26;
+  border-left-color: #00C805;
 }
-
-.drawer-nav-btn:not(.active) {
-  color: #6b8aad;
-}
-
 .drawer-nav-btn:hover:not(.active) {
-  background: #09131f;
+  background: #1A1D26;
+  color: #8A8FA8;
 }
 
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #09131f;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #1e3a52;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #457b9d;
-}
-
-/* Desktop overrides */
+/* ─── Desktop breakpoints ─── */
 @media (min-width: 768px) {
-  .overview-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .hamburger-btn {
-    display: none !important;
-  }
-
-  .tab-nav-desktop {
-    overflow-x: visible;
-  }
+  .overview-grid { grid-template-columns: 1fr 1fr; }
+  .hamburger-btn { display: none !important; }
+  .tab-nav-desktop { overflow-x: visible; }
 }
 
-/* Mobile overrides */
+/* ─── Mobile breakpoints ─── */
 @media (max-width: 767px) {
-  .hamburger-btn {
-    display: flex;
-  }
-
-  .tab-nav-desktop {
-    display: none;
-  }
-
-  .kpi-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .hamburger-btn { display: flex; }
+  .tab-nav-desktop { display: none; }
+  .kpi-cards { grid-template-columns: repeat(2, 1fr); }
 }

@@ -2,7 +2,6 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { HeatCell, FlagPill, Pagination, BlurOverlay } from '@/components/ui';
-import { TIER_COLORS } from '@/lib/constants';
 import { sortStocks, getMinMaxForField } from '@/lib/services/dataTransformService';
 import { applyLimit } from '@/lib/services/planService';
 import type { Stock } from '@/lib/types';
@@ -83,11 +82,13 @@ export function ScreenerTab({
 
   if (loading) {
     return (
-      <div style={{ background: '#09131f', border: '1px solid #132030', borderRadius: 10, padding: 20 }}>
-        <div style={{ fontSize: 11, color: '#6b8aad', letterSpacing: 2, marginBottom: 16 }}>LOADING...</div>
-        {[...Array(10)].map((_, i) => (
-          <div key={i} style={{ height: 28, background: '#0d1e30', marginBottom: 2, borderRadius: 2 }} />
-        ))}
+      <div className="bg-base-800 border border-base-600 rounded-xl p-5">
+        <div className="text-[11px] text-ink-muted tracking-widest uppercase mb-4 font-mono">LOADING...</div>
+        <div className="space-y-1.5">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="h-7 shimmer-bg rounded" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -100,60 +101,45 @@ export function ScreenerTab({
   ];
 
   return (
-    <div style={{ background: '#09131f', border: '1px solid #132030', borderRadius: 10, padding: 20 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+    <div className="bg-base-800 border border-base-600 rounded-xl p-5">
+      <div className="flex justify-between items-center mb-4">
         <div>
-          <div style={{ fontSize: 11, color: '#6b8aad', letterSpacing: 2, marginBottom: 2 }}>
+          <div className="text-[11px] text-ink-muted tracking-widest uppercase mb-0.5 font-mono font-semibold">
             STOCK SCREENER
           </div>
-          <div style={{ fontSize: 13, color: '#e8f4f8' }}>
+          <div className="text-sm text-ink-primary">
             {sortedStocks.length} stocks — cells colour-coded by value
           </div>
         </div>
       </div>
 
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-[11px]">
           <thead>
-            <tr style={{ borderBottom: '2px solid #132030' }}>
+            <tr className="border-b-2 border-base-600">
               <th
-                style={{
-                  textAlign: 'left',
-                  padding: 8,
-                  color: '#457B9D',
-                  cursor: 'pointer',
-                  fontFamily: "'DM Mono', monospace",
-                  fontSize: 10,
-                }}
+                className="text-left p-2 text-ink-muted cursor-pointer font-mono text-[10px] hover:text-ink-secondary transition-colors duration-150"
                 onClick={() => handleSort('code')}
               >
                 CODE{sortIcon('code')}
               </th>
-              <th style={{ textAlign: 'left', padding: 8, color: '#457B9D', fontSize: 10 }}>
+              <th className="text-left p-2 text-ink-muted font-mono text-[10px]">
                 ISSUER
               </th>
-              <th style={{ textAlign: 'left', padding: 8, color: '#457B9D', fontSize: 10 }}>
+              <th className="text-left p-2 text-ink-muted font-mono text-[10px]">
                 TIER
               </th>
               {tableCols.map((c) => (
                 <th
                   key={c.key}
-                  style={{
-                    textAlign: 'right',
-                    padding: 8,
-                    color: '#457B9D',
-                    cursor: 'pointer',
-                    fontFamily: "'DM Mono', monospace",
-                    fontSize: 10,
-                    whiteSpace: 'nowrap',
-                  }}
+                  className="text-right p-2 text-ink-muted cursor-pointer font-mono text-[10px] whitespace-nowrap hover:text-ink-secondary transition-colors duration-150"
                   onClick={() => handleSort(c.key)}
                 >
                   {c.label}
                   {sortIcon(c.key)}
                 </th>
               ))}
-              <th style={{ textAlign: 'left', padding: 8, color: '#457B9D', fontSize: 10 }}>
+              <th className="text-left p-2 text-ink-muted font-mono text-[10px]">
                 FLAGS
               </th>
             </tr>
@@ -163,56 +149,25 @@ export function ScreenerTab({
               <tr
                 key={s.code}
                 onClick={() => handleRowClick(s)}
-                style={{
-                  borderBottom: '1px solid #0d1e30',
-                  background:
-                    selectedCode === s.code
-                      ? '#132030'
-                      : i % 2 === 0
-                      ? '#09131f'
-                      : '#060d18',
-                  cursor: 'pointer',
-                  transition: 'background 0.1s',
-                }}
-                onMouseEnter={(e) =>
-                  selectedCode !== s.code && (e.currentTarget.style.background = '#0d1e30')
-                }
-                onMouseLeave={(e) =>
-                  selectedCode !== s.code &&
-                  (e.currentTarget.style.background = i % 2 === 0 ? '#09131f' : '#060d18')
-                }
+                className={`
+                  border-b border-base-600/20 cursor-pointer transition-colors duration-100
+                  ${selectedCode === s.code
+                    ? 'bg-base-600'
+                    : 'hover:bg-base-700/40'
+                  }
+                `}
               >
-                <td
-                  style={{
-                    padding: '6px 8px',
-                    color: '#e8f4f8',
-                    fontFamily: "'DM Mono', monospace",
-                    fontWeight: 600,
-                    fontSize: 11,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
+                <td className="p-[6px_8px] ticker-label text-[11px] text-accent whitespace-nowrap">
                   {s.code}
                 </td>
-                <td
-                  style={{
-                    padding: '6px 8px',
-                    color: '#6b8aad',
-                    maxWidth: 180,
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
+                <td className="p-[6px_8px] text-ink-muted max-w-[180px] overflow-hidden text-ellipsis whitespace-nowrap">
                   {s.issuer}
                 </td>
-                <td style={{ padding: '6px 8px' }}>
+                <td className="p-[6px_8px]">
                   <span
-                    style={{
-                      color: TIER_COLORS[s.tier as keyof typeof TIER_COLORS],
-                      fontSize: 10,
-                      fontWeight: 700,
-                    }}
+                    className={`text-[10px] font-bold ${
+                      s.tier === 'Red' ? 'text-tier-red' : s.tier === 'Amber' ? 'text-tier-amber' : 'text-tier-green'
+                    }`}
                   >
                     {s.tier}
                   </span>
@@ -242,8 +197,8 @@ export function ScreenerTab({
                   max={100}
                   fmt={(v) => v.toFixed(1) + '%'}
                 />
-                <td style={{ padding: '6px 8px', minWidth: 120 }}>
-                  {s.flags?.map((f) => <FlagPill key={f} flag={f} />) || '—'}
+                <td className="p-[6px_8px] min-w-[120px]">
+                  {s.flags?.map((f) => <FlagPill key={f} flag={f} />) || <span className="text-ink-muted">—</span>}
                 </td>
               </tr>
             ))}
@@ -254,17 +209,14 @@ export function ScreenerTab({
             isBlurred
             message={`${blurredCount} more rows — Upgrade to see all`}
           >
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+            <table className="w-full border-collapse text-[11px]">
               <tbody>
                 {Array.from({ length: Math.min(5, blurredCount) }).map((_, i) => (
                   <tr
                     key={`blurred-${i}`}
-                    style={{
-                      borderBottom: '1px solid #0d1e30',
-                      background: i % 2 === 0 ? '#09131f' : '#060d18',
-                    }}
+                    className="border-b border-base-600/20"
                   >
-                    <td colSpan={8} style={{ padding: '12px 8px', color: '#6b8aad', fontSize: 11 }}>
+                    <td colSpan={8} className="p-[12px_8px] text-ink-muted">
                       ••• ••• ••• ••• •••
                     </td>
                   </tr>
@@ -287,7 +239,7 @@ export function ScreenerTab({
           />
         )}
         {!isPremium && sortedStocks.length > 0 && (
-          <div style={{ fontSize: 11, color: '#6b8aad', padding: '12px 0', borderTop: '1px solid #132030' }}>
+          <div className="text-[11px] text-ink-muted py-3 border-t border-base-600">
             Showing {limitedVisible.length} of {sortedStocks.length} — Upgrade to see all
           </div>
         )}

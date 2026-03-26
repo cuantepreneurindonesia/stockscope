@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { TIER_COLORS, THEME_COLORS } from '@/lib/constants';
+import { Badge } from '@/components/ui';
 import { FlagPill } from '@/components/ui';
 import type { Stock } from '@/lib/types';
 
@@ -23,172 +23,96 @@ export function StockDetail({ stock, onClose }: StockDetailProps): React.ReactEl
       label: 'HHI',
       val: stock.hhi.toFixed(0),
       max: 10000,
-      color: stock.hhi > 2500 ? '#E76F51' : stock.hhi > 1500 ? '#E9C46A' : '#2A9D8F',
+      colorClass: stock.hhi > 2500 ? 'text-tier-red' : stock.hhi > 1500 ? 'text-tier-amber' : 'text-tier-green',
+      barClass: stock.hhi > 2500 ? 'bg-tier-red' : stock.hhi > 1500 ? 'bg-tier-amber' : 'bg-tier-green',
+      pct: Math.min((stock.hhi / 10000) * 100, 100),
     },
     {
       label: 'Free Float',
       val: ff.toFixed(1) + '%',
       max: 100,
+      colorClass: ff < 5 ? 'text-bear' : ff < 15 ? 'text-tier-amber' : 'text-tier-green',
+      barClass: ff < 5 ? 'bg-bear' : ff < 15 ? 'bg-tier-amber' : 'bg-tier-green',
       pct: ff,
-      color: ff < 5 ? '#d62828' : ff < 15 ? '#e9c46a' : '#2A9D8F',
     },
     {
       label: 'C1 (Top holder)',
       val: (stock.c1 ?? 0).toFixed(1) + '%',
       max: 100,
+      colorClass: (stock.c1 ?? 0) > 75 ? 'text-tier-red' : 'text-tier-amber',
+      barClass: (stock.c1 ?? 0) > 75 ? 'bg-tier-red' : 'bg-tier-amber',
       pct: stock.c1 ?? 0,
-      color: (stock.c1 ?? 0) > 75 ? '#e76f51' : '#e9c46a',
     },
     {
       label: 'C3 (Top 3)',
       val: (stock.c3 ?? 0).toFixed(1) + '%',
       max: 100,
+      colorClass: 'text-tier-amber',
+      barClass: 'bg-tier-amber',
       pct: stock.c3 ?? 0,
-      color: '#e9843a',
     },
   ];
 
   return (
-    <div
-      style={{
-        background: THEME_COLORS.bgAlt,
-        border: `1px solid ${THEME_COLORS.border}`,
-        borderRadius: 10,
-        padding: 20,
-        minWidth: 280,
-        maxWidth: 320,
-        position: 'sticky',
-        top: 20,
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          marginBottom: 16,
-        }}
-      >
+    <div className="bg-base-800 border border-base-500/50 rounded-xl p-5 min-w-[280px] max-w-[320px] sticky top-5 animate-slide-up">
+      {/* Header */}
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 700,
-              color: THEME_COLORS.text,
-              fontFamily: 'monospace',
-            }}
-          >
+          <div className="ticker-label text-xl text-ink-primary mb-1">
             {stock.code}
           </div>
-          <div
-            style={{
-              fontSize: 12,
-              color: THEME_COLORS.textTertiary,
-              marginTop: 2,
-              lineHeight: 1.3,
-            }}
-          >
+          <div className="text-xs text-ink-muted leading-snug max-w-[180px]">
             {stock.issuer}
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          <span
-            style={{
-              background: TIER_COLORS[stock.tier] + '33',
-              border: `1px solid ${TIER_COLORS[stock.tier]}66`,
-              color: TIER_COLORS[stock.tier],
-              borderRadius: 6,
-              padding: '3px 10px',
-              fontSize: 12,
-              fontWeight: 700,
-            }}
-          >
-            {stock.tier}
-          </span>
+        <div className="flex gap-1.5 items-center">
+          <Badge label={stock.tier} variant={stock.tier} />
           <button
             onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: THEME_COLORS.textTertiary,
-              cursor: 'pointer',
-              fontSize: 18,
-              padding: 0,
-            }}
+            className="bg-transparent border-none text-ink-muted cursor-pointer text-lg p-0 leading-none hover:text-ink-primary transition-colors duration-150"
           >
             ×
           </button>
         </div>
       </div>
 
-      {metrics.map((m) => (
-        <div key={m.label} style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
-            <span style={{ fontSize: 11, color: THEME_COLORS.textTertiary }}>{m.label}</span>
-            <span
-              style={{
-                fontSize: 11,
-                color: m.color,
-                fontFamily: 'monospace',
-                fontWeight: 600,
-              }}
-            >
-              {m.val}
-            </span>
+      {/* Metrics */}
+      <div className="space-y-2.5">
+        {metrics.map((m) => (
+          <div key={m.label}>
+            <div className="flex justify-between mb-1">
+              <span className="text-[11px] text-ink-muted">{m.label}</span>
+              <span className={`text-[11px] num font-semibold ${m.colorClass}`}>
+                {m.val}
+              </span>
+            </div>
+            <div className="bg-base-600 rounded-sm h-1">
+              <div
+                className={`h-full rounded-sm transition-all duration-300 ${m.barClass}`}
+                style={{ width: `${m.pct}%` }}
+              />
+            </div>
           </div>
-          <div style={{ background: '#132030', borderRadius: 3, height: 4 }}>
-            <div
-              style={{
-                width:
-                  (m.pct !== undefined ? m.pct : Math.min((parseFloat(m.val) / m.max) * 100, 100)) +
-                  '%',
-                background: m.color,
-                height: 4,
-                borderRadius: 3,
-                transition: 'width 0.3s',
-              }}
-            />
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
+      {/* Top Holder */}
       {shareholders.length > 0 && (
-        <div style={{ marginTop: 14, padding: '10px', background: '#060d18', borderRadius: 6 }}>
-          <div style={{ fontSize: 10, color: THEME_COLORS.textTertiary, letterSpacing: 1, marginBottom: 6 }}>
+        <div className="mt-3.5 p-2.5 bg-base-900 rounded-lg">
+          <div className="text-[10px] text-ink-muted tracking-wide uppercase mb-1.5 font-semibold">
             TOP HOLDER
           </div>
           {shareholders.map((holder, idx) => (
-            <div
-              key={idx}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: idx > 0 ? 5 : 0,
-              }}
-            >
+            <div key={idx} className="flex justify-between items-center mt-0 first:mt-0">
               <div
-                style={{
-                  fontSize: 11,
-                  color: THEME_COLORS.textSecondary,
-                  flex: 1,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
+                className="text-[11px] text-ink-secondary flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
                 title={holder.n}
               >
                 {holder.n || '—'}
               </div>
-              <span
-                style={{
-                  fontSize: 11,
-                  fontFamily: 'monospace',
-                  fontWeight: 600,
-                  color:
-                    holder.p > 50 ? '#e76f51' : holder.p > 25 ? '#E9C46A' : '#2A9D8F',
-                }}
-              >
+              <span className={`text-[11px] num font-semibold ml-2 ${
+                holder.p > 50 ? 'text-tier-red' : holder.p > 25 ? 'text-tier-amber' : 'text-tier-green'
+              }`}>
                 {holder.p != null ? holder.p.toFixed(1) + '%' : '—'}
               </span>
             </div>
@@ -196,12 +120,13 @@ export function StockDetail({ stock, onClose }: StockDetailProps): React.ReactEl
         </div>
       )}
 
+      {/* Flags */}
       {stock.flags && stock.flags.length > 0 && (
-        <div style={{ marginTop: 12 }}>
-          <div style={{ fontSize: 10, color: THEME_COLORS.textTertiary, marginBottom: 5 }}>
+        <div className="mt-3">
+          <div className="text-[10px] text-ink-muted mb-1.5 uppercase font-semibold tracking-wide">
             GOVERNANCE FLAGS
           </div>
-          <div>
+          <div className="flex flex-wrap gap-1">
             {stock.flags.map((f) => (
               <FlagPill key={f} flag={f} />
             ))}

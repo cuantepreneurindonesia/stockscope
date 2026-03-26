@@ -41,8 +41,8 @@ export function OverviewTab({ stocks, stats, loading = false }: OverviewTabProps
   if (loading) {
     return (
       <div className="overview-grid">
-        <div style={{ background: '#09131f', border: '1px solid #132030', borderRadius: 10, padding: 20, height: 300 }} />
-        <div style={{ background: '#09131f', border: '1px solid #132030', borderRadius: 10, padding: 20, height: 300 }} />
+        <div className="bg-base-800 border border-base-600 rounded-xl p-5 h-[300px] shimmer-bg" />
+        <div className="bg-base-800 border border-base-600 rounded-xl p-5 h-[300px] shimmer-bg" />
       </div>
     );
   }
@@ -54,27 +54,30 @@ export function OverviewTab({ stocks, stats, loading = false }: OverviewTabProps
   return (
     <div className="overview-grid">
       {/* Risk Distribution Chart */}
-      <div style={{ background: '#09131f', border: '1px solid #132030', borderRadius: 10, padding: 20 }}>
-        <div style={{ fontSize: 11, color: '#6b8aad', letterSpacing: 2, marginBottom: 4 }}>
+      <div className="bg-base-800 border border-base-600 rounded-xl p-5">
+        <div className="text-[11px] text-ink-muted tracking-widest uppercase mb-1 font-mono font-semibold">
           RISK DISTRIBUTION
         </div>
-        <div style={{ fontSize: 14, color: '#e8f4f8', fontWeight: 600, marginBottom: 16 }}>
+        <div className="text-sm text-ink-primary font-semibold mb-4">
           {redCount > greenCount + amberCount
             ? 'Most Stocks Have Governance Concerns'
             : 'Risk Spread Across Tiers'}
         </div>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={tierDist}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#132030" />
-            <XAxis dataKey="name" tick={{ fill: '#6b8aad', fontSize: 11 }} />
-            <YAxis tick={{ fill: '#6b8aad', fontSize: 11 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1A1D26" />
+            <XAxis dataKey="name" tick={{ fill: '#4A4F66', fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: '#4A4F66', fontSize: 11 }} axisLine={false} tickLine={false} />
             <Tooltip
               contentStyle={{
-                background: '#09131f',
-                border: '1px solid #1e3a52',
-                borderRadius: 6,
+                background: '#111318',
+                border: '1px solid #2A2D3A',
+                borderRadius: 8,
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: 12,
               }}
-              labelStyle={{ color: '#e8f4f8' }}
+              labelStyle={{ color: '#FFFFFF' }}
+              cursor={{ fill: '#1A1D26' }}
             />
             <Bar dataKey="value" radius={[4, 4, 0, 0]} cursor="pointer">
               {tierDist.map((d) => (
@@ -83,48 +86,51 @@ export function OverviewTab({ stocks, stats, loading = false }: OverviewTabProps
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-        <div style={{ fontSize: 10, color: '#457B9D', marginTop: 8 }}>
+        <div className="text-[10px] text-ink-muted mt-2">
           ↑ Click bars to filter
         </div>
       </div>
 
       {/* HHI Concentration Chart */}
-      <div style={{ background: '#09131f', border: '1px solid #132030', borderRadius: 10, padding: 20 }}>
-        <div style={{ fontSize: 11, color: '#6b8aad', letterSpacing: 2, marginBottom: 4 }}>
+      <div className="bg-base-800 border border-base-600 rounded-xl p-5">
+        <div className="text-[11px] text-ink-muted tracking-widest uppercase mb-1 font-mono font-semibold">
           HHI CONCENTRATION
         </div>
-        <div style={{ fontSize: 14, color: '#e8f4f8', fontWeight: 600, marginBottom: 16 }}>
+        <div className="text-sm text-ink-primary font-semibold mb-4">
           {stats && stats.avgHHI > 2500
             ? 'High Average Concentration Across Market'
             : 'Concentration Spread Across Zones'}
         </div>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={hhiData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#132030" />
-            <XAxis dataKey="range" tick={{ fill: '#6b8aad', fontSize: 9 }} />
-            <YAxis tick={{ fill: '#6b8aad', fontSize: 11 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1A1D26" />
+            <XAxis dataKey="range" tick={{ fill: '#4A4F66', fontSize: 9 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: '#4A4F66', fontSize: 11 }} axisLine={false} tickLine={false} />
             <Tooltip
               contentStyle={{
-                background: '#09131f',
-                border: '1px solid #1e3a52',
-                borderRadius: 6,
+                background: '#111318',
+                border: '1px solid #2A2D3A',
+                borderRadius: 8,
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: 12,
               }}
-              labelStyle={{ color: '#e8f4f8' }}
+              labelStyle={{ color: '#FFFFFF' }}
+              cursor={{ fill: '#1A1D26' }}
             />
-            <Bar dataKey="count" fill="#457b9d" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="count" fill="#00C805" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
-        <div style={{ fontSize: 10, color: '#457B9D', marginTop: 8 }}>
+        <div className="text-[10px] text-ink-muted mt-2">
           ↑ HHI zones distribution
         </div>
       </div>
 
       {/* Key Findings */}
-      <div style={{ background: '#09131f', border: '1px solid #132030', borderRadius: 10, padding: 20, gridColumn: '1 / -1' }}>
-        <div style={{ fontSize: 11, color: '#6b8aad', letterSpacing: 2, marginBottom: 12 }}>
+      <div className="bg-base-800 border border-base-600 rounded-xl p-5" style={{ gridColumn: '1 / -1' }}>
+        <div className="text-[11px] text-ink-muted tracking-widest uppercase mb-3 font-mono font-semibold">
           KEY FINDINGS
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+        <div className="grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
           {[
             {
               id: 'red',
@@ -165,25 +171,13 @@ export function OverviewTab({ stocks, stats, loading = false }: OverviewTabProps
           ].map((f) => (
             <div
               key={f.id}
-              style={{
-                background: '#060d18',
-                borderRadius: 8,
-                padding: '12px 14px',
-                borderLeft: '3px solid #1e3a52',
-              }}
+              className="bg-base-900 rounded-lg px-3.5 py-3 border-l-[3px] border-base-500"
             >
-              <div style={{ fontSize: 20, marginBottom: 4 }}>{f.icon}</div>
-              <div
-                style={{
-                  fontSize: 16,
-                  fontWeight: 700,
-                  color: '#e8f4f8',
-                  fontFamily: "'DM Mono', monospace",
-                }}
-              >
+              <div className="text-lg mb-1">{f.icon}</div>
+              <div className="text-base font-bold text-ink-primary num mb-0.5">
                 {f.stat}
               </div>
-              <div style={{ fontSize: 11, color: '#6b8aad', marginTop: 2 }}>{f.desc}</div>
+              <div className="text-[11px] text-ink-muted">{f.desc}</div>
             </div>
           ))}
         </div>

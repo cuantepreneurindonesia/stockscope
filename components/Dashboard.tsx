@@ -172,10 +172,11 @@ export function Dashboard(): React.ReactElement {
 
   if (stockData.loading && stockData.RAW.length === 0) {
     return (
-      <div className="app-root" style={{ background: '#060d18', minHeight: '100vh', color: '#e8f4f8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h2>{tDash('loadingTitle')}</h2>
-          <p style={{ color: '#a8c8e8' }}>{tDash('loadingSubtitle')}</p>
+      <div className="app-root bg-base-900 min-h-screen text-ink-primary flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <div className="w-8 h-8 rounded-full border-2 border-accent border-t-transparent animate-spin mx-auto mb-4" />
+          <h2 className="text-lg font-semibold mb-2">{tDash('loadingTitle')}</h2>
+          <p className="text-sm text-ink-secondary">{tDash('loadingSubtitle')}</p>
         </div>
       </div>
     );
@@ -183,10 +184,11 @@ export function Dashboard(): React.ReactElement {
 
   if (stockData.error && stockData.RAW.length === 0) {
     return (
-      <div className="app-root" style={{ background: '#060d18', minHeight: '100vh', color: '#e8f4f8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h2>{tDash('errorTitle')}</h2>
-          <p>{stockData.error}</p>
+      <div className="app-root bg-base-900 min-h-screen text-ink-primary flex items-center justify-center">
+        <div className="text-center animate-fade-in">
+          <div className="text-3xl mb-4">⚠️</div>
+          <h2 className="text-lg font-semibold mb-2 text-bear">{tDash('errorTitle')}</h2>
+          <p className="text-sm text-ink-secondary">{stockData.error}</p>
         </div>
       </div>
     );
@@ -194,7 +196,7 @@ export function Dashboard(): React.ReactElement {
 
   return (
     <>
-      <div className="app-root" style={{ background: '#060d18', minHeight: '100vh', color: '#e8f4f8', padding: '0 0 40px' }}>
+      <div className="app-root bg-base-900 min-h-screen text-ink-primary pb-10">
         <MobileDrawer
           drawerOpen={drawerOpen}
           setDrawerOpen={setDrawerOpen}
@@ -313,9 +315,10 @@ export function Dashboard(): React.ReactElement {
           )}
 
           {!stockData.loading && stockData.filtered.length === 0 && activeTab !== 'owners' && (
-            <div style={{ textAlign: 'center', padding: '60px 20px', color: '#a8c8e8' }}>
-              <p style={{ fontSize: 16, marginBottom: 8 }}>{tDash('emptyTitle')}</p>
-              <p style={{ fontSize: 13 }}>{tDash('emptyHint')}</p>
+            <div className="text-center px-5 py-16 text-ink-secondary animate-fade-in">
+              <div className="text-3xl mb-3">🔍</div>
+              <p className="text-base mb-2">{tDash('emptyTitle')}</p>
+              <p className="text-sm text-ink-muted">{tDash('emptyHint')}</p>
             </div>
           )}
         </div>

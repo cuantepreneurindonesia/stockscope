@@ -18,6 +18,14 @@ interface FilterPanelProps {
   onSearchChange: (query: string) => void;
 }
 
+const inputClass = `
+  w-full px-3 py-2.5 bg-base-900 border border-base-500 text-ink-primary rounded-lg
+  text-sm outline-none transition-all duration-150 placeholder:text-ink-muted
+  focus:border-accent focus:ring-2 focus:ring-accent-dim
+`;
+
+const labelClass = 'block text-[9px] tracking-[1.5px] text-ink-muted font-mono mb-2 uppercase font-semibold';
+
 export function FilterPanel({
   sectors,
   selectedSector,
@@ -36,79 +44,34 @@ export function FilterPanel({
   const t = useTranslations('filterPanel');
 
   return (
-    <div style={{ background: '#09131f', border: '1px solid #132030', borderRadius: 10, padding: 16, marginBottom: 24 }}>
-      <div style={{ fontSize: 9, letterSpacing: 2, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 16, textTransform: 'uppercase' }}>
+    <div className="bg-base-800 border border-base-600 rounded-xl p-4 mb-6">
+      <div className="text-[9px] tracking-[2px] text-accent font-mono mb-4 uppercase font-semibold">
         {t('filters')}
       </div>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 16 }}>
+
+      <div className="grid gap-4 mb-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
         {/* Search */}
         <div>
-          <label style={{ display: 'block', fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 8, textTransform: 'uppercase' }}>
-            {t('searchStock')}
-          </label>
+          <label className={labelClass}>{t('searchStock')}</label>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={t('searchPlaceholder')}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              background: '#060d18',
-              border: '1px solid #1e3a52',
-              color: '#e8f4f8',
-              borderRadius: 6,
-              fontSize: '0.875rem',
-              fontFamily: 'DM Sans, sans-serif',
-              outline: 'none',
-              transition: 'border-color 0.2s, box-shadow 0.2s',
-              boxShadow: '0 0 0 0 rgba(69, 123, 157, 0)'
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = '#457b9d';
-              e.currentTarget.style.boxShadow = '0 0 0 2px rgba(69, 123, 157, 0.2)';
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = '#1e3a52';
-              e.currentTarget.style.boxShadow = '0 0 0 0 rgba(69, 123, 157, 0)';
-            }}
+            className={inputClass}
           />
         </div>
 
         {/* Sector Filter */}
         <div>
-          <label style={{ display: 'block', fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 8, textTransform: 'uppercase' }}>
-            {t('sector')}
-          </label>
+          <label className={labelClass}>{t('sector')}</label>
           <select
             value={selectedSector}
             onChange={(e) => onSectorChange(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              background: '#060d18',
-              border: '1px solid #1e3a52',
-              color: '#e8f4f8',
-              borderRadius: 6,
-              fontSize: '0.875rem',
-              fontFamily: 'DM Sans, sans-serif',
-              outline: 'none',
-              transition: 'border-color 0.2s, box-shadow 0.2s',
-              boxShadow: '0 0 0 0 rgba(69, 123, 157, 0)',
-              cursor: 'pointer'
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = '#457b9d';
-              e.currentTarget.style.boxShadow = '0 0 0 2px rgba(69, 123, 157, 0.2)';
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = '#1e3a52';
-              e.currentTarget.style.boxShadow = '0 0 0 0 rgba(69, 123, 157, 0)';
-            }}
+            className={`${inputClass} cursor-pointer`}
           >
             {sectors.map((sector) => (
-              <option key={sector} value={sector} style={{ background: '#09131f', color: '#e8f4f8' }}>
+              <option key={sector} value={sector} className="bg-base-800 text-ink-primary">
                 {sector === 'All' ? t('allSectors') : sector}
               </option>
             ))}
@@ -117,50 +80,25 @@ export function FilterPanel({
 
         {/* AI Score Tier Filter */}
         <div>
-          <label style={{ display: 'block', fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 8, textTransform: 'uppercase' }}>
-            {t('aiTier')}
-          </label>
+          <label className={labelClass}>{t('aiTier')}</label>
           <select
             value={selectedAiTier}
             onChange={(e) => onAiTierChange(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              background: '#060d18',
-              border: '1px solid #1e3a52',
-              color: '#e8f4f8',
-              borderRadius: 6,
-              fontSize: '0.875rem',
-              fontFamily: 'DM Sans, sans-serif',
-              outline: 'none',
-              transition: 'border-color 0.2s, box-shadow 0.2s',
-              boxShadow: '0 0 0 0 rgba(69, 123, 157, 0)',
-              cursor: 'pointer'
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = '#457b9d';
-              e.currentTarget.style.boxShadow = '0 0 0 2px rgba(69, 123, 157, 0.2)';
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = '#1e3a52';
-              e.currentTarget.style.boxShadow = '0 0 0 0 rgba(69, 123, 157, 0)';
-            }}
+            className={`${inputClass} cursor-pointer`}
           >
-            <option value="" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tierAll')}</option>
-            <option value="1" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tier1')}</option>
-            <option value="2" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tier2')}</option>
-            <option value="3" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tier3')}</option>
-            <option value="4" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tier4')}</option>
-            <option value="5" style={{ background: '#09131f', color: '#e8f4f8' }}>{t('tier5')}</option>
+            <option value="" className="bg-base-800 text-ink-primary">{t('tierAll')}</option>
+            <option value="1" className="bg-base-800 text-ink-primary">{t('tier1')}</option>
+            <option value="2" className="bg-base-800 text-ink-primary">{t('tier2')}</option>
+            <option value="3" className="bg-base-800 text-ink-primary">{t('tier3')}</option>
+            <option value="4" className="bg-base-800 text-ink-primary">{t('tier4')}</option>
+            <option value="5" className="bg-base-800 text-ink-primary">{t('tier5')}</option>
           </select>
         </div>
 
         {/* Score Range */}
         <div>
-          <label style={{ display: 'block', fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 8, textTransform: 'uppercase' }}>
-            {t('scoreRange')}
-          </label>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <label className={labelClass}>{t('scoreRange')}</label>
+          <div className="flex gap-2 items-center">
             <input
               type="number"
               value={minScore}
@@ -168,29 +106,9 @@ export function FilterPanel({
               placeholder={t('min')}
               min="0"
               max="100"
-              style={{
-                flex: 1,
-                padding: '10px 12px',
-                background: '#060d18',
-                border: '1px solid #1e3a52',
-                color: '#e8f4f8',
-                borderRadius: 6,
-                fontSize: '0.875rem',
-                fontFamily: 'DM Sans, sans-serif',
-                outline: 'none',
-                transition: 'border-color 0.2s, box-shadow 0.2s',
-                boxShadow: '0 0 0 0 rgba(69, 123, 157, 0)'
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = '#457b9d';
-                e.currentTarget.style.boxShadow = '0 0 0 2px rgba(69, 123, 157, 0.2)';
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = '#1e3a52';
-                e.currentTarget.style.boxShadow = '0 0 0 0 rgba(69, 123, 157, 0)';
-              }}
+              className={inputClass}
             />
-            <span style={{ display: 'flex', alignItems: 'center', color: '#6b8aad' }}>-</span>
+            <span className="text-ink-muted text-sm flex-shrink-0">—</span>
             <input
               type="number"
               value={maxScore}
@@ -198,52 +116,32 @@ export function FilterPanel({
               placeholder={t('max')}
               min="0"
               max="100"
-              style={{
-                flex: 1,
-                padding: '10px 12px',
-                background: '#060d18',
-                border: '1px solid #1e3a52',
-                color: '#e8f4f8',
-                borderRadius: 6,
-                fontSize: '0.875rem',
-                fontFamily: 'DM Sans, sans-serif',
-                outline: 'none',
-                transition: 'border-color 0.2s, box-shadow 0.2s',
-                boxShadow: '0 0 0 0 rgba(69, 123, 157, 0)'
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = '#457b9d';
-                e.currentTarget.style.boxShadow = '0 0 0 2px rgba(69, 123, 157, 0.2)';
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = '#1e3a52';
-                e.currentTarget.style.boxShadow = '0 0 0 0 rgba(69, 123, 157, 0)';
-              }}
+              className={inputClass}
             />
           </div>
         </div>
       </div>
 
       {/* Governance Tier Buttons */}
-      <div style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #132030' }}>
-        <p style={{ fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 12, textTransform: 'uppercase' }}>{t('govTier')}</p>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <div className="mb-4 pb-4 border-b border-base-600">
+        <p className={labelClass}>{t('govTier')}</p>
+        <div className="flex gap-2 flex-wrap">
           {(['Red', 'Amber', 'Green'] as const).map(tier => (
             <button
               key={tier}
               onClick={() => onGovTierChange(selectedGovTier === tier ? '' : tier)}
-              style={{
-                background: selectedGovTier === tier ? '#64b5f6' : '#2d3748',
-                border: '1px solid #4b5563',
-                color: selectedGovTier === tier ? '#ffffff' : (tier === 'Red' ? '#E76F51' : tier === 'Amber' ? '#E9C46A' : '#2A9D8F'),
-                borderRadius: 6,
-                padding: '6px 16px',
-                cursor: 'pointer',
-                fontSize: 12,
-                fontWeight: 500,
-                whiteSpace: 'nowrap',
-                transition: 'all 0.2s'
-              }}
+              className={`
+                px-4 py-1.5 rounded-lg border text-xs font-medium cursor-pointer
+                whitespace-nowrap transition-all duration-150
+                ${selectedGovTier === tier
+                  ? 'bg-accent text-base-900 border-accent font-semibold'
+                  : tier === 'Red'
+                  ? 'bg-tier-red/10 border-tier-red/30 text-tier-red hover:border-tier-red/60'
+                  : tier === 'Amber'
+                  ? 'bg-tier-amber/10 border-tier-amber/30 text-tier-amber hover:border-tier-amber/60'
+                  : 'bg-tier-green/10 border-tier-green/30 text-tier-green hover:border-tier-green/60'
+                }
+              `}
             >
               {t('riskSuffix', { tier })}
             </button>
@@ -253,21 +151,21 @@ export function FilterPanel({
 
       {/* Score Legend */}
       <div>
-        <p style={{ fontSize: 9, letterSpacing: 1.5, color: '#457b9d', fontFamily: "'DM Mono', monospace", marginBottom: 12, textTransform: 'uppercase' }}>{t('legend')}</p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, background: 'rgba(42, 157, 143, 0.1)', color: '#2a9d8f', border: '1px solid rgba(42, 157, 143, 0.3)' }}>
+        <p className={labelClass}>{t('legend')}</p>
+        <div className="flex flex-wrap gap-2">
+          <span className="inline-flex items-center px-3 py-1.5 text-[11px] font-semibold rounded-md bg-tier-green/10 text-tier-green border border-tier-green/30">
             {t('legendStrongBuy')}
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, background: 'rgba(69, 123, 157, 0.1)', color: '#a8d8ea', border: '1px solid rgba(69, 123, 157, 0.3)' }}>
+          <span className="inline-flex items-center px-3 py-1.5 text-[11px] font-semibold rounded-md bg-accent/10 text-accent border border-accent/30">
             {t('legendBuy')}
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, background: 'rgba(233, 196, 106, 0.1)', color: '#e9c46a', border: '1px solid rgba(233, 196, 106, 0.3)' }}>
+          <span className="inline-flex items-center px-3 py-1.5 text-[11px] font-semibold rounded-md bg-tier-amber/10 text-tier-amber border border-tier-amber/30">
             {t('legendWatch')}
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, background: 'rgba(107, 138, 173, 0.1)', color: '#6b8aad', border: '1px solid rgba(107, 138, 173, 0.3)' }}>
+          <span className="inline-flex items-center px-3 py-1.5 text-[11px] font-semibold rounded-md bg-ink-muted/10 text-ink-secondary border border-ink-muted/20">
             {t('legendNeutral')}
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4, background: 'rgba(231, 111, 81, 0.1)', color: '#e76f51', border: '1px solid rgba(231, 111, 81, 0.3)' }}>
+          <span className="inline-flex items-center px-3 py-1.5 text-[11px] font-semibold rounded-md bg-tier-red/10 text-tier-red border border-tier-red/30">
             {t('legendAvoid')}
           </span>
         </div>

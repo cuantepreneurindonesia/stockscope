@@ -1,19 +1,19 @@
 import type { Metadata, Viewport } from 'next';
-import { DM_Sans, DM_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono } from 'next/font/google';
 import { Providers } from './providers';
 import './globals.css';
 
-const dmSans = DM_Sans({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '700'],
-  variable: '--font-dm-sans',
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-inter',
   display: 'swap',
 });
 
-const dmMono = DM_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-dm-mono',
+  weight: ['400', '600'],
+  variable: '--font-jetbrains-mono',
   display: 'swap',
 });
 
@@ -25,7 +25,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#06050f',
+  themeColor: '#0A0B0D',
 };
 
 export default function RootLayout({
@@ -34,14 +34,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${dmSans.variable} ${dmMono.variable}`} suppressHydrationWarning>
+    <html lang="id" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="RTI" />
       </head>
-      <body className={`${dmSans.className} bg-[#06050f] text-[#e8f4f8] antialiased`}>
+      <body className={`${inter.className} bg-base-900 text-ink-primary antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

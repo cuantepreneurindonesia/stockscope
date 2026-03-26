@@ -1,5 +1,6 @@
 'use client';
 
+import { Badge, ChangeIndicator, Skeleton } from '@/components/ui';
 import { FlagPill } from '@/components/ui';
 import type { EnrichedStock } from '@/lib/types/unified';
 
@@ -8,107 +9,116 @@ interface ScreenerTableProps {
   onSort: (field: string) => void;
   sortBy: string;
   sortOrder: 'asc' | 'desc';
+  loading?: boolean;
 }
 
 const SortIcon = ({ field, sortBy, sortOrder }: { field: string; sortBy: string; sortOrder: 'asc' | 'desc' }) => {
-  if (sortBy !== field) return <span style={{ color: '#6b8aad', marginLeft: 4 }}>⇅</span>;
-  return <span style={{ marginLeft: 4 }}>{sortOrder === 'asc' ? '↑' : '↓'}</span>;
+  if (sortBy !== field) return <span className="text-ink-muted ml-1 opacity-50">⇅</span>;
+  return <span className="text-accent ml-1">{sortOrder === 'asc' ? '↑' : '↓'}</span>;
 };
 
-export function ScreenerTable({ stocks, onSort, sortBy, sortOrder }: ScreenerTableProps) {
+const getHhiColorClass = (hhi: number | undefined): string => {
+  if (!hhi) return 'text-ink-muted';
+  if (hhi < 1500) return 'text-tier-green';
+  if (hhi <= 2500) return 'text-tier-amber';
+  return 'text-tier-red';
+};
+
+const ScoreBar = ({ value }: { value: number | undefined }) => {
+  if (!value) return <span className="text-ink-muted">—</span>;
+
+  let barClass = 'bg-tier-red';
+  if (value >= 80) barClass = 'bg-tier-green';
+  else if (value >= 65) barClass = 'bg-accent';
+  else if (value >= 50) barClass = 'bg-tier-amber';
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex-1 h-4 bg-base-600/50 rounded-sm overflow-hidden border border-base-500/30">
+        <div
+          className={`h-full transition-all duration-300 ${barClass}`}
+          style={{ width: `${value}%` }}
+        />
+      </div>
+      <span className={`text-[11px] num font-semibold min-w-[28px] text-right ${barClass.replace('bg-', 'text-')}`}>
+        {value}
+      </span>
+    </div>
+  );
+};
+
+const TH_CLASS = 'px-3 py-3 text-left text-[9px] font-semibold tracking-widest uppercase text-ink-muted hover:text-ink-secondary cursor-pointer select-none transition-colors duration-150 whitespace-nowrap';
+const TH_RIGHT_CLASS = 'px-3 py-3 text-right text-[9px] font-semibold tracking-widest uppercase text-ink-muted hover:text-ink-secondary cursor-pointer select-none transition-colors duration-150 whitespace-nowrap';
+
+export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, loading = false }: ScreenerTableProps) {
   const formatPrice = (price: number | undefined) => {
     if (!price) return '—';
     return price.toLocaleString('id-ID');
   };
 
-  // Map governance tier to RTI colors
-  const getGovTierStyle = (tier: string) => {
-    const tierColors: Record<string, { color: string; bg: string }> = {
-      'Red': { color: '#E76F51', bg: 'rgba(231, 111, 81, 0.12)' },
-      'Amber': { color: '#E9C46A', bg: 'rgba(233, 196, 106, 0.12)' },
-      'Green': { color: '#2A9D8F', bg: 'rgba(42, 157, 143, 0.12)' }
-    };
-    return tierColors[tier] || { color: '#6b8aad', bg: 'rgba(107, 138, 173, 0.12)' };
-  };
-
-  // Get HHI color
-  const getHhiColor = (hhi: number | undefined) => {
-    if (!hhi) return '#6b8aad';
-    if (hhi < 1500) return '#2a9d8f';
-    if (hhi <= 2500) return '#e9c46a';
-    return '#e76f51';
-  };
-
-  // Score bar component
-  const ScoreBar = ({ value }: { value: number | undefined }) => {
-    if (!value) return <span>—</span>;
-
-    let color = '#e76f51';
-    if (value >= 80) color = '#2a9d8f';
-    else if (value >= 65) color = '#457b9d';
-    else if (value >= 50) color = '#e9c46a';
-
+  if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ flex: 1, height: 20, background: 'rgba(69, 123, 157, 0.1)', borderRadius: 2, overflow: 'hidden', border: '1px solid #1e3a52' }}>
-          <div
-            style={{
-              height: '100%',
-              width: `${value}%`,
-              background: color,
-              transition: 'width 0.3s ease'
-            }}
-          />
-        </div>
-        <span style={{ fontSize: 11, fontFamily: "'DM Mono', monospace", color: color, minWidth: 30, textAlign: 'right', fontWeight: 600 }}>
-          {value}
-        </span>
+      <div className="overflow-x-auto">
+        <table className="min-w-full border-collapse">
+          <thead>
+            <tr className="bg-base-900 border-b border-base-600">
+              {['Ticker', 'Issuer', 'Sector', 'Price', 'Change %', 'AI Score', 'AI Tier', 'Gov Tier', 'HHI', 'Flags', 'P/E', 'ROE %', 'Div Yield'].map((h) => (
+                <th key={h} className={TH_CLASS}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array(8).fill(0).map((_, i) => (
+              <tr key={i} className="border-b border-base-600/30">
+                {[16, 36, 20, 16, 16, 36, 12, 10, 14, 24, 10, 10, 14].map((w, j) => (
+                  <td key={j} className="px-3 py-3">
+                    <Skeleton className={`h-3 w-${w}`} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
-  };
+  }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <table style={{ minWidth: '100%', borderCollapse: 'collapse' }}>
+    <div className="overflow-x-auto">
+      <table className="min-w-full border-collapse">
         <thead>
-          <tr style={{ background: '#060d18', borderBottom: '1px solid #132030' }}>
-            <th style={{ padding: 12, textAlign: 'left', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort('code')}>
+          <tr className="bg-base-900 border-b border-base-600">
+            <th className={TH_CLASS} onClick={() => onSort('code')}>
               Ticker <SortIcon field="code" sortBy={sortBy} sortOrder={sortOrder} />
             </th>
-            <th style={{ padding: 12, textAlign: 'left', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
-              Issuer
-            </th>
-            <th style={{ padding: 12, textAlign: 'left', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
-              Sector
-            </th>
-            <th style={{ padding: 12, textAlign: 'right', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort('price')}>
+            <th className={TH_CLASS}>Issuer</th>
+            <th className={TH_CLASS}>Sector</th>
+            <th className={TH_RIGHT_CLASS} onClick={() => onSort('price')}>
               Price <SortIcon field="price" sortBy={sortBy} sortOrder={sortOrder} />
             </th>
-            <th style={{ padding: 12, textAlign: 'right', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort('change')}>
+            <th className={TH_RIGHT_CLASS} onClick={() => onSort('change')}>
               Change % <SortIcon field="change" sortBy={sortBy} sortOrder={sortOrder} />
             </th>
-            <th style={{ padding: 12, textAlign: 'left', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort('composite')}>
+            <th className={TH_CLASS} onClick={() => onSort('composite')}>
               AI Score <SortIcon field="composite" sortBy={sortBy} sortOrder={sortOrder} />
             </th>
-            <th style={{ padding: 12, textAlign: 'center', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
+            <th className="px-3 py-3 text-center text-[9px] font-semibold tracking-widest uppercase text-ink-muted whitespace-nowrap">
               AI Tier
             </th>
-            <th style={{ padding: 12, textAlign: 'center', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
+            <th className="px-3 py-3 text-center text-[9px] font-semibold tracking-widest uppercase text-ink-muted whitespace-nowrap">
               Gov Tier
             </th>
-            <th style={{ padding: 12, textAlign: 'right', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort('hhi')}>
+            <th className={TH_RIGHT_CLASS} onClick={() => onSort('hhi')}>
               HHI <SortIcon field="hhi" sortBy={sortBy} sortOrder={sortOrder} />
             </th>
-            <th style={{ padding: 12, textAlign: 'left', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>
-              Flags
-            </th>
-            <th style={{ padding: 12, textAlign: 'right', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort('pe')}>
+            <th className={TH_CLASS}>Flags</th>
+            <th className={TH_RIGHT_CLASS} onClick={() => onSort('pe')}>
               P/E <SortIcon field="pe" sortBy={sortBy} sortOrder={sortOrder} />
             </th>
-            <th style={{ padding: 12, textAlign: 'right', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort('roe')}>
+            <th className={TH_RIGHT_CLASS} onClick={() => onSort('roe')}>
               ROE % <SortIcon field="roe" sortBy={sortBy} sortOrder={sortOrder} />
             </th>
-            <th style={{ padding: 12, textAlign: 'right', fontSize: 9, fontFamily: "'DM Mono', monospace", color: '#457b9d', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600, cursor: 'pointer', userSelect: 'none' }} onClick={() => onSort('dividendYield')}>
+            <th className={TH_RIGHT_CLASS} onClick={() => onSort('dividendYield')}>
               Div Yield % <SortIcon field="dividendYield" sortBy={sortBy} sortOrder={sortOrder} />
             </th>
           </tr>
@@ -116,108 +126,106 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder }: ScreenerTab
         <tbody>
           {stocks.length === 0 ? (
             <tr>
-              <td colSpan={13} style={{ padding: 32, textAlign: 'center', color: '#6b8aad', fontSize: '0.875rem' }}>
-                No stocks found matching your criteria
+              <td
+                colSpan={13}
+                className="px-6 py-12 text-center text-ink-secondary text-sm"
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <span className="text-2xl">🔍</span>
+                  <span>No stocks found matching your criteria</span>
+                </div>
               </td>
             </tr>
           ) : (
-            stocks.map((stock, idx) => {
-              const govTierStyle = getGovTierStyle(stock.tier);
-              return (
-                <tr
-                  key={stock.code}
-                  style={{
-                    background: idx % 2 === 0 ? '#09131f' : '#060d18',
-                    borderBottom: '1px solid #132030',
-                    transition: 'background 0.15s'
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = '#0d1e30')}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = idx % 2 === 0 ? '#09131f' : '#060d18')}
-                >
-                  <td style={{ padding: 12, whiteSpace: 'nowrap', fontFamily: "'DM Mono', monospace", fontWeight: 700, color: '#a8d8ea', fontSize: '0.875rem' }}>
+            stocks.map((stock, idx) => (
+              <tr
+                key={stock.code}
+                style={{ animationDelay: `${Math.min(idx * 15, 300)}ms` }}
+                className="border-b border-base-600/20 hover:bg-base-700/40 transition-colors duration-150 group animate-slide-up"
+              >
+                {/* Ticker */}
+                <td className="px-3 py-3 whitespace-nowrap">
+                  <span className="ticker-label text-sm text-accent group-hover:text-accent-hover transition-colors duration-150">
                     {stock.code}
-                  </td>
-                  <td style={{ padding: 12, fontSize: '0.875rem', color: '#e8f4f8' }}>
-                    {stock.issuer}
-                  </td>
-                  <td style={{ padding: 12, fontSize: '0.875rem', color: '#a8c8e8' }}>
-                    {stock.sector || '—'}
-                  </td>
-                  <td style={{ padding: 12, textAlign: 'right', fontSize: '0.875rem', color: '#e8f4f8', fontWeight: 500 }}>
-                    {formatPrice(stock.price)}
-                  </td>
-                  <td style={{ padding: 12, textAlign: 'right', fontSize: '0.875rem', fontWeight: 500, color: stock.change && stock.change >= 0 ? '#2a9d8f' : '#e76f51' }}>
-                    {stock.change ? (stock.change >= 0 ? '+' : '') + stock.change.toFixed(2) + '%' : '—'}
-                  </td>
-                  <td style={{ padding: 12, fontSize: '0.875rem', minWidth: 150 }}>
-                    <ScoreBar value={stock.scores?.composite} />
-                  </td>
-                  <td style={{ padding: 12, textAlign: 'center' }}>
-                    {stock.aiTier ? (
-                      <span
-                        style={{
-                          padding: '4px 10px',
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          borderRadius: 4,
-                          background: stock.aiTier.bg,
-                          color: stock.aiTier.color,
-                          border: `1px solid ${stock.aiTier.color}33`,
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
-                        T{stock.aiTier.level}
-                      </span>
-                    ) : (
-                      '—'
-                    )}
-                  </td>
-                  <td style={{ padding: 12, textAlign: 'center' }}>
-                    <span
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: 24,
-                        height: 24,
-                        borderRadius: '50%',
-                        background: govTierStyle.bg,
-                        color: govTierStyle.color,
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                        border: `1px solid ${govTierStyle.color}66`
-                      }}
-                      title={stock.tier}
-                    >
-                      {stock.tier[0]}
-                    </span>
-                  </td>
-                  <td style={{ padding: 12, textAlign: 'right', fontSize: '0.875rem', color: getHhiColor(stock.hhi), fontWeight: 500 }}>
-                    {stock.hhi ? stock.hhi.toFixed(0) : '—'}
-                  </td>
-                  <td style={{ padding: 12, fontSize: '0.875rem' }}>
-                    {stock.flags && stock.flags.length > 0 ? (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                        {stock.flags.map(flag => (
-                          <FlagPill key={flag} flag={flag} />
-                        ))}
-                      </div>
-                    ) : (
-                      '—'
-                    )}
-                  </td>
-                  <td style={{ padding: 12, textAlign: 'right', fontSize: '0.875rem', color: '#e8f4f8' }}>
-                    {stock.pe ? stock.pe.toFixed(1) : '—'}
-                  </td>
-                  <td style={{ padding: 12, textAlign: 'right', fontSize: '0.875rem', color: '#e8f4f8' }}>
-                    {stock.roe ? stock.roe.toFixed(1) : '—'}
-                  </td>
-                  <td style={{ padding: 12, textAlign: 'right', fontSize: '0.875rem', color: '#e8f4f8' }}>
-                    {stock.dividendYield ? stock.dividendYield.toFixed(2) : '—'}
-                  </td>
-                </tr>
-              );
-            })
+                  </span>
+                </td>
+
+                {/* Issuer */}
+                <td className="px-3 py-3 text-sm text-ink-primary max-w-[180px] truncate">
+                  {stock.issuer}
+                </td>
+
+                {/* Sector */}
+                <td className="px-3 py-3 text-sm text-ink-secondary max-w-[120px] truncate">
+                  {stock.sector || '—'}
+                </td>
+
+                {/* Price */}
+                <td className="px-3 py-3 text-right num text-sm text-ink-primary font-medium">
+                  {formatPrice(stock.price)}
+                </td>
+
+                {/* Change */}
+                <td className="px-3 py-3 text-right">
+                  {stock.change != null
+                    ? <ChangeIndicator value={stock.change} showBg />
+                    : <span className="text-ink-muted text-xs">—</span>
+                  }
+                </td>
+
+                {/* AI Score */}
+                <td className="px-3 py-3 min-w-[140px]">
+                  <ScoreBar value={stock.scores?.composite} />
+                </td>
+
+                {/* AI Tier */}
+                <td className="px-3 py-3 text-center">
+                  {stock.aiTier ? (
+                    <Badge label={`T${stock.aiTier.level}`} variant={`T${stock.aiTier.level}`} />
+                  ) : (
+                    <span className="text-ink-muted text-xs">—</span>
+                  )}
+                </td>
+
+                {/* Gov Tier */}
+                <td className="px-3 py-3 text-center">
+                  <Badge label={stock.tier[0]} variant={stock.tier} />
+                </td>
+
+                {/* HHI */}
+                <td className={`px-3 py-3 text-right num text-sm font-medium ${getHhiColorClass(stock.hhi)}`}>
+                  {stock.hhi ? stock.hhi.toFixed(0) : '—'}
+                </td>
+
+                {/* Flags */}
+                <td className="px-3 py-3">
+                  {stock.flags && stock.flags.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {stock.flags.map(flag => (
+                        <FlagPill key={flag} flag={flag} />
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-ink-muted text-xs">—</span>
+                  )}
+                </td>
+
+                {/* P/E */}
+                <td className="px-3 py-3 text-right num text-sm text-ink-secondary">
+                  {stock.pe ? `${stock.pe.toFixed(1)}x` : '—'}
+                </td>
+
+                {/* ROE */}
+                <td className="px-3 py-3 text-right num text-sm text-ink-secondary">
+                  {stock.roe ? `${stock.roe.toFixed(1)}%` : '—'}
+                </td>
+
+                {/* Dividend Yield */}
+                <td className="px-3 py-3 text-right num text-sm text-ink-secondary">
+                  {stock.dividendYield ? `${stock.dividendYield.toFixed(2)}%` : '—'}
+                </td>
+              </tr>
+            ))
           )}
         </tbody>
       </table>

@@ -16,20 +16,15 @@ export function TabBar({ NAV_TABS, activeTab, setActiveTab }: TabBarProps): Reac
           key={id}
           data-tour={id === 'overview' ? 'tab-overview' : id === 'table' ? 'tab-screener' : undefined}
           onClick={() => setActiveTab(id)}
-          style={{
-            background: 'none',
-            border: 'none',
-            borderBottom: activeTab === id ? '2px solid #457B9D' : '2px solid transparent',
-            color: activeTab === id ? '#a8d8ea' : '#6b8aad',
-            padding: '12px 18px',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontFamily: "'DM Mono', monospace",
-            letterSpacing: 1,
-            transition: 'color 0.15s',
-            whiteSpace: 'nowrap',
-            minHeight: 44,
-          }}
+          className={`
+            bg-transparent border-none border-b-2 px-[18px] py-3 cursor-pointer
+            text-xs font-mono tracking-wide transition-colors duration-150
+            whitespace-nowrap min-h-[44px]
+            ${activeTab === id
+              ? 'border-b-accent text-accent'
+              : 'border-b-transparent text-ink-muted hover:text-ink-secondary'
+            }
+          `}
         >
           {label}
         </button>

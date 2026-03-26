@@ -2,33 +2,19 @@
 
 import React from 'react';
 
-const FLAG_COLORS: Record<string, string> = {
-  'Insider>75%': '#e76f51',
-  'SingleCP>50%': '#e9843a',
-  'LowFloat<15%': '#e9c46a',
-  'CriticalFloat<5%': '#d62828',
-  'ZeroForeign': '#6d6875',
+const FLAG_CLASSES: Record<string, string> = {
+  'Insider>75%':        'bg-bear/10 border-bear/30 text-bear',
+  'SingleCP>50%':       'bg-tier-red/10 border-tier-red/30 text-tier-red',
+  'LowFloat<15%':       'bg-tier-amber/10 border-tier-amber/30 text-tier-amber',
+  'CriticalFloat<5%':   'bg-bear/15 border-bear/40 text-bear',
+  'ZeroForeign':        'bg-ink-muted/10 border-ink-muted/20 text-ink-muted',
 };
 
 export function FlagPill({ flag }: { flag: string }): React.ReactElement {
-  const flagColor = FLAG_COLORS[flag] || '#444';
+  const classes = FLAG_CLASSES[flag] ?? 'bg-base-500/30 border-base-400/30 text-ink-muted';
 
   return (
-    <span
-      style={{
-        position: 'relative',
-        display: 'inline-block',
-        background: flagColor + '22',
-        border: `1px solid ${flagColor}55`,
-        color: flagColor,
-        borderRadius: 4,
-        fontSize: 9,
-        padding: '1px 5px',
-        margin: '1px',
-        cursor: 'default',
-        lineHeight: 1.5,
-      }}
-    >
+    <span className={`inline-block border rounded text-[9px] px-1.5 py-px m-px leading-normal ${classes}`}>
       {flag}
     </span>
   );

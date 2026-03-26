@@ -51,28 +51,28 @@ export function AppHeader({
           label: t('presetRed'),
           active: tierFilter === 'Red',
           onClick: () => setTierFilter(tierFilter === 'Red' ? null : 'Red'),
-          color: '#E76F51',
+          color: 'text-tier-red',
         },
         {
           id: 'amber',
           label: t('presetAmber'),
           active: tierFilter === 'Amber',
           onClick: () => setTierFilter(tierFilter === 'Amber' ? null : 'Amber'),
-          color: '#E9C46A',
+          color: 'text-tier-amber',
         },
         {
           id: 'green',
           label: t('presetGreen'),
           active: tierFilter === 'Green',
           onClick: () => setTierFilter(tierFilter === 'Green' ? null : 'Green'),
-          color: '#2A9D8F',
+          color: 'text-tier-green',
         },
         {
           id: 'hhi',
           label: t('presetHighHhi'),
           active: hhiFilter === 'High',
           onClick: () => setHhiFilter && setHhiFilter(hhiFilter === 'High' ? null : 'High'),
-          color: '#E76F51',
+          color: 'text-tier-red',
         },
         {
           id: 'lowFloat',
@@ -82,7 +82,7 @@ export function AppHeader({
             () =>
               setFlagFilter &&
               setFlagFilter(flagFilter === 'LowFloat<15%' ? null : 'LowFloat<15%'),
-          color: '#E9C46A',
+          color: 'text-tier-amber',
         },
         {
           id: 'criticalFloat',
@@ -92,14 +92,14 @@ export function AppHeader({
             () =>
               setFlagFilter &&
               setFlagFilter(flagFilter === 'CriticalFloat<5%' ? null : 'CriticalFloat<5%'),
-          color: '#d62828',
+          color: 'text-bear',
         },
         {
           id: 'reset',
           label: t('presetReset'),
           active: false,
           onClick: clearFilters,
-          color: '#6b8aad',
+          color: 'text-ink-secondary',
         },
       ] as const,
     [t, tierFilter, hhiFilter, flagFilter, setTierFilter, setHhiFilter, setFlagFilter, clearFilters]
@@ -113,24 +113,23 @@ export function AppHeader({
   );
 
   return (
-    <div className="app-header">
-      <div className="header-row">
+    <div className="px-[clamp(12px,4vw,28px)] pt-[clamp(12px,4vw,20px)] pb-3.5 bg-gradient-to-b from-base-700 to-base-800 border-b border-base-600">
+      {/* Top row */}
+      <div className="flex justify-between items-center flex-wrap gap-2.5">
         <div>
-          <div className="header-eyebrow">{t('eyebrow')}</div>
-          <h1 className="header-title">{dynamicTitle}</h1>
+          <div className="text-[11px] tracking-[3px] text-accent font-mono mb-1">
+            {t('eyebrow')}
+          </div>
+          <h1 className="text-[clamp(0.875rem,5vw,1.375rem)] m-0 font-bold text-ink-primary">
+            {dynamicTitle}
+          </h1>
         </div>
-        <div className="header-right">
-          <div className="search-wrap" data-tour="search">
+        <div className="flex gap-2.5 items-center flex-wrap">
+          {/* Search */}
+          <div className="relative flex items-center" data-tour="search">
             <span
               aria-hidden="true"
-              style={{
-                position: 'absolute',
-                left: 10,
-                color: '#457B9D',
-                fontSize: 13,
-                pointerEvents: 'none',
-                userSelect: 'none',
-              }}
+              className="absolute left-2.5 text-ink-muted text-sm pointer-events-none select-none"
             >
               🔍
             </span>
@@ -139,104 +138,57 @@ export function AppHeader({
               onChange={handleSearchChange}
               placeholder={t('searchPlaceholder')}
               aria-label={t('searchAria')}
-              className="search-input"
-              style={{
-                border: `1px solid ${search ? '#457B9D' : '#1e3a52'}`,
-              }}
-              onFocus={(e) => {
-                e.currentTarget.style.borderColor = '#457B9D';
-                e.currentTarget.style.boxShadow = '0 0 0 2px #457B9D33';
-              }}
-              onBlur={(e) => {
-                e.currentTarget.style.borderColor = search ? '#457B9D' : '#1e3a52';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+              className={`
+                bg-base-700 rounded-full text-ink-primary text-xs outline-none
+                pl-8 pr-8 py-2 transition-all duration-150
+                border placeholder:text-ink-muted
+                focus:ring-2 focus:ring-accent-dim focus:border-accent
+                w-[clamp(140px,40vw,260px)]
+                ${search ? 'border-accent' : 'border-base-500'}
+              `}
             />
             {search && (
               <button
                 onClick={() => setSearch('')}
                 title={t('clearSearch')}
-                style={{
-                  position: 'absolute',
-                  right: 10,
-                  background: 'none',
-                  border: 'none',
-                  color: '#6b8aad',
-                  cursor: 'pointer',
-                  fontSize: 16,
-                  padding: 0,
-                  lineHeight: 1,
-                }}
+                className="absolute right-2.5 bg-transparent border-none text-ink-muted cursor-pointer text-base p-0 leading-none hover:text-ink-primary transition-colors duration-150"
               >
                 ×
               </button>
             )}
           </div>
+
           <Link
             href="/screener"
-            style={{
-              background: '#132030',
-              border: '1px solid #1e3a52',
-              color: '#a8c8e8',
-              borderRadius: 6,
-              padding: '6px 12px',
-              cursor: 'pointer',
-              fontSize: 12,
-              whiteSpace: 'nowrap',
-              textDecoration: 'none',
-              display: 'inline-flex',
-              alignItems: 'center',
-              transition: 'border-color 0.2s, color 0.2s'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#457b9d';
-              e.currentTarget.style.color = '#e8f4f8';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#1e3a52';
-              e.currentTarget.style.color = '#a8c8e8';
-            }}
+            className="bg-base-600 border border-base-500 text-ink-secondary rounded-md px-3 py-1.5 cursor-pointer text-xs whitespace-nowrap no-underline inline-flex items-center transition-all duration-150 hover:border-base-400 hover:text-ink-primary"
           >
             {t('screener')}
           </Link>
+
           <LocaleSwitcher />
+
           {onReplayTour && (
             <button
               onClick={onReplayTour}
               title={t('tourTitle')}
               aria-label={t('tourTitle')}
-              style={{
-                background: '#132030',
-                border: '1px solid #457B9D',
-                color: '#a8c8e8',
-                borderRadius: 6,
-                padding: '6px 12px',
-                cursor: 'pointer',
-                fontSize: 12,
-                whiteSpace: 'nowrap',
-              }}
+              className="bg-base-600 border border-accent/40 text-ink-secondary rounded-md px-3 py-1.5 cursor-pointer text-xs whitespace-nowrap transition-all duration-150 hover:border-accent hover:text-ink-primary"
             >
               {t('tour')}
             </button>
           )}
+
           <AuthButton />
+
           {hasFilter && (
             <button
               onClick={clearFilters}
-              style={{
-                background: '#132030',
-                border: '1px solid #e76f5155',
-                color: '#e76f51',
-                borderRadius: 6,
-                padding: '6px 14px',
-                cursor: 'pointer',
-                fontSize: 12,
-                whiteSpace: 'nowrap',
-              }}
+              className="bg-base-600 border border-bear/30 text-bear rounded-md px-3.5 py-1.5 cursor-pointer text-xs whitespace-nowrap transition-all duration-150 hover:border-bear/60"
             >
               {t('clearFilters')}
             </button>
           )}
+
           <button
             className="hamburger-btn"
             onClick={() => setDrawerOpen(true)}
@@ -248,43 +200,40 @@ export function AppHeader({
         </div>
       </div>
 
-      <div data-tour="presets" style={{ display: 'flex', gap: 8, flexWrap: 'nowrap', overflowX: 'auto', margin: '12px 0', paddingBottom: 4 }}>
+      {/* Preset filter chips */}
+      <div
+        data-tour="presets"
+        className="flex gap-2 flex-nowrap overflow-x-auto mt-3 mb-0 pb-1 scrollbar-hide"
+      >
         {presets.map((p) => (
           <button
             key={p.id}
             onClick={p.onClick}
-            style={{
-              height: 32,
-              padding: '0 12px',
-              minWidth: 'fit-content',
-              background: p.active ? '#64b5f6' : '#2d3748',
-              border: '1px solid #4b5563',
-              borderRadius: 6,
-              color: p.active ? '#ffffff' : (p.id === 'reset' ? '#9ca3af' : p.color),
-              fontSize: 13,
-              fontWeight: 500,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-            }}
+            className={`
+              h-8 px-3 min-w-fit rounded-md border text-[13px] font-medium
+              cursor-pointer whitespace-nowrap flex-shrink-0
+              transition-all duration-150
+              ${p.active
+                ? 'bg-accent text-base-900 border-accent font-semibold'
+                : `bg-base-600 border-base-500 ${p.color} hover:border-base-400`
+              }
+            `}
           >
             {p.label}
           </button>
         ))}
       </div>
 
+      {/* Active filter chips */}
       {hasFilter && (
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
+        <div className="flex gap-1.5 flex-wrap mt-2.5">
           {tierFilter && (
             <span
+              className="rounded-full px-2.5 py-0.5 text-[11px] cursor-pointer border transition-opacity duration-150 hover:opacity-80"
               style={{
                 background: TIER_COLORS[tierFilter] + '33',
                 border: `1px solid ${TIER_COLORS[tierFilter]}`,
-                borderRadius: 20,
-                padding: '2px 10px',
-                fontSize: 11,
                 color: TIER_COLORS[tierFilter],
-                cursor: 'pointer',
               }}
               onClick={() => setTierFilter(null)}
             >
@@ -293,15 +242,7 @@ export function AppHeader({
           )}
           {hhiFilter && setHhiFilter && (
             <span
-              style={{
-                background: '#2A9D8F33',
-                border: '1px solid #2A9D8F',
-                borderRadius: 20,
-                padding: '2px 10px',
-                fontSize: 11,
-                color: '#2A9D8F',
-                cursor: 'pointer',
-              }}
+              className="bg-tier-green/20 border border-tier-green text-tier-green rounded-full px-2.5 py-0.5 text-[11px] cursor-pointer transition-opacity duration-150 hover:opacity-80"
               onClick={() => setHhiFilter(null)}
             >
               {t('chipHhi', { level: hhiFilter })}
@@ -309,15 +250,7 @@ export function AppHeader({
           )}
           {flagFilter && setFlagFilter && (
             <span
-              style={{
-                background: '#e9c46a33',
-                border: '1px solid #e9c46a',
-                borderRadius: 20,
-                padding: '2px 10px',
-                fontSize: 11,
-                color: '#e9c46a',
-                cursor: 'pointer',
-              }}
+              className="bg-tier-amber/20 border border-tier-amber text-tier-amber rounded-full px-2.5 py-0.5 text-[11px] cursor-pointer transition-opacity duration-150 hover:opacity-80"
               onClick={() => setFlagFilter(null)}
             >
               {t('chipFlag', { flag: flagFilter })}

@@ -81,38 +81,13 @@ export default function ScreenerPage(): React.ReactElement {
   };
 
   return (
-    <div style={{ background: '#060d18', minHeight: '100vh' }}>
-      <div
-        style={{
-          padding: 'clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px) 14px',
-          background: 'linear-gradient(180deg, #0d1e30 0%, #09131f 100%)',
-          borderBottom: '1px solid #132030',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '10px',
-          }}
-        >
+    <div className="bg-base-900 min-h-screen">
+      {/* Page header */}
+      <div className="px-[clamp(12px,4vw,28px)] pt-[clamp(12px,4vw,20px)] pb-3.5 bg-gradient-to-b from-base-700 to-base-800 border-b border-base-600">
+        <div className="flex justify-between items-center flex-wrap gap-2.5">
           <Link
             href="/"
-            style={{
-              fontSize: 'clamp(0.875rem, 5vw, 1.375rem)',
-              fontWeight: 700,
-              color: '#e8f4f8',
-              textDecoration: 'none',
-              transition: 'color 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#a8d8ea';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = '#e8f4f8';
-            }}
+            className="text-[clamp(0.875rem,5vw,1.375rem)] font-bold text-ink-primary no-underline transition-colors duration-150 hover:text-accent"
           >
             {t('brand')}
           </Link>
@@ -120,81 +95,26 @@ export default function ScreenerPage(): React.ReactElement {
         </div>
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          gap: 0,
-          borderBottom: '1px solid #132030',
-          padding: 'clamp(12px, 4vw, 28px) 0',
-          background: '#09131f',
-          overflowX: 'auto',
-          scrollbarWidth: 'none',
-        }}
-      >
+      {/* Sub-nav */}
+      <div className="tab-nav-desktop">
         <Link
           href="/"
-          style={{
-            background: 'none',
-            border: 'none',
-            borderBottom: '2px solid transparent',
-            color: '#6b8aad',
-            padding: '12px 18px',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontFamily: "'DM Mono', monospace",
-            letterSpacing: 1,
-            transition: 'color 0.15s',
-            whiteSpace: 'nowrap',
-            minHeight: 44,
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#a8d8ea';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = '#6b8aad';
-          }}
+          className="bg-transparent border-none border-b-2 border-b-transparent text-ink-muted px-[18px] py-3 cursor-pointer text-xs font-mono tracking-wide transition-colors duration-150 whitespace-nowrap min-h-[44px] no-underline flex items-center hover:text-ink-secondary"
         >
           {t('navDashboard')}
         </Link>
-        <div
-          style={{
-            background: 'none',
-            borderBottom: '2px solid #457b9d',
-            color: '#a8d8ea',
-            padding: '12px 18px',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontFamily: "'DM Mono', monospace",
-            letterSpacing: 1,
-            transition: 'color 0.15s',
-            whiteSpace: 'nowrap',
-            minHeight: 44,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
+        <div className="bg-transparent border-none border-b-2 border-b-accent text-accent px-[18px] py-3 text-xs font-mono tracking-wide whitespace-nowrap min-h-[44px] flex items-center">
           {t('navScreener')}
         </div>
       </div>
 
-      <div style={{ padding: 'clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px)' }}>
-        <div
-          style={{
-            fontSize: 9,
-            letterSpacing: 2,
-            color: '#457b9d',
-            fontFamily: "'DM Mono', monospace",
-            marginBottom: 16,
-            textTransform: 'uppercase',
-          }}
-        >
+      <div className="px-[clamp(12px,4vw,28px)] py-[clamp(12px,4vw,20px)]">
+        {/* Section label */}
+        <div className="text-[9px] tracking-[2px] text-accent font-mono mb-3 uppercase">
           {t('sectionLabel')}
         </div>
 
-        <p style={{ fontSize: '0.875rem', color: '#a8c8e8', marginBottom: 24, lineHeight: 1.6 }}>
+        <p className="text-sm text-ink-secondary mb-6 leading-relaxed">
           {t('description')}
         </p>
 
@@ -214,42 +134,23 @@ export default function ScreenerPage(): React.ReactElement {
           onSearchChange={setSearchQuery}
         />
 
-        <div
-          style={{
-            background: '#09131f',
-            border: '1px solid #132030',
-            borderRadius: 10,
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              padding: 16,
-              borderBottom: '1px solid #132030',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div
-              style={{
-                fontSize: 9,
-                letterSpacing: 2,
-                color: '#457b9d',
-                fontFamily: "'DM Mono', monospace",
-                textTransform: 'uppercase',
-              }}
-            >
+        {/* Results table */}
+        <div className="bg-base-800 border border-base-600 rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-base-600 flex justify-between items-center">
+            <div className="text-[9px] tracking-[2px] text-ink-muted font-mono uppercase">
               {t('results', { count: stocks.length })}
             </div>
             {loading && (
-              <span style={{ fontSize: '0.75rem', color: '#6b8aad' }}>{t('loading')}</span>
+              <span className="text-xs text-ink-muted font-mono animate-pulse-dot">{t('loading')}</span>
             )}
           </div>
 
           {error ? (
-            <div style={{ padding: 32, textAlign: 'center', color: '#e76f51', fontSize: '0.875rem' }}>
-              {error}
+            <div className="px-8 py-10 text-center text-bear text-sm">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-2xl">⚠️</span>
+                <span>{error}</span>
+              </div>
             </div>
           ) : (
             <ScreenerTable
@@ -257,32 +158,17 @@ export default function ScreenerPage(): React.ReactElement {
               onSort={handleSort}
               sortBy={sortBy}
               sortOrder={sortOrder}
+              loading={loading}
             />
           )}
         </div>
 
-        <div
-          style={{
-            marginTop: 24,
-            background: '#09131f',
-            border: '1px solid #1e3a52',
-            borderRadius: 10,
-            padding: 16,
-          }}
-        >
-          <div
-            style={{
-              fontSize: 9,
-              letterSpacing: 2,
-              color: '#457b9d',
-              fontFamily: "'DM Mono', monospace",
-              marginBottom: 12,
-              textTransform: 'uppercase',
-            }}
-          >
+        {/* Methodology */}
+        <div className="mt-6 bg-base-800 border border-base-600 rounded-xl p-4">
+          <div className="text-[9px] tracking-[2px] text-ink-muted font-mono mb-3 uppercase">
             {t('methodology')}
           </div>
-          <p style={{ fontSize: '0.875rem', color: '#a8c8e8', lineHeight: 1.6 }}>
+          <p className="text-sm text-ink-secondary leading-relaxed">
             {t.rich('methodologyBody', {
               strong: (chunks) => <strong>{chunks}</strong>,
             })}
