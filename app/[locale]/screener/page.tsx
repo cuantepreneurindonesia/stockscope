@@ -5,6 +5,10 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { FilterPanel } from '@/components/screener/FilterPanel';
 import { ScreenerTable } from '@/components/screener/ScreenerTable';
+import { ScreenerCardList } from '@/components/screener/ScreenerCardList';
+import { ViewToggle } from '@/components/screener/ViewToggle';
+import { SkeletonLoader } from '@/components/screener/SkeletonLoader';
+import { LoadingSpinner } from '@/components/screener/LoadingSpinner';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import type { EnrichedStock } from '@/lib/types/unified';
 
@@ -15,6 +19,19 @@ export default function ScreenerPage(): React.ReactElement {
   const [sectors, setSectors] = useState<string[]>(['All']);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [view, setView] = useState<'table' | 'cards'>('table');
+
+  // Auto-switch to cards on mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setView('cards');
+      }
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSector, setSelectedSector] = useState('All');
@@ -238,19 +255,40 @@ export default function ScreenerPage(): React.ReactElement {
                 color: '#457b9d',
                 fontFamily: "'DM Mono', monospace",
                 textTransform: 'uppercase',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8
               }}
             >
-              {t('results', { count: stocks.length })}
+              {loading ? (
+                <>
+                  <LoadingSpinner size={14} />
+                  <span>{t('loading')}</span>
+                </>
+              ) : (
+                t('results', { count: stocks.length })
+              )}
             </div>
-            {loading && (
-              <span style={{ fontSize: '0.75rem', color: '#6b8aad' }}>{t('loading')}</span>
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              {!loading && stocks.length > 0 && (
+                <span style={{ fontSize: '0.75rem', color: '#6b8aad' }}>
+                  {searchQuery || selectedSector !== 'All' || selectedAiTier || selectedGovTier || minScore || maxScore 
+                    ? t('filtered') 
+                    : t('showing')}
+                </span>
+              )}
+              <ViewToggle view={view} onChange={setView} />
+            </div>
           </div>
 
           {error ? (
             <div style={{ padding: 32, textAlign: 'center', color: '#e76f51', fontSize: '0.875rem' }}>
               {error}
             </div>
+          ) : loading ? (
+            <SkeletonLoader rows={5} columns={7} />
+          ) : view === 'cards' ? (
+            <ScreenerCardList stocks={stocks} />
           ) : (
             <ScreenerTable
               stocks={stocks}
