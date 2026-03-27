@@ -1,13 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import type { EnrichedStock } from '@/lib/types/unified';
 
 interface ScreenerCardProps {
   stock: EnrichedStock;
-  onClick: () => void;
 }
 
-export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
+export function ScreenerCard({ stock }: ScreenerCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const isPositive = (stock.change ?? 0) >= 0;
 
   // Tier badge colors
@@ -44,6 +45,7 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
   return (
     <div 
       className={`
+        relative
         bg-surface-container 
         rounded-lg 
         p-4 
@@ -52,10 +54,14 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
         duration-200 
         hover:bg-surface-container-high
         border-l-4
+        overflow-hidden
         ${isPositive ? 'border-primary' : 'border-error'}
+        ${isExpanded ? 'ring-1 ring-primary/20' : ''}
       `}
-      onClick={onClick}
+      onClick={() => setIsExpanded(!isExpanded)}
     >
+      {/* Architect Mark — gradient top edge */}
+      <div className={`absolute top-0 left-0 right-0 h-0.5 ${isPositive ? 'architect-gradient' : 'bg-gradient-to-r from-error/80 to-error/20'}`} />
       {/* Header: Ticker + Gov Tier */}
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
@@ -86,9 +92,9 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
       </div>
 
       {/* Price + Change */}
-      <div className="flex justify-between items-end mb-4 pb-4 border-b border-outline-variant/10">
+      <div className="flex justify-between items-end mb-4 pb-4">
         <div>
-          <div className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+          <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
             Price
           </div>
           <div className="font-label text-xl font-semibold text-on-surface tabular-nums">
@@ -96,7 +102,7 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
           </div>
         </div>
         <div className="text-right">
-          <div className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+          <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
             Change
           </div>
           <div className={`
@@ -113,7 +119,7 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
 
       {/* AI Score Bar */}
       <div className="mb-3">
-        <div className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">
+        <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">
           AI Score
         </div>
         <div className="flex items-center gap-2">
@@ -149,6 +155,111 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
         </div>
       )}
 
+      {/* Expanded Details */}
+      {isExpanded && (
+        <div className="pt-4 mt-4 space-y-3 animate-in fade-in duration-200">
+          {/* Technical Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {stock.sector && (
+              <div>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+                  Sector
+                </div>
+                <div className="font-body text-sm text-on-surface">
+                  {stock.sector}
+                </div>
+              </div>
+            )}
+
+            {stock.hhi !== undefined && (
+              <div>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+                  HHI
+                </div>
+                <div className="font-label text-sm font-semibold text-on-surface tabular-nums">
+                  {stock.hhi.toFixed(0)}
+                </div>
+              </div>
+            )}
+
+            {stock.pe !== undefined && (
+              <div>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+                  P/E
+                </div>
+                <div className="font-label text-sm font-semibold text-on-surface tabular-nums">
+                  {stock.pe.toFixed(1)}
+                </div>
+              </div>
+            )}
+
+            {stock.roe !== undefined && (
+              <div>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+                  ROE %
+                </div>
+                <div className="font-label text-sm font-semibold text-on-surface tabular-nums">
+                  {stock.roe.toFixed(1)}
+                </div>
+              </div>
+            )}
+
+            {stock.dividendYield !== undefined && (
+              <div>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+                  Div Yield %
+                </div>
+                <div className="font-label text-sm font-semibold text-on-surface tabular-nums">
+                  {stock.dividendYield.toFixed(2)}
+                </div>
+              </div>
+            )}
+
+            {stock.volume !== undefined && (
+              <div>
+                <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
+                  Volume
+                </div>
+                <div className="font-label text-sm font-semibold text-on-surface tabular-nums">
+                  {(stock.volume / 1000000).toFixed(1)}M
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Flags */}
+          {stock.flags && stock.flags.length > 0 && (
+            <div>
+              <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">
+                Flags
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {stock.flags.map((flag, idx) => (
+                  <span 
+                    key={idx}
+                    className="px-2 py-1 rounded-full bg-tertiary/10 text-tertiary text-xs font-label border border-tertiary/20"
+                  >
+                    {flag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Expand/Collapse Indicator */}
+      <div className="mt-3 text-center">
+        <span className={`
+          material-symbols-outlined 
+          text-sm 
+          text-on-surface-variant 
+          transition-all 
+          ${isExpanded ? 'rotate-180' : ''}
+        `}>
+          expand_more
+        </span>
+      </div>
     </div>
   );
 }
