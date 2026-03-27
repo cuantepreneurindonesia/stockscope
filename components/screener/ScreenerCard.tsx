@@ -45,6 +45,7 @@ export function ScreenerCard({ stock }: ScreenerCardProps) {
   return (
     <div 
       className={`
+        relative
         bg-surface-container 
         rounded-lg 
         p-4 
@@ -53,11 +54,14 @@ export function ScreenerCard({ stock }: ScreenerCardProps) {
         duration-200 
         hover:bg-surface-container-high
         border-l-4
+        overflow-hidden
         ${isPositive ? 'border-primary' : 'border-error'}
         ${isExpanded ? 'ring-1 ring-primary/20' : ''}
       `}
       onClick={() => setIsExpanded(!isExpanded)}
     >
+      {/* Architect Mark — gradient top edge */}
+      <div className={`absolute top-0 left-0 right-0 h-0.5 ${isPositive ? 'architect-gradient' : 'bg-gradient-to-r from-error/80 to-error/20'}`} />
       {/* Header: Ticker + Gov Tier */}
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1">
@@ -88,7 +92,7 @@ export function ScreenerCard({ stock }: ScreenerCardProps) {
       </div>
 
       {/* Price + Change */}
-      <div className="flex justify-between items-end mb-4 pb-4 border-b border-outline-variant/10">
+      <div className="flex justify-between items-end mb-4 pb-4">
         <div>
           <div className="font-headline text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
             Price
@@ -153,7 +157,7 @@ export function ScreenerCard({ stock }: ScreenerCardProps) {
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div className="pt-4 mt-4 border-t border-outline-variant/10 space-y-3 animate-in fade-in duration-200">
+        <div className="pt-4 mt-4 space-y-3 animate-in fade-in duration-200">
           {/* Technical Grid */}
           <div className="grid grid-cols-2 gap-3">
             {stock.sector && (

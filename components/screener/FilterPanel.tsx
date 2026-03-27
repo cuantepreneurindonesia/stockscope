@@ -41,7 +41,7 @@ export function FilterPanel({
   const advancedFilterCount = [minScore, maxScore, selectedGovTier].filter(Boolean).length;
 
   return (
-    <div className="bg-surface-container-low rounded-xl p-6 mb-6">
+    <div className="glass-effect rounded-xl p-6 mb-6">
       {/* Terminal Header */}
       <h2 className="font-headline text-lg font-bold text-on-surface mb-6 flex items-center gap-2">
         <span className="material-symbols-outlined text-primary">tune</span>

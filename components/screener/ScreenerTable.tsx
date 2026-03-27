@@ -109,7 +109,7 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
     <div className="w-full overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-outline-variant/10">
+          <tr className="bg-surface-container-low/40">
             {/* Status Pill Column */}
             <th className="w-8 py-4" />
             
@@ -223,7 +223,7 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
           </tr>
         </thead>
 
-        <tbody>
+        <tbody className="divide-y divide-outline-variant/5">
           {stocks.map((stock) => {
             const isExpanded = expandedRows.has(stock.code);
             const isPositive = (stock.change ?? 0) >= 0;
