@@ -9,7 +9,6 @@ import { SkeletonLoader } from '@/components/screener/SkeletonLoader';
 import { TerminalHeader } from '@/components/layout/TerminalHeader';
 import { TerminalSidebar } from '@/components/layout/TerminalSidebar';
 import { ResultsHeader } from '@/components/screener/ResultsHeader';
-import { StockDetailPanel } from '@/components/screener/StockDetailPanel';
 import type { EnrichedStock } from '@/lib/types/unified';
 
 export default function ScreenerPage(): React.ReactElement {
@@ -21,20 +20,6 @@ export default function ScreenerPage(): React.ReactElement {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<'table' | 'cards'>('table');
-  
-  // Stock Detail Panel state
-  const [selectedStock, setSelectedStock] = useState<EnrichedStock | null>(null);
-  const [isPanelOpen, setIsPanelOpen] = useState(false);
-
-  const handleStockClick = (stock: EnrichedStock) => {
-    setSelectedStock(stock);
-    setIsPanelOpen(true);
-  };
-
-  const handlePanelClose = () => {
-    setIsPanelOpen(false);
-    setTimeout(() => setSelectedStock(null), 300);
-  };
 
   // Auto-switch to cards on mobile
   useEffect(() => {
@@ -187,29 +172,19 @@ export default function ScreenerPage(): React.ReactElement {
               ) : loading ? (
                 <SkeletonLoader rows={5} columns={7} />
               ) : view === 'cards' ? (
-                <ScreenerCardList 
-                  stocks={stocks} 
-                  onStockClick={handleStockClick} 
-                />
+                <ScreenerCardList stocks={stocks} />
               ) : (
                 <ScreenerTable
                   stocks={stocks}
                   onSort={handleSort}
                   sortBy={sortBy}
                   sortOrder={sortOrder}
-                  onStockClick={handleStockClick}
                 />
               )}
             </div>
           </div>
         </div>
       </div>
-
-      <StockDetailPanel
-        stock={selectedStock}
-        isOpen={isPanelOpen}
-        onClose={handlePanelClose}
-      />
     </div>
   );
 }

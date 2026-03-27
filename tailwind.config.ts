@@ -9,56 +9,78 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'surface-container-lowest': '#060d18',
-        'surface-container-low': '#09131f',
-        'surface-container': '#132030',
-        'surface-container-high': '#1e3a52',
-        'surface-container-highest': '#233f57',
-        'surface-bright': '#305373',
-        'surface-variant': '#1e3a52',
-        'surface': '#09131f',
-        'background': '#060d18',
-        'primary': '#2a9d8f',
-        'primary-container': '#187b6e',
-        'primary-fixed': '#5cc7b9',
-        'primary-fixed-dim': '#2a9d8f',
-        'on-primary': '#002824',
-        'on-primary-container': '#00423a',
-        'on-primary-fixed': '#001a17',
-        'on-primary-fixed-variant': '#004c44',
-        'secondary': '#b7c8e1',
-        'secondary-container': '#3a4a5f',
-        'secondary-fixed': '#d3e4fe',
-        'secondary-fixed-dim': '#b7c8e1',
-        'on-secondary': '#213145',
-        'on-secondary-container': '#a9bad3',
-        'on-secondary-fixed': '#0b1c30',
-        'on-secondary-fixed-variant': '#38485d',
-        'tertiary': '#e9c46a',
-        'tertiary-container': '#c79d38',
-        'tertiary-fixed': '#fae3a5',
-        'tertiary-fixed-dim': '#e9c46a',
-        'on-tertiary': '#4a3b0f',
-        'on-tertiary-container': '#6b5820',
-        'on-tertiary-fixed': '#2e2304',
-        'on-tertiary-fixed-variant': '#857030',
-        'error': '#e76f51',
-        'error-container': '#ba4326',
-        'on-error': '#601908',
-        'on-error-container': '#fed2c7',
-        'on-surface': '#e8f4f8',
-        'on-surface-variant': '#a8c8e8',
-        'on-background': '#e8f4f8',
-        'outline': '#1e3a52',
-        'outline-variant': '#132030',
-        'inverse-surface': '#e8f4f8',
-        'inverse-on-surface': '#09131f',
-        'inverse-primary': '#187b6e',
-        'surface-tint': '#2a9d8f',
+        // Stitch "Digital Architect's Ledger" Design System - Material Design 3
+        // Surface layers
+        'surface-container-lowest': '#070e19',
+        'surface-dim': '#0c141f',
+        'surface': '#0c141f',
+        'surface-container-low': '#151c27',
+        'surface-container': '#19202c',
+        'surface-container-high': '#232a36',
+        'surface-container-highest': '#2e3541',
+        'surface-bright': '#323946',
+        'surface-variant': '#2e3541',
+        'background': '#0c141f',
+
+        // Primary (Teal)
+        'primary': '#6fd8c8',
+        'primary-container': '#30a193',
+        'primary-fixed': '#8cf5e4',
+        'primary-fixed-dim': '#6fd8c8',
+        'on-primary': '#003731',
+        'on-primary-container': '#00302a',
+        'on-primary-fixed': '#00201c',
+        'on-primary-fixed-variant': '#005048',
+        'inverse-primary': '#006a60',
+        'surface-tint': '#6fd8c8',
+
+        // Secondary (Blue)
+        'secondary': '#98cdf2',
+        'secondary-container': '#0b4e6e',
+        'secondary-fixed': '#c7e7ff',
+        'secondary-fixed-dim': '#98cdf2',
+        'on-secondary': '#00344c',
+        'on-secondary-container': '#8abfe4',
+        'on-secondary-fixed': '#001e2e',
+        'on-secondary-fixed-variant': '#064c6b',
+
+        // Tertiary (Amber)
+        'tertiary': '#e7c268',
+        'tertiary-container': '#ad8d39',
+        'tertiary-fixed': '#ffdf96',
+        'tertiary-fixed-dim': '#e7c268',
+        'on-tertiary': '#3e2e00',
+        'on-tertiary-container': '#362800',
+        'on-tertiary-fixed': '#251a00',
+        'on-tertiary-fixed-variant': '#5a4400',
+
+        // Error (Red)
+        'error': '#ffb4ab',
+        'error-container': '#93000a',
+        'on-error': '#690005',
+        'on-error-container': '#ffdad6',
+
+        // Risk indicators
+        'emerald-risk': '#10b981',
+        'amber-risk': '#f59e0b',
+        'rose-danger': '#f43f5e',
+
+        // Text
+        'on-surface': '#dce3f3',
+        'on-surface-variant': '#bcc9c6',
+        'on-background': '#dce3f3',
+
+        // Outline
+        'outline': '#879390',
+        'outline-variant': '#3d4947',
+
+        // Inverse
+        'inverse-surface': '#dce3f3',
+        'inverse-on-surface': '#29313d',
         
         // Legacy colors (keep for gradual migration)
-        'bg-primary': '#060d18',
-        'bg-alt': '#09131f',
+        'bg-primary': '#06050f',
+        'bg-alt': '#0d1e30',
         'bg-content': '#09131f',
         'bg-card-alt': '#060d18',
         'text-primary': '#e8f4f8',
@@ -80,18 +102,20 @@ const config: Config = {
         'owner-other': '#666666',
       },
       fontFamily: {
-        headline: ['var(--font-dm-sans)', 'sans-serif'],
-        body: ['var(--font-dm-sans)', 'sans-serif'],
-        label: ['var(--font-dm-mono)', 'monospace'],
-        // Legacy fonts
+        headline: ['var(--font-space-grotesk)', 'sans-serif'],  // Headlines, display
+        body: ['var(--font-dm-sans)', 'sans-serif'],             // UI text, descriptions
+        label: ['var(--font-space-grotesk)', 'sans-serif'],      // Uppercase labels
+        mono: ['var(--font-dm-mono)', 'monospace'],              // ALL numbers, tickers, data
+        // Legacy fallbacks
         sans: ['var(--font-dm-sans)', 'sans-serif'],
-        mono: ['var(--font-dm-mono)', 'monospace'],
       },
       borderRadius: {
-        DEFAULT: '0.125rem',
-        lg: '0.25rem',
-        xl: '0.5rem',
-        full: '0.75rem',
+        DEFAULT: '0.125rem',  // 2px - minimal
+        sm: '0.125rem',       // 2px
+        md: '0.25rem',        // 4px
+        lg: '0.5rem',         // 8px
+        xl: '0.75rem',        // 12px - maximum for professional tone
+        full: '9999px',       // pill-shaped
       },
       spacing: {
         full: '100%',
@@ -111,17 +135,38 @@ const config: Config = {
         'auto-fill': 'repeat(auto-fill, minmax(200px, 1fr))',
       },
       boxShadow: {
-        'terminal': '0 20px 40px rgba(0, 0, 0, 0.4)',
-        'glow': '0 0 20px rgba(78, 222, 163, 0.3)',
+        'terminal': '0 20px 40px rgba(0, 0, 0, 0.4)',  // Ambient shadow for modals
+        'glow': '0 0 12px rgba(111, 216, 200, 0.3)',   // Primary glow (teal)
+        'glow-secondary': '0 0 12px rgba(152, 205, 242, 0.3)',
+        'glow-tertiary': '0 0 12px rgba(231, 194, 104, 0.3)',
+        'glow-error': '0 0 12px rgba(255, 180, 171, 0.3)',
       },
       animation: {
-        'marquee': 'marquee 30s linear infinite',
+        'marquee': 'marquee 25s linear infinite',  // Ticker tape (25s for Stitch)
+        'pulse-slow': 'pulse 2s ease-in-out infinite',
+        'shimmer': 'shimmer 1.5s ease-in-out infinite',
       },
       keyframes: {
         marquee: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-50%)' },
         },
+        pulse: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.5' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+      },
+      transitionDuration: {
+        '150': '150ms',
+        '200': '200ms',
+        '300': '300ms',
+      },
+      transitionTimingFunction: {
+        'in-out': 'ease-in-out',
       },
     },
   },
