@@ -22,7 +22,7 @@ export function ResultsHeader({ totalResults, view, onViewChange }: ResultsHeade
             • Total Results: {totalResults.toLocaleString()}
           </span>
         </div>
-        <h1 className="text-3xl md:text-5xl font-headline font-extrabold tracking-tight text-on-surface">
+        <h1 className="text-3xl md:text-5xl font-label font-medium uppercase tracking-widest text-on-surface">
           Screening Matrix
         </h1>
       </div>

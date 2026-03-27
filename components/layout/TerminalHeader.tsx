@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 interface TerminalHeaderProps {
   locale: string;
   onLocaleChange?: (locale: string) => void;
@@ -7,7 +9,7 @@ interface TerminalHeaderProps {
 
 export function TerminalHeader({ locale, onLocaleChange }: TerminalHeaderProps) {
   return (
-    <header className="bg-surface-container-lowest text-on-surface font-headline antialiased 
+    <header className="bg-surface-container-lowest text-on-surface font-label antialiased 
                        border-b border-white/10 flex justify-between items-center w-full 
                        px-6 py-4 sticky top-0 z-50">
       {/* Left: Logo + Navigation */}
@@ -17,26 +19,26 @@ export function TerminalHeader({ locale, onLocaleChange }: TerminalHeaderProps) 
         </span>
         
         <nav className="hidden md:flex gap-6 items-center">
-          <a 
+          <Link 
             className="text-on-surface-variant hover:text-on-surface transition-colors 
                        text-sm font-medium"
             href="/"
           >
             Dashboard
-          </a>
-          <a 
+          </Link>
+          <Link 
             className="text-primary border-b-2 border-primary pb-2 text-sm font-medium"
             href={`/${locale}/screener`}
           >
             Screener
-          </a>
-          <a 
+          </Link>
+          <Link 
             className="text-on-surface-variant hover:text-on-surface transition-colors 
                        text-sm font-medium"
             href="#"
           >
             Watchlist
-          </a>
+          </Link>
         </nav>
       </div>
 

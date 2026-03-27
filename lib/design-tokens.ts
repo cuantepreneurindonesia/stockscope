@@ -11,27 +11,27 @@
 export const terminalColors = {
   // Background Layers (The Abyss)
   surface: {
-    base: '#0c1324',                      // Base surface (deepest background)
-    containerLowest: '#070d1f',           // Absolute deepest (header, footer)
-    containerLow: '#151b2d',              // Filter panel, sidebar
-    container: '#191f31',                 // Cards, table rows
-    containerHigh: '#23293c',             // Hover states
-    containerHighest: '#2e3447',          // Inputs, active elements
-    bright: '#33394c',                    // Modals with backdrop blur
-    dim: '#0c1324',                       // Same as base
-    variant: '#2e3447',                   // Surface variant
+    base: '#09131f',                      // Base surface (deepest background)
+    containerLowest: '#060d18',           // Absolute deepest (header, footer)
+    containerLow: '#09131f',              // Filter panel, sidebar
+    container: '#132030',                 // Cards, table rows
+    containerHigh: '#1e3a52',             // Hover states
+    containerHighest: '#233f57',          // Inputs, active elements
+    bright: '#305373',                    // Modals with backdrop blur
+    dim: '#09131f',                       // Same as base
+    variant: '#1e3a52',                   // Surface variant
   },
 
   // Primary Colors (Emerald)
   primary: {
-    base: '#4edea3',                      // Main emerald
-    container: '#10b981',                 // Darker emerald (buttons)
-    fixed: '#6ffbbe',                     // Lighter emerald (hover)
-    fixedDim: '#4edea3',                  // Same as base
-    onPrimary: '#003824',                 // Text on primary bg
-    onPrimaryContainer: '#00422b',        // Text on primary container
-    onPrimaryFixed: '#002113',            // Text on primary fixed
-    onPrimaryFixedVariant: '#005236',     // Text variant
+    base: '#2a9d8f',                      // Main teal
+    container: '#187b6e',                 // Darker teal (buttons)
+    fixed: '#5cc7b9',                     // Lighter teal (hover)
+    fixedDim: '#2a9d8f',                  // Same as base
+    onPrimary: '#002824',                 // Text on primary bg
+    onPrimaryContainer: '#00423a',        // Text on primary container
+    onPrimaryFixed: '#001a17',            // Text on primary fixed
+    onPrimaryFixedVariant: '#004c44',     // Text variant
   },
 
   // Secondary Colors (Cool Blue)
@@ -48,47 +48,47 @@ export const terminalColors = {
 
   // Tertiary Colors (Amber)
   tertiary: {
-    base: '#ffb95f',                      // Warning amber
-    container: '#e29100',                 // Amber container
-    fixed: '#ffddb8',                     // Light amber
-    fixedDim: '#ffb95f',                  // Same as base
-    onTertiary: '#472a00',                // Text on tertiary
-    onTertiaryContainer: '#523200',       // Text on container
-    onTertiaryFixed: '#2a1700',           // Text on fixed
-    onTertiaryFixedVariant: '#653e00',    // Text variant
+    base: '#e9c46a',                      // Warning amber
+    container: '#c79d38',                 // Amber container
+    fixed: '#fae3a5',                     // Light amber
+    fixedDim: '#e9c46a',                  // Same as base
+    onTertiary: '#4a3b0f',                // Text on tertiary
+    onTertiaryContainer: '#6b5820',       // Text on container
+    onTertiaryFixed: '#2e2304',           // Text on fixed
+    onTertiaryFixedVariant: '#857030',    // Text variant
   },
 
   // Error Colors (Rose)
   error: {
-    base: '#ffb4ab',                      // Soft rose
-    container: '#93000a',                 // Dark red container
-    onError: '#690005',                   // Text on error
-    onErrorContainer: '#ffdad6',          // Text on error container
+    base: '#e76f51',                      // Soft red
+    container: '#ba4326',                 // Dark red container
+    onError: '#601908',                   // Text on error
+    onErrorContainer: '#fed2c7',          // Text on error container
   },
 
   // Text Colors
   text: {
-    onSurface: '#dce1fb',                 // Primary text
-    onSurfaceVariant: '#bbcabf',          // Secondary text, labels
-    onBackground: '#dce1fb',              // Same as onSurface
+    onSurface: '#e8f4f8',                 // Primary text
+    onSurfaceVariant: '#a8c8e8',          // Secondary text, labels
+    onBackground: '#e8f4f8',              // Same as onSurface
   },
 
   // Outline Colors (Ghost Borders)
   outline: {
-    base: '#86948a',                      // Standard outline
-    variant: '#3c4a42',                   // At 10% opacity for ghost borders
+    base: '#1e3a52',                      // Standard outline
+    variant: '#132030',                   // At 10% opacity for ghost borders
   },
 
   // Inverse Colors
   inverse: {
-    surface: '#dce1fb',                   // Light mode surface
-    onSurface: '#2a3043',                 // Text on inverse surface
-    primary: '#006c49',                   // Inverse primary
+    surface: '#e8f4f8',                   // Light mode surface
+    onSurface: '#09131f',                 // Text on inverse surface
+    primary: '#187b6e',                   // Inverse primary
   },
 
   // Special Colors
-  surfaceTint: '#4edea3',                 // Tint overlay
-  background: '#0c1324',                  // Page background
+  surfaceTint: '#2a9d8f',                 // Tint overlay
+  background: '#060d18',                  // Page background
 } as const;
 
 /**

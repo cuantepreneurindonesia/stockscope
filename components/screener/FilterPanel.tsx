@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
 import { useTranslations } from 'next-intl';
 import { Accordion } from './Accordion';
 
@@ -43,7 +43,7 @@ export function FilterPanel({
   return (
     <div className="bg-surface-container-low rounded-xl p-6 mb-6">
       {/* Terminal Header */}
-      <h2 className="font-headline text-lg font-bold text-on-surface mb-6 flex items-center gap-2">
+      <h2 className="font-label text-lg font-bold text-on-surface mb-6 flex items-center gap-2">
         <span className="material-symbols-outlined text-primary">tune</span>
         {t('filters')}
       </h2>
@@ -52,7 +52,7 @@ export function FilterPanel({
       <div className="space-y-6">
         {/* Search */}
         <div>
-          <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 font-headline">
+          <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 font-label">
             {t('searchStock')}
           </label>
           <div className="relative group">
@@ -84,7 +84,7 @@ export function FilterPanel({
 
         {/* Sector Filter */}
         <div>
-          <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 font-headline">
+          <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 font-label">
             {t('sector')}
           </label>
           <select
@@ -104,7 +104,7 @@ export function FilterPanel({
 
         {/* AI Score Tier Filter */}
         <div>
-          <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 font-headline">
+          <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-2 font-label">
             {t('aiTier')}
           </label>
           <select
@@ -134,7 +134,7 @@ export function FilterPanel({
           <div className="space-y-6 pt-4">
             {/* Score Range */}
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-4 font-headline">
+              <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-4 font-label">
                 {t('scoreRange')}
               </label>
               <div className="flex gap-3 items-center">
@@ -162,7 +162,7 @@ export function FilterPanel({
 
             {/* Governance Tier Segmented Control */}
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-4 font-headline">
+              <label className="block text-[10px] uppercase tracking-widest text-on-surface-variant mb-4 font-label">
                 {t('govTier')}
               </label>
               <div className="grid grid-cols-3 gap-1 bg-surface-container-highest p-1 rounded-lg">
@@ -196,7 +196,7 @@ export function FilterPanel({
                     onGovTierChange('');
                   }}
                   className="border border-outline-variant/20 text-on-surface-variant px-4 py-2 
-                             rounded-lg text-xs font-headline uppercase tracking-wider transition-all
+                             rounded-lg text-xs font-label uppercase tracking-wider transition-all
                              hover:border-error hover:text-error"
                 >
                   {t('clearAdvancedFilters')}

@@ -13,7 +13,7 @@ export function TerminalSidebar({ locale }: TerminalSidebarProps) {
 
   return (
     <aside className="hidden md:flex flex-col h-[calc(100vh-68px)] w-64 
-                      bg-surface border-r border-white/5 font-headline text-sm 
+                      bg-surface border-r border-white/5 font-label text-sm 
                       tracking-wide sticky top-[68px]">
       {/* Brand Section */}
       <div className="p-6">

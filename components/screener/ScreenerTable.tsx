@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { EnrichedStock } from '@/lib/types/unified';
 
 interface ScreenerTableProps {
@@ -9,6 +9,7 @@ interface ScreenerTableProps {
   sortBy: string;
   sortOrder: 'asc' | 'desc';
   locale?: string;
+  onStockClick: (stock: EnrichedStock) => void;
 }
 
 const SortIcon = ({ 
@@ -78,19 +79,7 @@ const TierBadge = ({ tier }: { tier: string }) => {
   );
 };
 
-export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en' }: ScreenerTableProps) {
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
-
-  const toggleRow = (ticker: string) => {
-    const newExpanded = new Set(expandedRows);
-    if (newExpanded.has(ticker)) {
-      newExpanded.delete(ticker);
-    } else {
-      newExpanded.add(ticker);
-    }
-    setExpandedRows(newExpanded);
-  };
-
+export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en', onStockClick }: ScreenerTableProps) {
   const formatNumber = (num: number | null | undefined, decimals = 2): string => {
     if (num == null) return '-';
     return num.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US', {
@@ -119,7 +108,7 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
               onClick={() => onSort('ticker')}
             >
               <div className="flex items-center gap-2">
-                <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
+                <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
                   Ticker
                 </span>
                 <SortIcon field="ticker" sortBy={sortBy} sortOrder={sortOrder} />
@@ -132,7 +121,7 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
               onClick={() => onSort('price')}
             >
               <div className="flex items-center justify-end gap-2">
-                <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
+                <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
                   Price
                 </span>
                 <SortIcon field="price" sortBy={sortBy} sortOrder={sortOrder} />
@@ -145,7 +134,7 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
               onClick={() => onSort('change')}
             >
               <div className="flex items-center justify-end gap-2">
-                <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
+                <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
                   Change
                 </span>
                 <SortIcon field="change" sortBy={sortBy} sortOrder={sortOrder} />
@@ -158,7 +147,7 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
               onClick={() => onSort('volume')}
             >
               <div className="flex items-center justify-end gap-2">
-                <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
+                <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
                   Volume
                 </span>
                 <SortIcon field="volume" sortBy={sortBy} sortOrder={sortOrder} />
@@ -171,7 +160,7 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
               onClick={() => onSort('aiScore')}
             >
               <div className="flex items-center gap-2">
-                <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
+                <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
                   AI Score
                 </span>
                 <SortIcon field="aiScore" sortBy={sortBy} sortOrder={sortOrder} />
@@ -184,7 +173,7 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
               onClick={() => onSort('govScore')}
             >
               <div className="flex items-center gap-2">
-                <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
+                <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
                   Gov Score
                 </span>
                 <SortIcon field="govScore" sortBy={sortBy} sortOrder={sortOrder} />
@@ -197,7 +186,7 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
               onClick={() => onSort('hhi')}
             >
               <div className="flex items-center justify-end gap-2">
-                <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
+                <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant group-hover:text-primary transition-colors">
                   HHI
                 </span>
                 <SortIcon field="hhi" sortBy={sortBy} sortOrder={sortOrder} />
@@ -206,14 +195,14 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
 
             {/* AI Tier */}
             <th className="px-4 py-4 text-left">
-              <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant">
+              <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant">
                 AI Tier
               </span>
             </th>
 
             {/* Gov Tier */}
             <th className="px-4 py-4 text-left">
-              <span className="font-headline text-xs uppercase tracking-widest text-on-surface-variant">
+              <span className="font-label text-xs uppercase tracking-widest text-on-surface-variant">
                 Gov Tier
               </span>
             </th>
@@ -225,14 +214,13 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
 
         <tbody>
           {stocks.map((stock) => {
-            const isExpanded = expandedRows.has(stock.code);
             const isPositive = (stock.change ?? 0) >= 0;
 
             return (
               <React.Fragment key={stock.code}>
                 <tr 
                   className="group hover:bg-white/5 transition-colors cursor-pointer"
-                  onClick={() => toggleRow(stock.code)}
+                  onClick={() => onStockClick(stock)}
                 >
                   {/* Vertical Status Pill */}
                   <td className="py-4 pl-4">
@@ -305,89 +293,12 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
                     <TierBadge tier={stock.tier ?? 'Amber'} />
                   </td>
 
-                  {/* Expand Icon */}
                   <td className="px-4 py-4">
-                    <span className={`material-symbols-outlined text-sm text-on-surface-variant group-hover:text-primary transition-all ${
-                      isExpanded ? 'rotate-180' : ''
-                    }`}>
-                      expand_more
+                    <span className="material-symbols-outlined text-sm text-on-surface-variant group-hover:text-primary transition-all">
+                      chevron_right
                     </span>
                   </td>
                 </tr>
-
-                {/* Expanded Row */}
-                {isExpanded && (
-                  <tr className="bg-surface-container-low">
-                    <td colSpan={11} className="px-4 py-6">
-                      <div className="grid grid-cols-3 gap-6">
-                        {/* Technical Indicators */}
-                        <div>
-                          <h4 className="font-headline text-xs uppercase tracking-widest text-on-surface-variant mb-3">
-                            Technical
-                          </h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between">
-                              <span className="font-body text-sm text-on-surface-variant">Composite</span>
-                              <span className="font-label text-sm tabular-nums text-on-surface">
-                                {stock.scores?.composite?.toFixed(1) ?? '-'}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="font-body text-sm text-on-surface-variant">Technical</span>
-                              <span className="font-label text-sm tabular-nums text-on-surface">
-                                {stock.scores?.technical?.toFixed(1) ?? '-'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Fundamentals */}
-                        <div>
-                          <h4 className="font-headline text-xs uppercase tracking-widest text-on-surface-variant mb-3">
-                            Fundamentals
-                          </h4>
-                          <div className="space-y-2">
-                            <div className="flex justify-between">
-                              <span className="font-body text-sm text-on-surface-variant">P/E Ratio</span>
-                              <span className="font-label text-sm tabular-nums text-on-surface">
-                                {stock.pe?.toFixed(2) ?? '-'}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="font-body text-sm text-on-surface-variant">ROE</span>
-                              <span className="font-label text-sm tabular-nums text-on-surface">
-                                {stock.roe ? `${stock.roe.toFixed(1)}%` : '-'}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Flags */}
-                        <div>
-                          <h4 className="font-headline text-xs uppercase tracking-widest text-on-surface-variant mb-3">
-                            Flags
-                          </h4>
-                          <div className="flex flex-wrap gap-2">
-                            {stock.flags && stock.flags.length > 0 ? (
-                              stock.flags.map((flag, idx) => (
-                                <span 
-                                  key={idx}
-                                  className="px-2 py-1 rounded-full bg-tertiary/10 text-tertiary text-xs font-label"
-                                >
-                                  {flag}
-                                </span>
-                              ))
-                            ) : (
-                              <span className="font-body text-sm text-on-surface-variant">
-                                No flags
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                )}
               </React.Fragment>
             );
           })}
@@ -399,7 +310,7 @@ export function ScreenerTable({ stocks, onSort, sortBy, sortOrder, locale = 'en'
           <span className="material-symbols-outlined text-6xl text-on-surface-variant/20 mb-4 block">
             search_off
           </span>
-          <p className="font-headline text-sm uppercase tracking-widest text-on-surface-variant">
+          <p className="font-label text-sm uppercase tracking-widest text-on-surface-variant">
             No stocks found
           </p>
           <p className="font-body text-sm text-on-surface-variant/60 mt-2">
