@@ -2,23 +2,31 @@
  * NextAuth configuration
  * Separation of Concerns: Auth options, callbacks
  */
+import type { NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 
-import type { NextAuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import type { Plan } from '@/lib/auth/types';
-import { ensureUser, getUserPlan } from '../services/userService';
+import type { Plan } from "@/lib/auth/types";
+import { ensureUser, getUserPlan } from "@/lib/services/userService";
 
+/**
+ * Utility: authOptions
+ */
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
   ],
   callbacks: {
     async signIn({ user }) {
       if (user.id) {
-        await ensureUser(user.id, user.email ?? null, user.name ?? null, user.image ?? null);
+        await ensureUser(
+          user.id,
+          user.email ?? null,
+          user.name ?? null,
+          user.image ?? null,
+        );
       }
       return true;
     },
@@ -44,6 +52,6 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
   },
 };

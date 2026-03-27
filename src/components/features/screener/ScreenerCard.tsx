@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import type { EnrichedStock } from '@/lib/types/unified';
+import type { EnrichedStock } from "@/types/unified";
 
 interface ScreenerCardProps {
   stock: EnrichedStock;
@@ -12,37 +12,47 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
 
   // Tier badge colors
   const getTierColor = (tier: string) => {
-    const tierLower = tier?.toLowerCase() || '';
+    const tierLower = tier?.toLowerCase() || "";
     const colors: Record<string, string> = {
-      'green': 'bg-primary/10 text-primary border-primary/20',
-      'amber': 'bg-tertiary/10 text-tertiary border-tertiary/20',
-      'red': 'bg-error/10 text-error border-error/20',
-      'strong buy': 'bg-primary/10 text-primary border-primary/20',
-      'buy': 'bg-primary/10 text-primary border-primary/20',
-      'watch': 'bg-tertiary/10 text-tertiary border-tertiary/20',
-      'neutral': 'bg-on-surface-variant/10 text-on-surface-variant border-on-surface-variant/20',
-      'avoid': 'bg-error/10 text-error border-error/20',
+      green: "bg-primary/10 text-primary border-primary/20",
+      amber: "bg-tertiary/10 text-tertiary border-tertiary/20",
+      red: "bg-error/10 text-error border-error/20",
+      "strong buy": "bg-primary/10 text-primary border-primary/20",
+      buy: "bg-primary/10 text-primary border-primary/20",
+      watch: "bg-tertiary/10 text-tertiary border-tertiary/20",
+      neutral:
+        "bg-on-surface-variant/10 text-on-surface-variant border-on-surface-variant/20",
+      avoid: "bg-error/10 text-error border-error/20",
     };
-    return colors[tierLower] || 'bg-on-surface-variant/10 text-on-surface-variant border-on-surface-variant/20';
+    return (
+      colors[tierLower] ||
+      "bg-on-surface-variant/10 text-on-surface-variant border-on-surface-variant/20"
+    );
   };
 
   const formatPrice = (price: number | undefined) => {
-    if (!price) return '—';
-    return price.toLocaleString('id-ID');
+    if (!price) return "—";
+    return price.toLocaleString("id-ID");
   };
 
   const formatPercent = (num: number | null | undefined): string => {
-    if (num == null) return '—';
-    const sign = num >= 0 ? '+' : '';
+    if (num == null) return "—";
+    const sign = num >= 0 ? "+" : "";
     return `${sign}${num.toFixed(2)}%`;
   };
 
   const score = stock.scores?.composite ?? 0;
-  const scoreColor = score >= 70 ? 'bg-primary' : score >= 40 ? 'bg-tertiary' : 'bg-error';
-  const scoreGlow = score >= 70 ? 'shadow-[0_0_8px_rgba(78,222,163,0.4)]' : score >= 40 ? 'shadow-[0_0_8px_rgba(255,185,95,0.4)]' : 'shadow-[0_0_8px_rgba(255,180,171,0.3)]';
+  const scoreColor =
+    score >= 70 ? "bg-primary" : score >= 40 ? "bg-tertiary" : "bg-error";
+  const scoreGlow =
+    score >= 70
+      ? "shadow-[0_0_8px_rgba(78,222,163,0.4)]"
+      : score >= 40
+        ? "shadow-[0_0_8px_rgba(255,185,95,0.4)]"
+        : "shadow-[0_0_8px_rgba(255,180,171,0.3)]";
 
   return (
-    <div 
+    <div
       className={`
         bg-surface-container 
         rounded-lg 
@@ -52,7 +62,7 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
         duration-200 
         hover:bg-surface-container-high
         border-l-4
-        ${isPositive ? 'border-primary' : 'border-error'}
+        ${isPositive ? "border-primary" : "border-error"}
       `}
       onClick={onClick}
     >
@@ -66,9 +76,10 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
             {stock.issuer}
           </div>
         </div>
-        
+
         {/* Governance Tier Badge */}
-        <span className={`
+        <span
+          className={`
           ${getTierColor(stock.tier)} 
           px-2 py-1 
           rounded-full 
@@ -80,7 +91,8 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
           border 
           ml-2
           flex-shrink-0
-        `}>
+        `}
+        >
           {stock.tier}
         </span>
       </div>
@@ -99,13 +111,15 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
           <div className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-1">
             Change
           </div>
-          <div className={`
+          <div
+            className={`
             font-label 
             text-lg 
             font-bold 
             tabular-nums
-            ${isPositive ? 'text-primary' : 'text-error'}
-          `}>
+            ${isPositive ? "text-primary" : "text-error"}
+          `}
+          >
             {formatPercent(stock.change)}
           </div>
         </div>
@@ -118,7 +132,7 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
         </div>
         <div className="flex items-center gap-2">
           <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
-            <div 
+            <div
               className={`h-full ${scoreColor} ${scoreGlow} transition-all duration-500`}
               style={{ width: `${Math.min(Math.max(score, 0), 100)}%` }}
             />
@@ -132,7 +146,8 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
       {/* AI Tier Badge */}
       {stock.aiTier && (
         <div className="mb-3">
-          <span className={`
+          <span
+            className={`
             ${getTierColor(stock.aiTier.label)}
             px-3 py-1.5
             rounded-full
@@ -143,12 +158,12 @@ export function ScreenerCard({ stock, onClick }: ScreenerCardProps) {
             tracking-wider
             border
             inline-block
-          `}>
+          `}
+          >
             {stock.aiTier.label}
           </span>
         </div>
       )}
-
     </div>
   );
 }

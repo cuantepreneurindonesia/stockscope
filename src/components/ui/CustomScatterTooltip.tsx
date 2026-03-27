@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { TIER_COLORS, THEME_COLORS } from '@/lib/constants';
-import type { ScatterChartPoint } from '@/lib/types';
+import React from "react";
+
+import { THEME_COLORS, TIER_COLORS } from "@/lib/constants";
+
+import type { ScatterChartPoint } from "@/types";
 
 interface TooltipPayload {
   payload?: Partial<ScatterChartPoint>;
@@ -13,6 +15,9 @@ interface CustomScatterTooltipProps {
   payload?: TooltipPayload[];
 }
 
+/**
+ * UI Component: CustomScatterTooltip
+ */
 export function CustomScatterTooltip({
   active,
   payload,
@@ -28,7 +33,7 @@ export function CustomScatterTooltip({
         background: THEME_COLORS.bgContent,
         border: `1px solid ${THEME_COLORS.border}`,
         borderRadius: 8,
-        padding: '10px 14px',
+        padding: "10px 14px",
         fontSize: 12,
       }}
     >
@@ -36,7 +41,7 @@ export function CustomScatterTooltip({
         style={{
           fontWeight: 700,
           color: THEME_COLORS.text,
-          fontFamily: 'monospace',
+          fontFamily: "monospace",
           marginBottom: 4,
         }}
       >
@@ -54,14 +59,12 @@ export function CustomScatterTooltip({
         {data.tier} Risk
       </div>
       <div style={{ color: THEME_COLORS.textSecondary, marginTop: 2 }}>
-        HHI:{' '}
-        <span style={{ fontFamily: 'monospace' }}>
-          {data.hhi?.toFixed(0)}
-        </span>
+        HHI:{" "}
+        <span style={{ fontFamily: "monospace" }}>{data.hhi?.toFixed(0)}</span>
       </div>
       <div style={{ color: THEME_COLORS.textSecondary }}>
-        Float:{' '}
-        <span style={{ fontFamily: 'monospace' }}>
+        Float:{" "}
+        <span style={{ fontFamily: "monospace" }}>
           {(data.ff ?? 0).toFixed(1)}%
         </span>
       </div>

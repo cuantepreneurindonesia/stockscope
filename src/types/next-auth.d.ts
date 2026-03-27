@@ -1,6 +1,6 @@
-import type { Plan } from '@/lib/auth/types';
+import type { Plan } from "@/lib/auth/types";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
     user: {
       id?: string;

@@ -2,23 +2,23 @@
  * Stock service layer
  * Separation of Concerns: All stock-related business logic
  */
+import { stockQueries } from "@/lib/mongodb";
 
-import { stockQueries } from '@/lib/mongodb';
-import type { Stock, StockFilter, QueryOptions } from '@/lib/types';
+import type { QueryOptions, Stock, StockFilter } from "@/types";
 
 /**
  * Fetch stocks with filtering and pagination
  */
 export async function fetchStocks(
   filter: StockFilter = {},
-  options: QueryOptions = {}
+  options: QueryOptions = {},
 ): Promise<Stock[]> {
   const mongoFilter = buildMongoFilter(filter);
   const sortOpt = options.sort;
   const mongoSort: Record<string, 1 | -1> | undefined =
     sortOpt != null
       ? {
-          [sortOpt.sortBy]: sortOpt.direction === 'asc' ? 1 : -1,
+          [sortOpt.sortBy]: sortOpt.direction === "asc" ? 1 : -1,
         }
       : undefined;
   const result = await stockQueries.find(mongoFilter, {
@@ -58,7 +58,7 @@ export async function findStockByCode(code: string): Promise<Stock | null> {
  */
 export async function getStockStats(stocks: Stock[]): Promise<{
   totalStocks: number;
-  byTier: Record<'red' | 'amber' | 'green', number>;
+  byTier: Record<"red" | "amber" | "green", number>;
   avgHHI: number;
   avgFloat: number;
 }> {
@@ -72,13 +72,14 @@ export async function getStockStats(stocks: Stock[]): Promise<{
   }
 
   const byTier = {
-    red: stocks.filter((s) => s.tier === 'Red').length,
-    amber: stocks.filter((s) => s.tier === 'Amber').length,
-    green: stocks.filter((s) => s.tier === 'Green').length,
+    red: stocks.filter((s) => s.tier === "Red").length,
+    amber: stocks.filter((s) => s.tier === "Amber").length,
+    green: stocks.filter((s) => s.tier === "Green").length,
   };
 
   const avgHHI = stocks.reduce((sum, s) => sum + s.hhi, 0) / stocks.length;
-  const avgFloat = stocks.reduce((sum, s) => sum + s.floatPercentage, 0) / stocks.length;
+  const avgFloat =
+    stocks.reduce((sum, s) => sum + s.floatPercentage, 0) / stocks.length;
 
   return {
     totalStocks: stocks.length,
@@ -113,9 +114,9 @@ function buildMongoFilter(filter: StockFilter): Record<string, unknown> {
 
   if (filter.searchText) {
     mongoFilter.$or = [
-      { code: { $regex: filter.searchText, $options: 'i' } },
-      { issuer: { $regex: filter.searchText, $options: 'i' } },
-      { topHolder: { $regex: filter.searchText, $options: 'i' } },
+      { code: { $regex: filter.searchText, $options: "i" } },
+      { issuer: { $regex: filter.searchText, $options: "i" } },
+      { topHolder: { $regex: filter.searchText, $options: "i" } },
     ];
   }
 

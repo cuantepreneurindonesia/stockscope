@@ -6,7 +6,7 @@ export interface Stock {
   _id?: string;
   code: string;
   issuer: string;
-  tier: 'Red' | 'Amber' | 'Green';
+  tier: "Red" | "Amber" | "Green";
   hhi: number;
   floatPercentage: number;
   c1: number;
@@ -29,17 +29,17 @@ export interface Owner {
 }
 
 export type OwnerType =
-  | 'ID'
-  | 'CP'
-  | 'IB'
-  | 'IS'
-  | 'SC'
-  | 'PF'
-  | 'MF'
-  | 'YD'
-  | 'GY'
-  | 'BK'
-  | 'OT';
+  | "ID"
+  | "CP"
+  | "IB"
+  | "IS"
+  | "SC"
+  | "PF"
+  | "MF"
+  | "YD"
+  | "GY"
+  | "BK"
+  | "OT";
 
 export interface OwnershipHolding {
   _id?: string;
@@ -93,7 +93,7 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 }
 
 export interface StockFilter {
-  tier?: Stock['tier'];
+  tier?: Stock["tier"];
   hierarchyLevel?: string;
   flag?: string;
   ownerType?: OwnerType;
@@ -102,7 +102,7 @@ export interface StockFilter {
 
 export interface SortOptions {
   sortBy: keyof Stock;
-  direction: 'asc' | 'desc';
+  direction: "asc" | "desc";
 }
 
 export interface QueryOptions {
@@ -112,7 +112,7 @@ export interface QueryOptions {
 }
 
 export interface DashboardFilters {
-  tier?: Stock['tier'];
+  tier?: Stock["tier"];
   searchText?: string;
   ownerType?: OwnerType;
   hierarchyLevel?: string;
@@ -154,7 +154,7 @@ export interface PaginationResult<T> {
 }
 
 /** HHI concentration level derived from hhi value */
-export type HierarchyLevel = 'Low' | 'Moderate' | 'High';
+export type HierarchyLevel = "Low" | "Moderate" | "High";
 
 /** Tab-specific stats computed from filtered stocks */
 export interface TabStats {
@@ -184,11 +184,11 @@ export interface FlagCount {
 
 /** Known governance flag identifiers */
 export type GovernanceFlag =
-  | 'LowFloat<15%'
-  | 'Insider>75%'
-  | 'SingleCP>50%'
-  | 'ZeroForeign'
-  | 'CriticalFloat<5%';
+  | "LowFloat<15%"
+  | "Insider>75%"
+  | "SingleCP>50%"
+  | "ZeroForeign"
+  | "CriticalFloat<5%";
 
 /** Single stock in owner portfolio */
 export interface PortfolioStock {

@@ -1,13 +1,17 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { THEME_COLORS } from '@/lib/constants';
+import React, { useState } from "react";
+
+import { THEME_COLORS } from "@/lib/constants";
 
 interface Tooltip2Props {
   text: string;
   children?: React.ReactNode;
 }
 
+/**
+ * UI Component: Tooltip2
+ */
 export function Tooltip2({ text }: Tooltip2Props): React.ReactElement {
   const [show, setShow] = useState(false);
 
@@ -17,7 +21,7 @@ export function Tooltip2({ text }: Tooltip2Props): React.ReactElement {
         onMouseEnter={() => setShow(true)}
         onMouseLeave={() => setShow(false)}
         style={{
-          cursor: 'help',
+          cursor: "help",
           color: THEME_COLORS.textTertiary,
           fontSize: 11,
           marginLeft: 4,
@@ -28,21 +32,21 @@ export function Tooltip2({ text }: Tooltip2Props): React.ReactElement {
       {show && (
         <span
           style={{
-            position: 'absolute',
-            bottom: '120%',
-            left: '50%',
-            transform: 'translateX(-50%)',
+            position: "absolute",
+            bottom: "120%",
+            left: "50%",
+            transform: "translateX(-50%)",
             background: THEME_COLORS.bgAlt,
             border: `1px solid ${THEME_COLORS.border}`,
             borderRadius: 6,
-            padding: '6px 10px',
+            padding: "6px 10px",
             fontSize: 11,
             color: THEME_COLORS.textSecondary,
-            whiteSpace: 'nowrap',
+            whiteSpace: "nowrap",
             maxWidth: 260,
             lineHeight: 1.4,
             zIndex: 100,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
+            boxShadow: "0 4px 20px rgba(0,0,0,0.6)",
           }}
         >
           {text}

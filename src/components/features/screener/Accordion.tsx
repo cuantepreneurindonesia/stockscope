@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 interface AccordionProps {
   title: string;
@@ -9,7 +9,12 @@ interface AccordionProps {
   defaultOpen?: boolean;
 }
 
-export function Accordion({ title, badge, children, defaultOpen = false }: AccordionProps) {
+export function Accordion({
+  title,
+  badge,
+  children,
+  defaultOpen = false,
+}: AccordionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
@@ -17,46 +22,46 @@ export function Accordion({ title, badge, children, defaultOpen = false }: Accor
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 0',
-          background: 'none',
-          border: 'none',
-          borderBottom: '1px solid #132030',
-          color: '#457b9d',
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "12px 0",
+          background: "none",
+          border: "none",
+          borderBottom: "1px solid #132030",
+          color: "#457b9d",
           fontSize: 10,
           fontFamily: "'DM Mono', monospace",
           letterSpacing: 1.5,
-          textTransform: 'uppercase',
-          cursor: 'pointer',
-          transition: 'color 0.2s'
+          textTransform: "uppercase",
+          cursor: "pointer",
+          transition: "color 0.2s",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = '#a8d8ea';
+          e.currentTarget.style.color = "#a8d8ea";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.color = '#457b9d';
+          e.currentTarget.style.color = "#457b9d";
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span>{title}</span>
           {badge !== undefined && badge > 0 && (
             <span
               style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
                 minWidth: 18,
                 height: 18,
-                padding: '0 6px',
-                background: '#457b9d',
-                color: '#e8f4f8',
+                padding: "0 6px",
+                background: "#457b9d",
+                color: "#e8f4f8",
                 fontSize: 10,
                 fontWeight: 600,
                 borderRadius: 9,
-                fontFamily: 'DM Sans, sans-serif'
+                fontFamily: "DM Sans, sans-serif",
               }}
             >
               {badge}
@@ -66,20 +71,20 @@ export function Accordion({ title, badge, children, defaultOpen = false }: Accor
         <span
           style={{
             fontSize: 14,
-            transition: 'transform 0.2s',
-            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-            display: 'inline-block'
+            transition: "transform 0.2s",
+            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+            display: "inline-block",
           }}
         >
           ▼
         </span>
       </button>
-      
+
       {isOpen && (
         <div
           style={{
             paddingTop: 16,
-            animation: 'slideDown 0.2s ease-out'
+            animation: "slideDown 0.2s ease-out",
           }}
         >
           {children}

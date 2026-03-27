@@ -1,27 +1,41 @@
-import { MongoClient, Db } from 'mongodb';
+import { Db, MongoClient } from "mongodb";
+
+import type { Plan } from "@/lib/auth/types";
+
 import type {
-  OwnerWithPortfolio,
-  OwnerType,
   MongoOwnerDocument,
   MongoPortfolioItem,
+  OwnerType,
+  OwnerWithPortfolio,
   PortfolioStock,
-} from '@/lib/types';
-import type { Plan } from '@/lib/auth/types';
+} from "@/types";
 
 const mongoUri = process.env.MONGODB_URI;
 if (!mongoUri) {
-  throw new Error('MONGODB_URI environment variable is not set');
+  throw new Error("MONGODB_URI environment variable is not set");
 }
 const MONGODB_URI: string = mongoUri;
 
 const VALID_OWNER_TYPES: readonly OwnerType[] = [
-  'ID', 'CP', 'IB', 'IS', 'SC', 'PF', 'MF', 'YD', 'GY', 'BK', 'OT',
+  "ID",
+  "CP",
+  "IB",
+  "IS",
+  "SC",
+  "PF",
+  "MF",
+  "YD",
+  "GY",
+  "BK",
+  "OT",
 ];
 
 function toOwnerType(value: unknown): OwnerType {
-  return VALID_OWNER_TYPES.includes(value as OwnerType) ? (value as OwnerType) : 'OT';
+  return VALID_OWNER_TYPES.includes(value as OwnerType)
+    ? (value as OwnerType)
+    : "OT";
 }
-const DB_NAME = 'right_to_information';
+const DB_NAME = "right_to_information";
 
 let client: MongoClient | null = null;
 let db: Db | null = null;
@@ -36,10 +50,8 @@ export async function connectDB(): Promise<Db> {
     client = new MongoClient(MONGODB_URI);
     await client.connect();
     db = client.db(DB_NAME);
-    console.log('✅ Connected to MongoDB');
     return db;
   } catch (error) {
-    console.error('❌ MongoDB connection error:', error);
     throw error;
   }
 }
@@ -60,7 +72,6 @@ export async function closeDB(): Promise<void> {
     await client.close();
     client = null;
     db = null;
-    console.log('✅ MongoDB connection closed');
   }
 }
 
@@ -70,11 +81,7 @@ export async function closeDB(): Promise<void> {
 export const stockQueries = {
   async findAll(limit = 10000) {
     const database = await getDB();
-    return database
-      .collection('stocks')
-      .find({})
-      .limit(limit)
-      .toArray();
+    return database.collection("stocks").find({}).limit(limit).toArray();
   },
 
   async find(
@@ -83,12 +90,12 @@ export const stockQueries = {
       limit?: number;
       skip?: number;
       sort?: Record<string, 1 | -1>;
-    } = {}
+    } = {},
   ) {
     const database = await getDB();
     const { limit = 50, skip = 0, sort } = options;
     let cursor = database
-      .collection('stocks')
+      .collection("stocks")
       .find(filter)
       .skip(skip)
       .limit(Math.min(limit, 10000));
@@ -100,10 +107,10 @@ export const stockQueries = {
 
   async findByCode(code: string) {
     const database = await getDB();
-    const stock = await database.collection('stocks').findOne({ code });
+    const stock = await database.collection("stocks").findOne({ code });
     if (stock) {
       const holdings = await database
-        .collection('ownershipHoldings')
+        .collection("ownershipHoldings")
         .find({ stockCode: code })
         .toArray();
       return { ...stock, holdings };
@@ -113,7 +120,7 @@ export const stockQueries = {
 
   async count(filter: Record<string, unknown> = {}) {
     const database = await getDB();
-    return database.collection('stocks').countDocuments(filter);
+    return database.collection("stocks").countDocuments(filter);
   },
 };
 
@@ -123,12 +130,12 @@ export const stockQueries = {
 export const ownerQueries = {
   async find(
     filter: Record<string, unknown>,
-    options: { limit?: number; skip?: number } = {}
+    options: { limit?: number; skip?: number } = {},
   ) {
     const database = await getDB();
     const { limit = 50, skip = 0 } = options;
     return database
-      .collection('owners')
+      .collection("owners")
       .find(filter)
       .skip(skip)
       .limit(Math.min(limit, 1000))
@@ -138,9 +145,9 @@ export const ownerQueries = {
   async getTop(limit = 100) {
     const database = await getDB();
     return database
-      .collection('owners')
+      .collection("owners")
       .aggregate([
-        { $group: { _id: '$name', count: { $sum: 1 } } },
+        { $group: { _id: "$name", count: { $sum: 1 } } },
         { $sort: { count: -1 } },
         { $limit: limit },
       ])
@@ -150,9 +157,9 @@ export const ownerQueries = {
   async getTopWithPortfolio(limit = 100): Promise<OwnerWithPortfolio[]> {
     const database = await getDB();
     const owners = (await database
-      .collection<MongoOwnerDocument>('owners')
+      .collection<MongoOwnerDocument>("owners")
       .find({})
-      .sort({ 'stats.totalHoldings': -1 })
+      .sort({ "stats.totalHoldings": -1 })
       .limit(limit)
       .toArray()) as MongoOwnerDocument[];
 
@@ -166,20 +173,22 @@ export const ownerQueries = {
     }
 
     const stocks = await database
-      .collection<{ code: string; issuer?: string }>('stocks')
+      .collection<{ code: string; issuer?: string }>("stocks")
       .find({ code: { $in: Array.from(stockCodes) } })
       .project({ code: 1, issuer: 1 })
       .toArray();
 
-    const stockMap = new Map(stocks.map((s) => [s.code, s.issuer ?? '']));
+    const stockMap = new Map(stocks.map((s) => [s.code, s.issuer ?? ""]));
 
     return owners.map((o): OwnerWithPortfolio => {
       const portfolio = o.portfolio ?? [];
-      const portfolioStocks: PortfolioStock[] = portfolio.map((p: MongoPortfolioItem) => ({
-        code: p.stockCode,
-        pct: p.percentage ?? 0,
-        issuer: stockMap.get(p.stockCode) ?? '',
-      }));
+      const portfolioStocks: PortfolioStock[] = portfolio.map(
+        (p: MongoPortfolioItem) => ({
+          code: p.stockCode,
+          pct: p.percentage ?? 0,
+          issuer: stockMap.get(p.stockCode) ?? "",
+        }),
+      );
       return {
         name: o.name,
         type: toOwnerType(o.type),
@@ -197,37 +206,35 @@ export const ownerQueries = {
 export const userQueries = {
   async findById(id: string): Promise<{ plan: Plan } | null> {
     const database = await getDB();
-    const user = await database.collection('users').findOne(
-      { userId: id },
-      { projection: { plan: 1 } }
-    );
-    return user ? { plan: (user.plan as Plan) ?? 'free' } : null;
+    const user = await database
+      .collection("users")
+      .findOne({ userId: id }, { projection: { plan: 1 } });
+    return user ? { plan: (user.plan as Plan) ?? "free" } : null;
   },
 
   async upsertUser(
     id: string,
     email: string | null,
     name: string | null,
-    image: string | null
+    image: string | null,
   ): Promise<void> {
     const database = await getDB();
     const now = new Date();
-    await database.collection('users').updateOne(
+    await database.collection("users").updateOne(
       { userId: id },
       {
         $set: { email, name, image, updatedAt: now },
-        $setOnInsert: { userId: id, plan: 'free' as Plan },
+        $setOnInsert: { userId: id, plan: "free" as Plan },
       },
-      { upsert: true }
+      { upsert: true },
     );
   },
 
-  async updatePlan(userId: string, plan: 'free' | 'premium'): Promise<void> {
+  async updatePlan(userId: string, plan: "free" | "premium"): Promise<void> {
     const database = await getDB();
-    await database.collection('users').updateOne(
-      { userId },
-      { $set: { plan, updatedAt: new Date() } }
-    );
+    await database
+      .collection("users")
+      .updateOne({ userId }, { $set: { plan, updatedAt: new Date() } });
   },
 };
 
@@ -238,17 +245,21 @@ export const analyticsQueries = {
   async getStats(filter: Record<string, unknown> = {}) {
     const database = await getDB();
     const stocks = (await database
-      .collection('stocks')
+      .collection("stocks")
       .find(filter)
-      .toArray()) as { tier?: string; hhi?: number; floatPercentage?: number }[];
+      .toArray()) as {
+      tier?: string;
+      hhi?: number;
+      floatPercentage?: number;
+    }[];
 
     const totalStocks = stocks.length;
     return {
       totalStocks,
       byTier: {
-        red: stocks.filter((s) => s.tier === 'Red').length,
-        amber: stocks.filter((s) => s.tier === 'Amber').length,
-        green: stocks.filter((s) => s.tier === 'Green').length,
+        red: stocks.filter((s) => s.tier === "Red").length,
+        amber: stocks.filter((s) => s.tier === "Amber").length,
+        green: stocks.filter((s) => s.tier === "Green").length,
       },
       avgHHI:
         totalStocks > 0
@@ -256,7 +267,8 @@ export const analyticsQueries = {
           : 0,
       avgFloat:
         totalStocks > 0
-          ? stocks.reduce((sum, s) => sum + (s.floatPercentage ?? 0), 0) / totalStocks
+          ? stocks.reduce((sum, s) => sum + (s.floatPercentage ?? 0), 0) /
+            totalStocks
           : 0,
     };
   },

@@ -2,39 +2,38 @@
  * Tab stats service layer
  * Separation of Concerns: Pure analytics for dashboard tabs (HHI, Flags, etc.)
  */
-
 import type {
+  FlagCount,
+  GovernanceFlag,
+  HhiHistBin,
+  HierarchyLevel,
   Stock,
   TabStats,
-  HhiHistBin,
-  FlagCount,
-  HierarchyLevel,
-  GovernanceFlag,
-} from '@/lib/types';
+} from "@/types";
 
 const GOVERNANCE_FLAGS: readonly GovernanceFlag[] = [
-  'LowFloat<15%',
-  'Insider>75%',
-  'SingleCP>50%',
-  'ZeroForeign',
-  'CriticalFloat<5%',
+  "LowFloat<15%",
+  "Insider>75%",
+  "SingleCP>50%",
+  "ZeroForeign",
+  "CriticalFloat<5%",
 ] as const;
 
 const HHI_BIN_BOUNDS = [
-  { max: 1500, range: '<1,500' },
-  { max: 2000, range: '1,500\n-\n2,000' },
-  { max: 2500, range: '2,000\n-\n2,500' },
-  { max: 5000, range: '2,500\n-\n5,000' },
-  { max: Infinity, range: '>5,000' },
+  { max: 1500, range: "<1,500" },
+  { max: 2000, range: "1,500\n-\n2,000" },
+  { max: 2500, range: "2,000\n-\n2,500" },
+  { max: 5000, range: "2,500\n-\n5,000" },
+  { max: Infinity, range: ">5,000" },
 ] as const;
 
 /**
  * Derive hierarchy level from HHI value
  */
 export function getHierarchyLevel(hhi: number): HierarchyLevel {
-  if (hhi < 1500) return 'Low';
-  if (hhi <= 2500) return 'Moderate';
-  return 'High';
+  if (hhi < 1500) return "Low";
+  if (hhi <= 2500) return "Moderate";
+  return "High";
 }
 
 /**
@@ -55,15 +54,15 @@ export function calculateTabStats(stocks: Stock[]): TabStats {
   }
 
   const total = stocks.length;
-  const red = stocks.filter((s) => s.tier === 'Red').length;
-  const amber = stocks.filter((s) => s.tier === 'Amber').length;
-  const green = stocks.filter((s) => s.tier === 'Green').length;
+  const red = stocks.filter((s) => s.tier === "Red").length;
+  const amber = stocks.filter((s) => s.tier === "Amber").length;
+  const green = stocks.filter((s) => s.tier === "Green").length;
   const avgHHI = stocks.reduce((sum, s) => sum + s.hhi, 0) / total;
   const avgFF =
     stocks.reduce((sum, s) => sum + (s.floatPercentage ?? 0), 0) / total;
   const lowFloat = stocks.filter((s) => (s.floatPercentage ?? 0) < 15).length;
   const highConc = stocks.filter(
-    (s) => getHierarchyLevel(s.hhi) === 'High'
+    (s) => getHierarchyLevel(s.hhi) === "High",
   ).length;
 
   return {

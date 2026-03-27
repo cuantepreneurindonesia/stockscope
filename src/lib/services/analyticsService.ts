@@ -2,8 +2,12 @@
  * Analytics service layer
  * Separation of Concerns: All analytics calculations and data aggregation
  */
-
-import type { Stock, AnalyticsStats, TierDistribution, FlagDistribution } from '@/lib/types';
+import type {
+  AnalyticsStats,
+  FlagDistribution,
+  Stock,
+  TierDistribution,
+} from "@/types";
 
 /**
  * Calculate comprehensive analytics from stocks
@@ -44,29 +48,31 @@ export function calculateAnalytics(stocks: Stock[]): AnalyticsStats {
  */
 export function calculateTierDistribution(stocks: Stock[]): TierDistribution {
   return {
-    red: stocks.filter((s) => s.tier === 'Red').length,
-    amber: stocks.filter((s) => s.tier === 'Amber').length,
-    green: stocks.filter((s) => s.tier === 'Green').length,
+    red: stocks.filter((s) => s.tier === "Red").length,
+    amber: stocks.filter((s) => s.tier === "Amber").length,
+    green: stocks.filter((s) => s.tier === "Green").length,
   };
 }
 
 /**
  * Calculate HHI distribution buckets
  */
-export function calculateHhiDistribution(stocks: Stock[]): Record<string, number> {
+export function calculateHhiDistribution(
+  stocks: Stock[],
+): Record<string, number> {
   const buckets: Record<string, number> = {
-    '< 1500': 0,
-    '1500-2500': 0,
-    '> 2500': 0,
+    "< 1500": 0,
+    "1500-2500": 0,
+    "> 2500": 0,
   };
 
   stocks.forEach((s) => {
     if (s.hhi < 1500) {
-      buckets['< 1500']++;
+      buckets["< 1500"]++;
     } else if (s.hhi <= 2500) {
-      buckets['1500-2500']++;
+      buckets["1500-2500"]++;
     } else {
-      buckets['> 2500']++;
+      buckets["> 2500"]++;
     }
   });
 
@@ -81,7 +87,7 @@ export function calculateFlagDistribution(stocks: Stock[]): FlagDistribution {
 
   stocks.forEach((s) => {
     if (s.flags && s.flags.length > 0) {
-      s.flags.forEach((flag) => {
+      s.flags.forEach((flag: string) => {
         distribution[flag] = (distribution[flag] ?? 0) + 1;
       });
     }
@@ -93,7 +99,10 @@ export function calculateFlagDistribution(stocks: Stock[]): FlagDistribution {
 /**
  * Calculate average from stocks using selector function
  */
-function calculateAverage(stocks: Stock[], selector: (stock: Stock) => number): number {
+function calculateAverage(
+  stocks: Stock[],
+  selector: (stock: Stock) => number,
+): number {
   if (stocks.length === 0) return 0;
   const sum = stocks.reduce((acc, stock) => acc + selector(stock), 0);
   return sum / stocks.length;
@@ -115,7 +124,9 @@ export function getConcentrationMetrics(stocks: Stock[]): {
   const total = stocks.length;
 
   const highlyConcentrated = stocks.filter((s) => s.hhi > 2500).length;
-  const moderatelyConcentrated = stocks.filter((s) => s.hhi > 1500 && s.hhi <= 2500).length;
+  const moderatelyConcentrated = stocks.filter(
+    (s) => s.hhi > 1500 && s.hhi <= 2500,
+  ).length;
   const wellDistributed = stocks.filter((s) => s.hhi <= 1500).length;
 
   return {
@@ -124,7 +135,8 @@ export function getConcentrationMetrics(stocks: Stock[]): {
     wellDistributed,
     percentage: {
       highlyConcentrated: total > 0 ? (highlyConcentrated / total) * 100 : 0,
-      moderatelyConcentrated: total > 0 ? (moderatelyConcentrated / total) * 100 : 0,
+      moderatelyConcentrated:
+        total > 0 ? (moderatelyConcentrated / total) * 100 : 0,
       wellDistributed: total > 0 ? (wellDistributed / total) * 100 : 0,
     },
   };
@@ -142,7 +154,9 @@ export function getTopMetrics(stocks: Stock[]): {
 
   return {
     topByHhi: sorted.sort((a, b) => b.hhi - a.hhi).slice(0, 10),
-    topByFloat: sorted.sort((a, b) => b.floatPercentage - a.floatPercentage).slice(0, 10),
+    topByFloat: sorted
+      .sort((a, b) => b.floatPercentage - a.floatPercentage)
+      .slice(0, 10),
     topByC1: sorted.sort((a, b) => b.c1 - a.c1).slice(0, 10),
   };
 }

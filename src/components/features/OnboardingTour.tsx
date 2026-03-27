@@ -1,15 +1,12 @@
-'use client';
+"use client";
 
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-} from 'react';
-import { useTranslations } from 'next-intl';
-import { TOUR_STEP_DEFS } from '@/lib/tourSteps';
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
-export type { TourStepDef } from '@/lib/tourSteps';
+import { useTranslations } from "next-intl";
+
+import { TOUR_STEP_DEFS } from "@/lib/tourSteps";
+
+export type { TourStepDef } from "@/lib/tourSteps";
 
 export interface OnboardingTourProps {
   visible: boolean;
@@ -21,7 +18,7 @@ const DEBOUNCE_MS = 100;
 
 function useDebouncedCallback<T extends (...args: unknown[]) => void>(
   callback: T,
-  delay: number
+  delay: number,
 ): T {
   const callbackRef = useRef(callback);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -38,7 +35,7 @@ function useDebouncedCallback<T extends (...args: unknown[]) => void>(
         callbackRef.current(...args);
       }, delay);
     },
-    [delay]
+    [delay],
   ) as T;
 }
 
@@ -47,13 +44,13 @@ export function OnboardingTour({
   onSkip,
   onComplete,
 }: OnboardingTourProps): React.ReactElement | null {
-  const t = useTranslations('tour');
+  const t = useTranslations("tour");
   const [currentStep, setCurrentStep] = useState(0);
   const [spotlightRect, setSpotlightRect] = useState<DOMRect | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{
     top: number;
     left: number;
-    arrowPosition: 'top' | 'bottom';
+    arrowPosition: "top" | "bottom";
     arrowLeft: number;
   } | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -69,25 +66,31 @@ export function OnboardingTour({
   const calculateSpotlight = useCallback((): void => {
     const el = getTargetElement();
     if (!el) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn(`[OnboardingTour] Element not found for selector: ${step?.selector}`);
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          `[OnboardingTour] Element not found for selector: ${step?.selector}`,
+        );
       }
       setSpotlightRect(null);
       return;
     }
     const rect = el.getBoundingClientRect();
-    const padding = typeof window !== 'undefined' && window.innerWidth < 640 ? 4 : 8;
+    const padding =
+      typeof window !== "undefined" && window.innerWidth < 640 ? 4 : 8;
     setSpotlightRect(
       new DOMRect(
         rect.left - padding,
         rect.top - padding,
         rect.width + padding * 2,
-        rect.height + padding * 2
-      )
+        rect.height + padding * 2,
+      ),
     );
   }, [getTargetElement, step?.selector]);
 
-  const debouncedCalculate = useDebouncedCallback(calculateSpotlight, DEBOUNCE_MS);
+  const debouncedCalculate = useDebouncedCallback(
+    calculateSpotlight,
+    DEBOUNCE_MS,
+  );
 
   const calculateTooltipPosition = useCallback((): void => {
     const el = getTargetElement();
@@ -97,30 +100,37 @@ export function OnboardingTour({
     const rect = spotlightRect;
     const tooltipRect = tooltip.getBoundingClientRect();
     const screenPadding = 16;
-    const maxWidth = typeof window !== 'undefined' && window.innerWidth < 640 ? 280 : 360;
+    const maxWidth =
+      typeof window !== "undefined" && window.innerWidth < 640 ? 280 : 360;
 
     const spotlightCenterX = rect.left + rect.width / 2;
     const tooltipHalfWidth = Math.min(maxWidth / 2, tooltipRect.width / 2);
 
     let left = spotlightCenterX - tooltipHalfWidth;
-    left = Math.max(screenPadding, Math.min(window.innerWidth - maxWidth - screenPadding, left));
+    left = Math.max(
+      screenPadding,
+      Math.min(window.innerWidth - maxWidth - screenPadding, left),
+    );
 
     const gap = 12;
     const spaceAbove = rect.top;
     const spaceBelow = window.innerHeight - rect.bottom;
 
     let top: number;
-    let arrowPosition: 'top' | 'bottom';
+    let arrowPosition: "top" | "bottom";
 
     if (spaceBelow >= tooltipRect.height + gap || spaceBelow >= spaceAbove) {
       top = rect.bottom + gap;
-      arrowPosition = 'top';
+      arrowPosition = "top";
     } else {
       top = rect.top - tooltipRect.height - gap;
-      arrowPosition = 'bottom';
+      arrowPosition = "bottom";
     }
 
-    top = Math.max(screenPadding, Math.min(window.innerHeight - tooltipRect.height - screenPadding, top));
+    top = Math.max(
+      screenPadding,
+      Math.min(window.innerHeight - tooltipRect.height - screenPadding, top),
+    );
 
     const arrowLeft = spotlightCenterX - left;
     setTooltipPosition({ top, left, arrowPosition, arrowLeft });
@@ -135,11 +145,11 @@ export function OnboardingTour({
   useEffect(() => {
     if (!visible) return;
     const handle = (): void => debouncedCalculate();
-    window.addEventListener('resize', handle);
-    window.addEventListener('scroll', handle, true);
+    window.addEventListener("resize", handle);
+    window.addEventListener("scroll", handle, true);
     return () => {
-      window.removeEventListener('resize', handle);
-      window.removeEventListener('scroll', handle, true);
+      window.removeEventListener("resize", handle);
+      window.removeEventListener("scroll", handle, true);
     };
   }, [visible, debouncedCalculate]);
 
@@ -157,8 +167,10 @@ export function OnboardingTour({
     while (next < TOUR_STEP_DEFS.length) {
       const nextEl = document.querySelector(TOUR_STEP_DEFS[next].selector);
       if (nextEl) break;
-      if (process.env.NODE_ENV === 'development') {
-        console.warn(`[OnboardingTour] Skipping step ${next}: element not found`);
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          `[OnboardingTour] Skipping step ${next}: element not found`,
+        );
       }
       next++;
     }
@@ -187,10 +199,10 @@ export function OnboardingTour({
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent): void => {
       if (!visible) return;
-      if (e.key === 'Escape') handleSkip();
+      if (e.key === "Escape") handleSkip();
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [visible, handleSkip]);
 
   useEffect(() => {
@@ -213,26 +225,26 @@ export function OnboardingTour({
       className="onboarding-tour"
       role="dialog"
       aria-modal="true"
-      aria-label={t('ariaProgress', {
+      aria-label={t("ariaProgress", {
         current: currentStep + 1,
         total: TOUR_STEP_DEFS.length,
       })}
       style={{
-        position: 'fixed',
+        position: "fixed",
         inset: 0,
         zIndex: 1000,
-        pointerEvents: 'auto',
+        pointerEvents: "auto",
       }}
     >
       {/* Backdrop */}
       <div
         style={{
-          position: 'fixed',
+          position: "fixed",
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
-          background: 'rgba(0, 0, 0, 0.85)',
+          width: "100%",
+          height: "100%",
+          background: "rgba(0, 0, 0, 0.85)",
           zIndex: 1000,
         }}
       />
@@ -241,17 +253,17 @@ export function OnboardingTour({
       {spotlightRect && (
         <div
           style={{
-            position: 'fixed',
+            position: "fixed",
             left: spotlightRect.left,
             top: spotlightRect.top,
             width: spotlightRect.width,
             height: spotlightRect.height,
-            border: '3px solid #64b5f6',
+            border: "3px solid #64b5f6",
             borderRadius: 8,
-            boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.85)',
+            boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.85)",
             zIndex: 1001,
-            transition: 'all 300ms ease-out',
-            pointerEvents: 'none',
+            transition: "all 300ms ease-out",
+            pointerEvents: "none",
           }}
         />
       )}
@@ -260,62 +272,70 @@ export function OnboardingTour({
       <div
         ref={tooltipRef}
         style={{
-          position: 'fixed',
-          top: tooltipPosition?.top ?? (typeof window !== 'undefined' ? window.innerHeight / 2 - 100 : 0),
-          left: tooltipPosition?.left ?? (typeof window !== 'undefined' ? window.innerWidth / 2 - 180 : 0),
-          background: '#1f2937',
-          border: '1px solid #4b5563',
+          position: "fixed",
+          top:
+            tooltipPosition?.top ??
+            (typeof window !== "undefined" ? window.innerHeight / 2 - 100 : 0),
+          left:
+            tooltipPosition?.left ??
+            (typeof window !== "undefined" ? window.innerWidth / 2 - 180 : 0),
+          background: "#1f2937",
+          border: "1px solid #4b5563",
           borderRadius: 12,
-          padding: typeof window !== 'undefined' && window.innerWidth < 640 ? 16 : 24,
-          maxWidth: typeof window !== 'undefined' && window.innerWidth < 640 ? 280 : 360,
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.4)',
+          padding:
+            typeof window !== "undefined" && window.innerWidth < 640 ? 16 : 24,
+          maxWidth:
+            typeof window !== "undefined" && window.innerWidth < 640
+              ? 280
+              : 360,
+          boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.4)",
           zIndex: 1002,
         }}
       >
         <button
           onClick={handleSkip}
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 12,
             right: 12,
-            background: 'none',
-            border: 'none',
-            color: '#9ca3af',
+            background: "none",
+            border: "none",
+            color: "#9ca3af",
             fontSize: 12,
-            cursor: 'pointer',
+            cursor: "pointer",
             padding: 4,
-            outline: 'none',
+            outline: "none",
           }}
           onFocus={(e) => {
-            e.currentTarget.style.outline = '2px solid #64b5f6';
-            e.currentTarget.style.outlineOffset = '2px';
+            e.currentTarget.style.outline = "2px solid #64b5f6";
+            e.currentTarget.style.outlineOffset = "2px";
           }}
           onBlur={(e) => {
-            e.currentTarget.style.outline = 'none';
+            e.currentTarget.style.outline = "none";
           }}
-          aria-label={t('skipAria')}
+          aria-label={t("skipAria")}
         >
-          {t('skip')}
+          {t("skip")}
         </button>
 
         {tooltipPosition && (
           <div
             style={{
-              position: 'absolute',
+              position: "absolute",
               left: tooltipPosition.arrowLeft,
-              transform: 'translateX(-50%)',
+              transform: "translateX(-50%)",
               width: 0,
               height: 0,
-              borderLeft: '8px solid transparent',
-              borderRight: '8px solid transparent',
-              ...(tooltipPosition.arrowPosition === 'top'
+              borderLeft: "8px solid transparent",
+              borderRight: "8px solid transparent",
+              ...(tooltipPosition.arrowPosition === "top"
                 ? {
-                    bottom: '100%',
-                    borderBottom: '8px solid #1f2937',
+                    bottom: "100%",
+                    borderBottom: "8px solid #1f2937",
                   }
                 : {
-                    top: '100%',
-                    borderTop: '8px solid #1f2937',
+                    top: "100%",
+                    borderTop: "8px solid #1f2937",
                   }),
             }}
           />
@@ -325,31 +345,33 @@ export function OnboardingTour({
           style={{
             fontSize: 18,
             fontWeight: 600,
-            color: '#ffffff',
+            color: "#ffffff",
             margin: 0,
             paddingRight: 70,
           }}
         >
-          {step ? (t as (key: string) => string)(`steps.${step.id}.title`) : ''}
+          {step ? (t as (key: string) => string)(`steps.${step.id}.title`) : ""}
         </h3>
         <p
           style={{
             fontSize: 14,
             fontWeight: 400,
-            color: '#d1d5db',
+            color: "#d1d5db",
             marginTop: 8,
             marginBottom: 20,
             lineHeight: 1.5,
           }}
         >
-          {step ? (t as (key: string) => string)(`steps.${step.id}.description`) : ''}
+          {step
+            ? (t as (key: string) => string)(`steps.${step.id}.description`)
+            : ""}
         </p>
 
         {/* Step indicators */}
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'center',
+            display: "flex",
+            justifyContent: "center",
             gap: 8,
             marginBottom: 16,
           }}
@@ -360,8 +382,8 @@ export function OnboardingTour({
               style={{
                 width: 8,
                 height: 8,
-                borderRadius: '50%',
-                background: i === currentStep ? '#64b5f6' : '#6b7280',
+                borderRadius: "50%",
+                background: i === currentStep ? "#64b5f6" : "#6b7280",
               }}
               aria-hidden="true"
             />
@@ -369,55 +391,55 @@ export function OnboardingTour({
         </div>
 
         {/* Buttons */}
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
           {currentStep > 0 && (
             <button
               onClick={goBack}
               style={{
                 height: 32,
-                padding: '0 12px',
+                padding: "0 12px",
                 borderRadius: 6,
-                background: 'transparent',
-                border: '1px solid #4b5563',
-                color: '#d1d5db',
+                background: "transparent",
+                border: "1px solid #4b5563",
+                color: "#d1d5db",
                 fontSize: 14,
-                cursor: 'pointer',
-                outline: 'none',
+                cursor: "pointer",
+                outline: "none",
               }}
               onFocus={(e) => {
-                e.currentTarget.style.outline = '2px solid #64b5f6';
-                e.currentTarget.style.outlineOffset = '2px';
+                e.currentTarget.style.outline = "2px solid #64b5f6";
+                e.currentTarget.style.outlineOffset = "2px";
               }}
               onBlur={(e) => {
-                e.currentTarget.style.outline = 'none';
+                e.currentTarget.style.outline = "none";
               }}
             >
-              {t('back')}
+              {t("back")}
             </button>
           )}
           <button
             onClick={goNext}
             style={{
               height: 32,
-              padding: '0 12px',
+              padding: "0 12px",
               borderRadius: 6,
-              background: '#64b5f6',
-              border: 'none',
-              color: '#ffffff',
+              background: "#64b5f6",
+              border: "none",
+              color: "#ffffff",
               fontSize: 14,
               fontWeight: 500,
-              cursor: 'pointer',
-              outline: 'none',
+              cursor: "pointer",
+              outline: "none",
             }}
             onFocus={(e) => {
-              e.currentTarget.style.outline = '2px solid #64b5f6';
-              e.currentTarget.style.outlineOffset = '2px';
+              e.currentTarget.style.outline = "2px solid #64b5f6";
+              e.currentTarget.style.outlineOffset = "2px";
             }}
             onBlur={(e) => {
-              e.currentTarget.style.outline = 'none';
+              e.currentTarget.style.outline = "none";
             }}
           >
-            {isLastStep ? t('done') : t('next')}
+            {isLastStep ? t("done") : t("next")}
           </button>
         </div>
       </div>

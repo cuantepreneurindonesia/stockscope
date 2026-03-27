@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import { useSession, signIn, signOut } from 'next-auth/react';
-import type { Session } from 'next-auth';
-import type { AuthUser } from '@/lib/auth/types';
+import type { Session } from "next-auth";
+import { signIn, signOut, useSession } from "next-auth/react";
+
+import type { AuthUser } from "@/lib/auth/types";
 
 export interface UseAuthReturn {
   session: Session | null;
-  status: 'loading' | 'authenticated' | 'unauthenticated';
+  status: "loading" | "authenticated" | "unauthenticated";
   signIn: typeof signIn;
   signOut: typeof signOut;
   user: AuthUser | null;
@@ -19,13 +20,13 @@ export function useAuth(): UseAuthReturn {
   const { data: session, status } = useSession();
 
   const user: AuthUser | null =
-    session?.user && 'plan' in session.user
+    session?.user && "plan" in session.user
       ? {
-          id: (session.user as { id?: string }).id ?? '',
+          id: (session.user as { id?: string }).id ?? "",
           email: session.user.email ?? null,
           name: session.user.name ?? null,
           image: session.user.image ?? null,
-          plan: (session.user as { plan?: AuthUser['plan'] }).plan ?? 'free',
+          plan: (session.user as { plan?: AuthUser["plan"] }).plan ?? "free",
         }
       : null;
 

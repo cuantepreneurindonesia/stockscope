@@ -3,55 +3,60 @@
  * Get aggregated analytics and statistics
  * Separation of Concerns: API layer handles HTTP, service layer handles calculations
  */
+import { NextRequest, NextResponse } from "next/server";
 
-import { NextRequest, NextResponse } from 'next/server';
-import { fetchAllStocks } from '@/lib/services/stockService';
-import { calculateAnalytics } from '@/lib/services/analyticsService';
-import { filterStocks } from '@/lib/services/dataTransformService';
+import { calculateAnalytics } from "@/lib/services/analyticsService";
+import { filterStocks } from "@/lib/services/dataTransformService";
+import { fetchAllStocks } from "@/lib/services/stockService";
+
 import type {
-  StockFilter,
   AnalyticsStats,
   ApiResponse,
   OwnerType,
-} from '@/lib/types';
+  StockFilter,
+} from "@/types";
 
 const OWNER_TYPES: OwnerType[] = [
-  'ID',
-  'CP',
-  'IB',
-  'IS',
-  'SC',
-  'PF',
-  'MF',
-  'YD',
-  'GY',
-  'BK',
-  'OT',
+  "ID",
+  "CP",
+  "IB",
+  "IS",
+  "SC",
+  "PF",
+  "MF",
+  "YD",
+  "GY",
+  "BK",
+  "OT",
 ];
 
 function parseOwnerTypeParam(value: string | null): OwnerType | undefined {
   if (!value) return undefined;
-  return OWNER_TYPES.includes(value as OwnerType) ? (value as OwnerType) : undefined;
+  return OWNER_TYPES.includes(value as OwnerType)
+    ? (value as OwnerType)
+    : undefined;
 }
 
 type AnalyticsResponse = ApiResponse<AnalyticsStats>;
 
-export async function GET(request: NextRequest): Promise<NextResponse<AnalyticsResponse>> {
+export async function GET(
+  request: NextRequest,
+): Promise<NextResponse<AnalyticsResponse>> {
   try {
     const searchParams = request.nextUrl.searchParams;
 
     // Parse query parameters with type safety
-    const tier = searchParams.get('tier');
-    const hierarchyLevel = searchParams.get('hierarchyLevel');
-    const flag = searchParams.get('flag');
-    const ownerType = searchParams.get('ownerType');
+    const tier = searchParams.get("tier");
+    const hierarchyLevel = searchParams.get("hierarchyLevel");
+    const flag = searchParams.get("flag");
+    const ownerType = searchParams.get("ownerType");
 
     // Fetch all stocks for analysis
     const allStocks = await fetchAllStocks();
 
     // Build filter object
     const filter: StockFilter = {};
-    if (tier === 'Red' || tier === 'Amber' || tier === 'Green') {
+    if (tier === "Red" || tier === "Amber" || tier === "Green") {
       filter.tier = tier;
     }
     if (hierarchyLevel) {
@@ -76,15 +81,15 @@ export async function GET(request: NextRequest): Promise<NextResponse<AnalyticsR
       data: stats,
     });
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch analytics';
-    console.error('Error fetching analytics:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to fetch analytics";
 
     return NextResponse.json<AnalyticsResponse>(
       {
         success: false,
         error: errorMessage,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

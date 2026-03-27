@@ -2,9 +2,9 @@
  * GET /api/health
  * Liveness / readiness for uptime monitors (e.g. Vercel Cron or external pings).
  */
+import { NextResponse } from "next/server";
 
-import { NextResponse } from 'next/server';
-import { getDB } from '@/lib/mongodb';
+import { getDB } from "@/lib/mongodb";
 
 export async function GET(): Promise<NextResponse> {
   const timestamp = new Date().toISOString();
@@ -13,18 +13,18 @@ export async function GET(): Promise<NextResponse> {
     const db = await getDB();
     await db.command({ ping: 1 });
     return NextResponse.json({
-      status: 'ok',
+      status: "ok",
       timestamp,
-      database: 'connected',
+      database: "connected",
     });
   } catch {
     return NextResponse.json(
       {
-        status: 'degraded',
+        status: "degraded",
         timestamp,
-        database: 'unavailable',
+        database: "unavailable",
       },
-      { status: 503 }
+      { status: 503 },
     );
   }
 }

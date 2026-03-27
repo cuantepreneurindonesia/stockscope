@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useEffect, useCallback, RefObject } from 'react';
+import React, { RefObject, useCallback, useEffect } from "react";
 
 interface MobileDrawerProps {
   drawerOpen: boolean;
@@ -24,7 +24,7 @@ export function MobileDrawer({
       setActiveTab(tabId);
       setDrawerOpen(false);
     },
-    [setActiveTab, setDrawerOpen]
+    [setActiveTab, setDrawerOpen],
   );
 
   useEffect(() => {
@@ -34,17 +34,20 @@ export function MobileDrawer({
         setDrawerOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [drawerOpen, setDrawerOpen, drawerRef]);
 
   return (
     <>
       <div
-        className={`drawer-overlay ${drawerOpen ? 'open' : ''}`}
+        className={`drawer-overlay ${drawerOpen ? "open" : ""}`}
         onClick={() => setDrawerOpen(false)}
       />
-      <div ref={drawerRef} className={`mobile-drawer ${drawerOpen ? 'open' : ''}`}>
+      <div
+        ref={drawerRef}
+        className={`mobile-drawer ${drawerOpen ? "open" : ""}`}
+      >
         <button
           className="drawer-close"
           onClick={() => setDrawerOpen(false)}
@@ -55,7 +58,7 @@ export function MobileDrawer({
         {NAV_TABS.map(([id, label]) => (
           <button
             key={id}
-            className={`drawer-nav-btn ${activeTab === id ? 'active' : ''}`}
+            className={`drawer-nav-btn ${activeTab === id ? "active" : ""}`}
             onClick={() => handleTabClick(id)}
           >
             {label}

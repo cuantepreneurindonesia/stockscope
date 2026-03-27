@@ -1,5 +1,6 @@
-import React from 'react';
-import { getHeatColor } from '@/lib/services/dataTransformService';
+import React from "react";
+
+import { getHeatColor } from "@/lib/services/dataTransformService";
 
 interface HeatCellProps {
   value: number;
@@ -9,6 +10,9 @@ interface HeatCellProps {
   fmt?: (value: number) => string;
 }
 
+/**
+ * UI Component: HeatCell
+ */
 export function HeatCell({
   value,
   min,
@@ -23,10 +27,10 @@ export function HeatCell({
   return (
     <td
       style={{
-        padding: '5px 8px',
-        textAlign: 'right',
+        padding: "5px 8px",
+        textAlign: "right",
         fontSize: 11,
-        fontFamily: 'monospace',
+        fontFamily: "monospace",
         color: colorString,
         background: bgColorString,
       }}

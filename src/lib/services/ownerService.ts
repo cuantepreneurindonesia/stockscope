@@ -2,10 +2,9 @@
  * Owner service layer
  * Separation of Concerns: Owner data fetching and API communication
  */
+import type { ApiResponse, OwnerWithPortfolio } from "@/types";
 
-import type { OwnerWithPortfolio, ApiResponse } from '@/lib/types';
-
-const OWNERS_API = '/api/owners';
+const OWNERS_API = "/api/owners";
 
 export interface FetchOwnersOptions {
   limit?: number;
@@ -16,7 +15,7 @@ export interface FetchOwnersOptions {
  * Fetch owners from API
  */
 export async function fetchOwnersWithPortfolio(
-  options: FetchOwnersOptions = {}
+  options: FetchOwnersOptions = {},
 ): Promise<OwnerWithPortfolio[]> {
   const { limit = 100, detailed = true } = options;
   const params = new URLSearchParams({

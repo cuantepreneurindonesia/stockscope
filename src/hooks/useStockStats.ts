@@ -1,22 +1,28 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useMemo } from 'react';
-import { calculateTabStats, calculateHhiHistogram, calculateFlagCounts } from '@/lib/services/tabStatsService';
-import { fetchOwnersWithPortfolio } from '@/lib/services/ownerService';
+import { useEffect, useMemo, useState } from "react";
+
+import { fetchOwnersWithPortfolio } from "@/lib/services/ownerService";
 import {
   filterOwnersByName,
   transformOwnerTypeData,
   transformTopOwnersBarData,
-} from '@/lib/services/ownerTransformService';
+} from "@/lib/services/ownerTransformService";
+import {
+  calculateFlagCounts,
+  calculateHhiHistogram,
+  calculateTabStats,
+} from "@/lib/services/tabStatsService";
+
 import type {
+  FlagCount,
+  HhiHistBin,
+  OwnerTypeData,
+  OwnerWithPortfolio,
   Stock,
   TabStats,
-  HhiHistBin,
-  FlagCount,
-  OwnerWithPortfolio,
-  OwnerTypeData,
   TopOwnersBarData,
-} from '@/lib/types';
+} from "@/types";
 
 export interface UseStockStatsReturn {
   stats: TabStats;
@@ -34,7 +40,7 @@ export interface UseStockStatsReturn {
  */
 export function useStockStats(
   filteredStocks: Stock[],
-  ownerSearch = ''
+  ownerSearch = "",
 ): UseStockStatsReturn {
   const [ownerStats, setOwnerStats] = useState<OwnerWithPortfolio[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,10 +51,12 @@ export function useStockStats(
     async function loadOwners(): Promise<void> {
       try {
         setLoading(true);
-        const data = await fetchOwnersWithPortfolio({ limit: 100, detailed: true });
+        const data = await fetchOwnersWithPortfolio({
+          limit: 100,
+          detailed: true,
+        });
         if (!cancelled) setOwnerStats(data);
-      } catch (err) {
-        console.error('Failed to fetch owners:', err);
+      } catch {
         if (!cancelled) setOwnerStats([]);
       } finally {
         if (!cancelled) setLoading(false);
@@ -63,32 +71,32 @@ export function useStockStats(
 
   const stats = useMemo(
     () => calculateTabStats(filteredStocks),
-    [filteredStocks]
+    [filteredStocks],
   );
 
   const hhiHist = useMemo(
     () => calculateHhiHistogram(filteredStocks),
-    [filteredStocks]
+    [filteredStocks],
   );
 
   const flagCounts = useMemo(
     () => calculateFlagCounts(filteredStocks),
-    [filteredStocks]
+    [filteredStocks],
   );
 
   const filteredOwners = useMemo(
     () => filterOwnersByName(ownerStats, ownerSearch),
-    [ownerStats, ownerSearch]
+    [ownerStats, ownerSearch],
   );
 
   const ownerTypeData = useMemo(
     () => transformOwnerTypeData(filteredOwners),
-    [filteredOwners]
+    [filteredOwners],
   );
 
   const topOwnersBarData = useMemo(
     () => transformTopOwnersBarData(filteredOwners),
-    [filteredOwners]
+    [filteredOwners],
   );
 
   return {

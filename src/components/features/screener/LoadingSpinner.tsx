@@ -1,11 +1,14 @@
-'use client';
+"use client";
 
 interface LoadingSpinnerProps {
   size?: number;
   color?: string;
 }
 
-export function LoadingSpinner({ size = 20, color = '#457b9d' }: LoadingSpinnerProps) {
+export function LoadingSpinner({
+  size = 20,
+  color = "#457b9d",
+}: LoadingSpinnerProps) {
   return (
     <div
       style={{
@@ -13,9 +16,9 @@ export function LoadingSpinner({ size = 20, color = '#457b9d' }: LoadingSpinnerP
         height: size,
         border: `2px solid #1e3a52`,
         borderTopColor: color,
-        borderRadius: '50%',
-        animation: 'spin 0.8s linear infinite',
-        display: 'inline-block'
+        borderRadius: "50%",
+        animation: "spin 0.8s linear infinite",
+        display: "inline-block",
       }}
     >
       <style jsx>{`

@@ -3,22 +3,27 @@
  * Creates a Midtrans Snap transaction token for the logged-in user.
  * Returns { token, orderId } on success.
  */
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/config';
-import { snap, PREMIUM_PRICE_IDR, ADMIN_FEE_IDR, PRODUCT_NAME } from '@/lib/midtrans';
+import { authOptions } from "@/lib/auth/config";
+import {
+  ADMIN_FEE_IDR,
+  PREMIUM_PRICE_IDR,
+  PRODUCT_NAME,
+  snap,
+} from "@/lib/midtrans";
 
 export async function POST() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   // Already premium — no need to pay again
-  if ((session.user as { plan?: string }).plan === 'premium') {
-    return NextResponse.json({ error: 'Already premium' }, { status: 400 });
+  if ((session.user as { plan?: string }).plan === "premium") {
+    return NextResponse.json({ error: "Already premium" }, { status: 400 });
   }
 
   // Generate a unique order ID: userId + timestamp
@@ -31,24 +36,24 @@ export async function POST() {
     },
     item_details: [
       {
-        id: 'premium-monthly',
+        id: "premium-monthly",
         price: PREMIUM_PRICE_IDR,
         quantity: 1,
         name: PRODUCT_NAME,
       },
       {
-        id: 'admin-fee',
+        id: "admin-fee",
         price: ADMIN_FEE_IDR,
         quantity: 1,
-        name: 'Admin Fee',
+        name: "Admin Fee",
       },
     ],
     customer_details: {
-      first_name: session.user.name ?? 'User',
-      email: session.user.email ?? '',
+      first_name: session.user.name ?? "User",
+      email: session.user.email ?? "",
     },
     // Restrict payment to QRIS only.
-    enabled_payments: ['other_qris'],
+    enabled_payments: ["other_qris"],
     // Redirect URLs after payment completes (Snap popup closes and redirects)
     callbacks: {
       finish: `${process.env.NEXTAUTH_URL}/upgrade?status=success`,
@@ -63,8 +68,10 @@ export async function POST() {
       token: transaction.token,
       orderId,
     });
-  } catch (err) {
-    console.error('Midtrans createTransaction error:', err);
-    return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 });
+  } catch {
+    return NextResponse.json(
+      { error: "Failed to create transaction" },
+      { status: 500 },
+    );
   }
 }

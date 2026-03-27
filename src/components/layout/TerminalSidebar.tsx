@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { usePathname } from 'next/navigation';
+import { usePathname } from "next/navigation";
 
 interface TerminalSidebarProps {
   locale: string;
@@ -8,13 +8,15 @@ interface TerminalSidebarProps {
 
 export function TerminalSidebar({ locale }: TerminalSidebarProps) {
   const pathname = usePathname();
-  
+
   const isActive = (path: string) => pathname.includes(path);
 
   return (
-    <aside className="hidden md:flex flex-col h-[calc(100vh-68px)] w-64 
+    <aside
+      className="hidden md:flex flex-col h-[calc(100vh-68px)] w-64 
                       bg-surface border-r border-white/5 font-label text-sm 
-                      tracking-wide sticky top-[68px]">
+                      tracking-wide sticky top-[68px]"
+    >
       {/* Brand Section */}
       <div className="p-6">
         <div className="text-primary font-black text-xs uppercase tracking-widest mb-1">
@@ -31,9 +33,10 @@ export function TerminalSidebar({ locale }: TerminalSidebarProps) {
           href={`/${locale}`}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg 
                      transition-all duration-200
-                     ${isActive('/') && !isActive('/screener')
-                       ? 'bg-primary/10 text-primary'
-                       : 'text-on-surface-variant hover:bg-white/5 hover:text-on-surface'
+                     ${
+                       isActive("/") && !isActive("/screener")
+                         ? "bg-primary/10 text-primary"
+                         : "text-on-surface-variant hover:bg-white/5 hover:text-on-surface"
                      }`}
         >
           <span className="material-symbols-outlined">dashboard</span>
@@ -44,9 +47,10 @@ export function TerminalSidebar({ locale }: TerminalSidebarProps) {
           href={`/${locale}/screener`}
           className={`flex items-center gap-3 px-4 py-3 rounded-lg 
                      transition-all duration-200
-                     ${isActive('/screener')
-                       ? 'bg-primary/10 text-primary'
-                       : 'text-on-surface-variant hover:bg-white/5 hover:text-on-surface'
+                     ${
+                       isActive("/screener")
+                         ? "bg-primary/10 text-primary"
+                         : "text-on-surface-variant hover:bg-white/5 hover:text-on-surface"
                      }`}
         >
           <span className="material-symbols-outlined">filter_alt</span>

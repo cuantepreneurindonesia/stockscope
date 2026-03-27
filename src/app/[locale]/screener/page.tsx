@@ -1,29 +1,34 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useTranslations, useLocale } from 'next-intl';
-import { FilterPanel } from '@/components/screener/FilterPanel';
-import { ScreenerTable } from '@/components/screener/ScreenerTable';
-import { ScreenerCardList } from '@/components/screener/ScreenerCardList';
-import { SkeletonLoader } from '@/components/screener/SkeletonLoader';
-import { TerminalHeader } from '@/components/layout/TerminalHeader';
-import { TerminalSidebar } from '@/components/layout/TerminalSidebar';
-import { ResultsHeader } from '@/components/screener/ResultsHeader';
-import { StockDetailPanel } from '@/components/screener/StockDetailPanel';
-import type { EnrichedStock } from '@/lib/types/unified';
+import { useEffect, useState } from "react";
+
+import { useLocale, useTranslations } from "next-intl";
+
+import { FilterPanel } from "@/components/features/screener/FilterPanel";
+import { ResultsHeader } from "@/components/features/screener/ResultsHeader";
+import { ScreenerCardList } from "@/components/features/screener/ScreenerCardList";
+import { ScreenerTable } from "@/components/features/screener/ScreenerTable";
+import { SkeletonLoader } from "@/components/features/screener/SkeletonLoader";
+import { StockDetailPanel } from "@/components/features/screener/StockDetailPanel";
+import { TerminalHeader } from "@/components/layout/TerminalHeader";
+import { TerminalSidebar } from "@/components/layout/TerminalSidebar";
+
+import type { EnrichedStock } from "@/types/unified";
 
 export default function ScreenerPage(): React.ReactElement {
-  const t = useTranslations('screenerPage');
+  const t = useTranslations("screenerPage");
   const locale = useLocale();
-  const loadErrorLabel = t('loadError');
+  const loadErrorLabel = t("loadError");
   const [stocks, setStocks] = useState<EnrichedStock[]>([]);
-  const [sectors, setSectors] = useState<string[]>(['All']);
+  const [sectors, setSectors] = useState<string[]>(["All"]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [view, setView] = useState<'table' | 'cards'>('table');
-  
+  const [view, setView] = useState<"table" | "cards">("table");
+
   // Stock Detail Panel state
-  const [selectedStock, setSelectedStock] = useState<EnrichedStock | null>(null);
+  const [selectedStock, setSelectedStock] = useState<EnrichedStock | null>(
+    null,
+  );
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   const handleStockClick = (stock: EnrichedStock) => {
@@ -40,40 +45,42 @@ export default function ScreenerPage(): React.ReactElement {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setView('cards');
+        setView("cards");
       }
     };
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSector, setSelectedSector] = useState('All');
-  const [selectedAiTier, setSelectedAiTier] = useState('');
-  const [selectedGovTier, setSelectedGovTier] = useState<'Red' | 'Amber' | 'Green' | ''>('');
-  const [minScore, setMinScore] = useState('');
-  const [maxScore, setMaxScore] = useState('');
-  const [sortBy, setSortBy] = useState('composite');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSector, setSelectedSector] = useState("All");
+  const [selectedAiTier, setSelectedAiTier] = useState("");
+  const [selectedGovTier, setSelectedGovTier] = useState<
+    "Red" | "Amber" | "Green" | ""
+  >("");
+  const [minScore, setMinScore] = useState("");
+  const [maxScore, setMaxScore] = useState("");
+  const [sortBy, setSortBy] = useState("composite");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
-    fetch('/api/screener/filters')
+    fetch("/api/screener/filters")
       .then((res) => res.json())
-      .then((data) => setSectors(data.sectors || ['All']))
-      .catch((err) => console.error('Failed to load sectors:', err));
+      .then((data) => setSectors(data.sectors || ["All"]))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
     const params = new URLSearchParams();
-    if (searchQuery) params.append('search', searchQuery);
-    if (selectedSector !== 'All') params.append('sector', selectedSector);
-    if (selectedAiTier) params.append('aiTier', selectedAiTier);
-    if (selectedGovTier) params.append('tier', selectedGovTier);
-    if (minScore) params.append('minScore', minScore);
-    if (maxScore) params.append('maxScore', maxScore);
-    params.append('sortBy', sortBy);
-    params.append('order', sortOrder);
+    if (searchQuery) params.append("search", searchQuery);
+    if (selectedSector !== "All") params.append("sector", selectedSector);
+    if (selectedAiTier) params.append("aiTier", selectedAiTier);
+    if (selectedGovTier) params.append("tier", selectedGovTier);
+    if (minScore) params.append("minScore", minScore);
+    if (maxScore) params.append("maxScore", maxScore);
+    params.append("sortBy", sortBy);
+    params.append("order", sortOrder);
 
     queueMicrotask(() => setLoading(true));
     fetch(`/api/stocks/enriched?${params.toString()}`)
@@ -86,8 +93,7 @@ export default function ScreenerPage(): React.ReactElement {
           setError(data.error || loadErrorLabel);
         }
       })
-      .catch((err) => {
-        console.error('Error fetching stocks:', err);
+      .catch(() => {
         setError(loadErrorLabel);
       })
       .finally(() => setLoading(false));
@@ -105,10 +111,10 @@ export default function ScreenerPage(): React.ReactElement {
 
   const handleSort = (field: string): void => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortBy(field);
-      setSortOrder('desc');
+      setSortOrder("desc");
     }
   };
 
@@ -116,12 +122,12 @@ export default function ScreenerPage(): React.ReactElement {
     <div className="min-h-screen bg-surface-container-lowest flex flex-col">
       {/* Terminal Header */}
       <TerminalHeader locale={locale} />
-      
+
       {/* Main Content Area with Sidebar */}
       <div className="flex flex-1">
         {/* Terminal Sidebar */}
         <TerminalSidebar locale={locale} />
-        
+
         {/* Content Area (Filter + Results) */}
         <div className="flex-1 flex gap-6 p-6 overflow-hidden">
           {/* Filter Panel Column */}
@@ -186,10 +192,10 @@ export default function ScreenerPage(): React.ReactElement {
                 </div>
               ) : loading ? (
                 <SkeletonLoader rows={5} columns={7} />
-              ) : view === 'cards' ? (
-                <ScreenerCardList 
-                  stocks={stocks} 
-                  onStockClick={handleStockClick} 
+              ) : view === "cards" ? (
+                <ScreenerCardList
+                  stocks={stocks}
+                  onStockClick={handleStockClick}
                 />
               ) : (
                 <ScreenerTable

@@ -1,11 +1,13 @@
-'use client';
+"use client";
 
-import { useCallback, useMemo } from 'react';
-import { useAuth } from './useAuth';
+import { useCallback, useMemo } from "react";
+
 // Premium gating (uncomment when restoring tier limits):
 // import { FREE_LIMIT } from '@/lib/auth/constants';
 // import { isPremiumTab } from '@/lib/services/planService';
-import type { Plan } from '@/lib/auth/types';
+import type { Plan } from "@/lib/auth/types";
+
+import { useAuth } from "./useAuth";
 
 export interface UsePlanReturn {
   plan: Plan;
@@ -21,7 +23,7 @@ export interface UsePlanReturn {
 export function usePlan(): UsePlanReturn {
   const { user, status } = useAuth();
 
-  const plan: Plan = useMemo(() => user?.plan ?? 'free', [user?.plan]);
+  const plan: Plan = useMemo(() => user?.plan ?? "free", [user?.plan]);
 
   // --- Premium gating off: everyone treated as premium. Restore block below and remove the `true` / `Infinity` shims. ---
   // const isPremium = useMemo(() => plan === 'premium', [plan]);
@@ -48,6 +50,6 @@ export function usePlan(): UsePlanReturn {
     isPremium,
     canAccessTab,
     dataLimit,
-    isLoading: status === 'loading',
+    isLoading: status === "loading",
   };
 }

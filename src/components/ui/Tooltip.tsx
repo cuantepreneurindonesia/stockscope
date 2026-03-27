@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 interface TooltipProps {
   content: string;
@@ -8,7 +8,14 @@ interface TooltipProps {
   delay?: number;
 }
 
-export function Tooltip({ content, children, delay = 200 }: TooltipProps): React.ReactElement {
+/**
+ * UI Component: Tooltip
+ */
+export function Tooltip({
+  content,
+  children,
+  delay = 200,
+}: TooltipProps): React.ReactElement {
   const [visible, setVisible] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
@@ -34,24 +41,24 @@ export function Tooltip({ content, children, delay = 200 }: TooltipProps): React
       {visible && (
         <div
           style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
+            position: "absolute",
+            bottom: "100%",
+            left: "50%",
+            transform: "translateX(-50%)",
             marginBottom: 8,
             zIndex: 50,
           }}
         >
           <div
             style={{
-              background: '#1e3a52',
-              color: '#e8f4f8',
+              background: "#1e3a52",
+              color: "#e8f4f8",
               fontSize: 11,
-              padding: '6px 10px',
+              padding: "6px 10px",
               borderRadius: 6,
-              whiteSpace: 'nowrap',
-              pointerEvents: 'none',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
+              whiteSpace: "nowrap",
+              pointerEvents: "none",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.6)",
             }}
           >
             {content}

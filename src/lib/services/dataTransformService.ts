@@ -2,18 +2,17 @@
  * Data transformation service
  * Separation of Concerns: All data formatting and transformation
  */
-
-import type { Stock, StockFilter } from '@/lib/types';
+import type { Stock, StockFilter } from "@/types";
 
 /**
  * Format number with K/M suffix
  */
 export function formatNumber(value: number, decimals: number = 0): string {
   if (value >= 1_000_000) {
-    return (value / 1_000_000).toFixed(decimals) + 'M';
+    return (value / 1_000_000).toFixed(decimals) + "M";
   }
   if (value >= 1_000) {
-    return (value / 1_000).toFixed(decimals) + 'K';
+    return (value / 1_000).toFixed(decimals) + "K";
   }
   return value.toFixed(decimals);
 }
@@ -22,7 +21,7 @@ export function formatNumber(value: number, decimals: number = 0): string {
  * Format percentage (values are already in 0-100 range)
  */
 export function formatPercent(value: number, decimals: number = 2): string {
-  return value.toFixed(decimals) + '%';
+  return value.toFixed(decimals) + "%";
 }
 
 /**
@@ -33,7 +32,7 @@ export function getHeatColor(
   value: number,
   min: number,
   max: number,
-  reverse: boolean = false
+  reverse: boolean = false,
 ): { r: number; g: number; b: number } {
   const pct = max === min ? 0.5 : (value - min) / (max - min);
   const heat = reverse ? 1 - pct : pct;
@@ -50,7 +49,7 @@ export function getHeatColorString(
   value: number,
   min: number,
   max: number,
-  reverse: boolean = false
+  reverse: boolean = false,
 ): string {
   const { r, g, b } = getHeatColor(value, min, max, reverse);
   return `rgb(${r},${g},${b})`;
@@ -71,7 +70,7 @@ export function filterStocks(stocks: Stock[], filters: StockFilter): Stock[] {
     result = result.filter((s) => {
       const computed =
         s.hierarchyLevel ??
-        (s.hhi < 1500 ? 'Low' : s.hhi <= 2500 ? 'Moderate' : 'High');
+        (s.hhi < 1500 ? "Low" : s.hhi <= 2500 ? "Moderate" : "High");
       return computed === hl;
     });
   }
@@ -91,7 +90,7 @@ export function filterStocks(stocks: Stock[], filters: StockFilter): Stock[] {
       (s) =>
         s.code.toLowerCase().includes(searchLower) ||
         s.issuer.toLowerCase().includes(searchLower) ||
-        s.topHolder?.toLowerCase().includes(searchLower)
+        s.topHolder?.toLowerCase().includes(searchLower),
     );
   }
 
@@ -103,8 +102,8 @@ export function filterStocks(stocks: Stock[], filters: StockFilter): Stock[] {
  */
 export function sortStocks(
   stocks: Stock[],
-  sortBy: keyof Stock = 'code',
-  direction: 'asc' | 'desc' = 'asc'
+  sortBy: keyof Stock = "code",
+  direction: "asc" | "desc" = "asc",
 ): Stock[] {
   const sorted = [...stocks];
 
@@ -118,19 +117,19 @@ export function sortStocks(
     }
 
     // Handle numeric comparison
-    if (typeof aValue === 'number' && typeof bValue === 'number') {
-      return direction === 'asc' ? aValue - bValue : bValue - aValue;
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return direction === "asc" ? aValue - bValue : bValue - aValue;
     }
 
     // Handle string comparison
-    if (typeof aValue === 'string' && typeof bValue === 'string') {
+    if (typeof aValue === "string" && typeof bValue === "string") {
       const cmp = aValue.localeCompare(bValue);
-      return direction === 'asc' ? cmp : -cmp;
+      return direction === "asc" ? cmp : -cmp;
     }
 
     // Handle other types
-    if (aValue < bValue) return direction === 'asc' ? -1 : 1;
-    if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+    if (aValue < bValue) return direction === "asc" ? -1 : 1;
+    if (aValue > bValue) return direction === "asc" ? 1 : -1;
     return 0;
   });
 
@@ -143,7 +142,7 @@ export function sortStocks(
 export function paginate<T>(
   items: T[],
   page: number,
-  pageSize: number = 50
+  pageSize: number = 50,
 ): {
   data: T[];
   total: number;
@@ -164,24 +163,29 @@ export function paginate<T>(
 /**
  * Group stocks by tier
  */
-export function groupByTier(stocks: Stock[]): Record<'Red' | 'Amber' | 'Green', Stock[]> {
+export function groupByTier(
+  stocks: Stock[],
+): Record<"Red" | "Amber" | "Green", Stock[]> {
   return {
-    Red: stocks.filter((s) => s.tier === 'Red'),
-    Amber: stocks.filter((s) => s.tier === 'Amber'),
-    Green: stocks.filter((s) => s.tier === 'Green'),
+    Red: stocks.filter((s) => s.tier === "Red"),
+    Amber: stocks.filter((s) => s.tier === "Amber"),
+    Green: stocks.filter((s) => s.tier === "Green"),
   };
 }
 
 /**
  * Get min and max values for heat coloring
  */
-export function getMinMaxForField(stocks: Stock[], field: keyof Stock): {
+export function getMinMaxForField(
+  stocks: Stock[],
+  field: keyof Stock,
+): {
   min: number;
   max: number;
 } {
   const values = stocks
     .map((s) => s[field])
-    .filter((v) => typeof v === 'number') as number[];
+    .filter((v) => typeof v === "number") as number[];
 
   if (values.length === 0) {
     return { min: 0, max: 100 };

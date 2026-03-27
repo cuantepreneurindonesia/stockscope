@@ -1,27 +1,30 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
+
 import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
+  Bar,
   BarChart,
   CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  Bar,
-} from 'recharts';
-import { Pagination, BlurOverlay } from '@/components/ui';
-import { OWNER_TYPE_STYLES } from '@/lib/constants';
-import { applyLimit } from '@/lib/services/planService';
+} from "recharts";
+
+import { BlurOverlay, Pagination } from "@/components/ui";
+import { OWNER_TYPE_STYLES } from "@/lib/constants";
+import { applyLimit } from "@/lib/services/planService";
+
 import type {
-  OwnerWithPortfolio,
   OwnerTypeData,
+  OwnerWithPortfolio,
   TopOwnersBarData,
-} from '@/lib/types';
+} from "@/types";
 
 interface OwnersTabProps {
   filteredOwners: OwnerWithPortfolio[];
@@ -53,7 +56,7 @@ export function OwnersTab({
 
   const { visible: limitedVisible, blurredCount } = useMemo(
     () => applyLimit(filteredOwners, dataLimit),
-    [filteredOwners, dataLimit]
+    [filteredOwners, dataLimit],
   );
 
   useEffect(() => {
@@ -71,26 +74,33 @@ export function OwnersTab({
   return (
     <div
       style={{
-        background: '#09131f',
-        border: '1px solid #132030',
+        background: "#09131f",
+        border: "1px solid #132030",
         borderRadius: 10,
         padding: 20,
       }}
     >
-      <div style={{ fontSize: 11, color: '#6b8aad', letterSpacing: 2, marginBottom: 4 }}>
+      <div
+        style={{
+          fontSize: 11,
+          color: "#6b8aad",
+          letterSpacing: 2,
+          marginBottom: 4,
+        }}
+      >
         TOP HOLDERS DISSECTION
       </div>
       <div
         style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          alignItems: "flex-end",
           marginBottom: 16,
           gap: 10,
         }}
       >
-        <div style={{ fontSize: 14, color: '#e8f4f8', fontWeight: 600 }}>
+        <div style={{ fontSize: 14, color: "#e8f4f8", fontWeight: 600 }}>
           {filteredOwners.length} Unique Owners Found
         </div>
         <input
@@ -99,13 +109,13 @@ export function OwnersTab({
           value={ownerSearch}
           onChange={(e) => setOwnerSearch(e.target.value)}
           style={{
-            background: '#060d18',
-            border: '1px solid #1e3a52',
+            background: "#060d18",
+            border: "1px solid #1e3a52",
             borderRadius: 6,
-            padding: '8px 12px',
-            color: '#e8f4f8',
+            padding: "8px 12px",
+            color: "#e8f4f8",
             fontSize: 12,
-            outline: 'none',
+            outline: "none",
             width: 200,
           }}
         />
@@ -113,30 +123,30 @@ export function OwnersTab({
 
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
           gap: 20,
           marginBottom: 20,
         }}
       >
         <div
           style={{
-            background: '#060d18',
-            border: '1px solid #132030',
+            background: "#060d18",
+            border: "1px solid #132030",
             borderRadius: 8,
             padding: 16,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
           <div
             style={{
               fontSize: 11,
-              color: '#6b8aad',
+              color: "#6b8aad",
               letterSpacing: 1,
               marginBottom: 8,
-              alignSelf: 'flex-start',
+              alignSelf: "flex-start",
             }}
           >
             OWNER COMPOSITION
@@ -159,21 +169,24 @@ export function OwnersTab({
               </Pie>
               <Tooltip
                 contentStyle={{
-                  background: '#09131f',
-                  border: '1px solid #1e3a52',
+                  background: "#09131f",
+                  border: "1px solid #1e3a52",
                   borderRadius: 6,
                   fontSize: 12,
                 }}
-                itemStyle={{ color: '#e8f4f8' }}
+                itemStyle={{ color: "#e8f4f8" }}
               />
-              <Legend iconType="circle" wrapperStyle={{ fontSize: 11, color: '#a8c8e8' }} />
+              <Legend
+                iconType="circle"
+                wrapperStyle={{ fontSize: 11, color: "#a8c8e8" }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
         <div
           style={{
-            background: '#060d18',
-            border: '1px solid #132030',
+            background: "#060d18",
+            border: "1px solid #132030",
             borderRadius: 8,
             padding: 16,
           }}
@@ -181,7 +194,7 @@ export function OwnersTab({
           <div
             style={{
               fontSize: 11,
-              color: '#6b8aad',
+              color: "#6b8aad",
               letterSpacing: 1,
               marginBottom: 8,
             }}
@@ -194,85 +207,96 @@ export function OwnersTab({
               layout="vertical"
               margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#132030" horizontal={false} />
-              <XAxis type="number" tick={{ fill: '#6b8aad', fontSize: 9 }} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#132030"
+                horizontal={false}
+              />
+              <XAxis type="number" tick={{ fill: "#6b8aad", fontSize: 9 }} />
               <YAxis
                 dataKey="name"
                 type="category"
                 width={110}
-                tick={{ fill: '#a8c8e8', fontSize: 10 }}
+                tick={{ fill: "#a8c8e8", fontSize: 10 }}
               />
               <Tooltip
                 contentStyle={{
-                  background: '#09131f',
-                  border: '1px solid #1e3a52',
+                  background: "#09131f",
+                  border: "1px solid #1e3a52",
                   borderRadius: 6,
                   fontSize: 12,
                 }}
-                labelStyle={{ color: '#e8f4f8' }}
-                cursor={{ fill: '#132030' }}
+                labelStyle={{ color: "#e8f4f8" }}
+                cursor={{ fill: "#132030" }}
               />
-              <Bar dataKey="count" fill="#2A9D8F" radius={[0, 4, 4, 0]} name="Stocks Held" />
+              <Bar
+                dataKey="count"
+                fill="#2A9D8F"
+                radius={[0, 4, 4, 0]}
+                name="Stocks Held"
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+      <div style={{ overflowX: "auto" }}>
+        <table
+          style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}
+        >
           <thead>
-            <tr style={{ borderBottom: '2px solid #132030' }}>
+            <tr style={{ borderBottom: "2px solid #132030" }}>
               <th
                 style={{
-                  textAlign: 'left',
-                  padding: '10px 8px',
-                  color: '#457B9D',
+                  textAlign: "left",
+                  padding: "10px 8px",
+                  color: "#457B9D",
                   fontSize: 10,
-                  width: '30%',
+                  width: "30%",
                 }}
               >
                 OWNER NAME
               </th>
               <th
                 style={{
-                  textAlign: 'left',
-                  padding: '10px 8px',
-                  color: '#457B9D',
+                  textAlign: "left",
+                  padding: "10px 8px",
+                  color: "#457B9D",
                   fontSize: 10,
-                  width: '12%',
+                  width: "12%",
                 }}
               >
                 TYPE
               </th>
               <th
                 style={{
-                  textAlign: 'right',
-                  padding: '10px 8px',
-                  color: '#457B9D',
+                  textAlign: "right",
+                  padding: "10px 8px",
+                  color: "#457B9D",
                   fontSize: 10,
-                  width: '10%',
+                  width: "10%",
                 }}
               >
                 STOCKS
               </th>
               <th
                 style={{
-                  textAlign: 'right',
-                  padding: '10px 8px',
-                  color: '#457B9D',
+                  textAlign: "right",
+                  padding: "10px 8px",
+                  color: "#457B9D",
                   fontSize: 10,
-                  width: '12%',
+                  width: "12%",
                 }}
               >
                 ∑ EST. RISK WT
               </th>
               <th
                 style={{
-                  textAlign: 'left',
-                  padding: '10px 16px',
-                  color: '#457B9D',
+                  textAlign: "left",
+                  padding: "10px 16px",
+                  color: "#457B9D",
                   fontSize: 10,
-                  width: '36%',
+                  width: "36%",
                 }}
               >
                 PORTFOLIO EXPOSURE
@@ -282,38 +306,41 @@ export function OwnersTab({
           <tbody>
             {paginatedOwners.map((o, i) => {
               const isExpanded = expandedPortfolios[o.name];
-              const visibleStocks = isExpanded ? o.stocks : o.stocks.slice(0, 5);
+              const visibleStocks = isExpanded
+                ? o.stocks
+                : o.stocks.slice(0, 5);
               const hiddenCount = o.stocks.length - 5;
               return (
                 <tr
                   key={o.name}
                   style={{
-                    borderBottom: '1px solid #132030',
-                    background: i % 2 === 0 ? '#09131f' : '#060d18',
+                    borderBottom: "1px solid #132030",
+                    background: i % 2 === 0 ? "#09131f" : "#060d18",
                   }}
                 >
                   <td
                     style={{
-                      padding: '14px 8px',
-                      color: '#e8f4f8',
+                      padding: "14px 8px",
+                      color: "#e8f4f8",
                       fontWeight: 600,
                       maxWidth: 240,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
                     }}
                     title={o.name}
                   >
                     {o.name}
                   </td>
-                  <td style={{ padding: '14px 8px' }}>
+                  <td style={{ padding: "14px 8px" }}>
                     <span
                       style={{
-                        background: OWNER_TYPE_STYLES[o.type]?.bg ?? '#E9C46A22',
-                        color: OWNER_TYPE_STYLES[o.type]?.color ?? '#E9C46A',
-                        border: `1px solid ${OWNER_TYPE_STYLES[o.type]?.border ?? '#E9C46A55'}`,
+                        background:
+                          OWNER_TYPE_STYLES[o.type]?.bg ?? "#E9C46A22",
+                        color: OWNER_TYPE_STYLES[o.type]?.color ?? "#E9C46A",
+                        border: `1px solid ${OWNER_TYPE_STYLES[o.type]?.border ?? "#E9C46A55"}`,
                         borderRadius: 4,
-                        padding: '3px 8px',
+                        padding: "3px 8px",
                         fontSize: 9,
                         fontWeight: 500,
                       }}
@@ -324,10 +351,10 @@ export function OwnersTab({
                   </td>
                   <td
                     style={{
-                      padding: '14px 8px',
-                      textAlign: 'right',
-                      color: '#a8c8e8',
-                      fontFamily: 'DM Mono, monospace',
+                      padding: "14px 8px",
+                      textAlign: "right",
+                      color: "#a8c8e8",
+                      fontFamily: "DM Mono, monospace",
                       fontSize: 14,
                     }}
                   >
@@ -335,48 +362,58 @@ export function OwnersTab({
                   </td>
                   <td
                     style={{
-                      padding: '14px 8px',
-                      textAlign: 'right',
-                      color: o.totalPct > 100 ? '#e76f51' : '#E9C46A',
-                      fontFamily: 'DM Mono, monospace',
+                      padding: "14px 8px",
+                      textAlign: "right",
+                      color: o.totalPct > 100 ? "#e76f51" : "#E9C46A",
+                      fontFamily: "DM Mono, monospace",
                       fontSize: 13,
                       fontWeight: 600,
                     }}
                   >
                     {o.totalPct.toFixed(1)}%
                   </td>
-                  <td style={{ padding: '10px 16px' }}>
+                  <td style={{ padding: "10px 16px" }}>
                     <div
                       style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
+                        display: "flex",
+                        flexWrap: "wrap",
                         gap: 6,
-                        alignItems: 'center',
+                        alignItems: "center",
                       }}
                     >
                       {visibleStocks.map((sym) => (
                         <span
                           key={sym.code}
                           style={{
-                            background: '#132030',
-                            color: '#e8f4f8',
+                            background: "#132030",
+                            color: "#e8f4f8",
                             borderRadius: 4,
-                            padding: '4px 8px',
+                            padding: "4px 8px",
                             fontSize: 10,
-                            fontFamily: 'DM Mono, monospace',
-                            border: '1px solid #1e3a52',
-                            display: 'flex',
-                            flexDirection: 'column',
+                            fontFamily: "DM Mono, monospace",
+                            border: "1px solid #1e3a52",
+                            display: "flex",
+                            flexDirection: "column",
                             gap: 2,
                             minWidth: 100,
                           }}
                         >
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <b style={{ color: '#a8c8e8' }}>{sym.code}</b>
+                          <span
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 6,
+                            }}
+                          >
+                            <b style={{ color: "#a8c8e8" }}>{sym.code}</b>
                             <span
                               style={{
                                 color:
-                                  sym.pct > 50 ? '#e76f51' : sym.pct > 25 ? '#E9C46A' : '#2A9D8F',
+                                  sym.pct > 50
+                                    ? "#e76f51"
+                                    : sym.pct > 25
+                                      ? "#E9C46A"
+                                      : "#2A9D8F",
                               }}
                             >
                               {sym.pct.toFixed(2)}%
@@ -386,10 +423,10 @@ export function OwnersTab({
                             <span
                               style={{
                                 fontSize: 9,
-                                color: '#6b8aad',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
+                                color: "#6b8aad",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
                                 maxWidth: 140,
                               }}
                               title={sym.issuer}
@@ -403,13 +440,13 @@ export function OwnersTab({
                         <button
                           onClick={() => toggleExpand(o.name)}
                           style={{
-                            background: '#2A9D8F22',
-                            color: '#2A9D8F',
-                            border: '1px dashed #2A9D8F55',
+                            background: "#2A9D8F22",
+                            color: "#2A9D8F",
+                            border: "1px dashed #2A9D8F55",
                             borderRadius: 4,
-                            padding: '3px 8px',
+                            padding: "3px 8px",
                             fontSize: 10,
-                            cursor: 'pointer',
+                            cursor: "pointer",
                             fontWeight: 600,
                           }}
                         >
@@ -420,13 +457,13 @@ export function OwnersTab({
                         <button
                           onClick={() => toggleExpand(o.name)}
                           style={{
-                            background: 'transparent',
-                            color: '#e76f51',
-                            border: 'none',
-                            padding: '3px 8px',
+                            background: "transparent",
+                            color: "#e76f51",
+                            border: "none",
+                            padding: "3px 8px",
                             fontSize: 10,
-                            cursor: 'pointer',
-                            textDecoration: 'underline',
+                            cursor: "pointer",
+                            textDecoration: "underline",
                             fontWeight: 600,
                           }}
                         >
@@ -445,21 +482,36 @@ export function OwnersTab({
             isBlurred
             message={`${blurredCount} more owners — Upgrade to see all`}
           >
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontSize: 11,
+              }}
+            >
               <tbody>
-                {Array.from({ length: Math.min(5, blurredCount) }).map((_, i) => (
-                  <tr
-                    key={`blurred-owner-${i}`}
-                    style={{
-                      borderBottom: '1px solid #132030',
-                      background: i % 2 === 0 ? '#09131f' : '#060d18',
-                    }}
-                  >
-                    <td colSpan={5} style={{ padding: '14px 8px', color: '#6b8aad', fontSize: 11 }}>
-                      ••• ••• ••• ••• •••
-                    </td>
-                  </tr>
-                ))}
+                {Array.from({ length: Math.min(5, blurredCount) }).map(
+                  (_, i) => (
+                    <tr
+                      key={`blurred-owner-${i}`}
+                      style={{
+                        borderBottom: "1px solid #132030",
+                        background: i % 2 === 0 ? "#09131f" : "#060d18",
+                      }}
+                    >
+                      <td
+                        colSpan={5}
+                        style={{
+                          padding: "14px 8px",
+                          color: "#6b8aad",
+                          fontSize: 11,
+                        }}
+                      >
+                        ••• ••• ••• ••• •••
+                      </td>
+                    </tr>
+                  ),
+                )}
               </tbody>
             </table>
           </BlurOverlay>
@@ -478,8 +530,16 @@ export function OwnersTab({
           />
         )}
         {!isPremium && filteredOwners.length > 0 && (
-          <div style={{ fontSize: 11, color: '#6b8aad', padding: '12px 0', borderTop: '1px solid #132030' }}>
-            Showing {limitedVisible.length} of {filteredOwners.length} — Upgrade to see all
+          <div
+            style={{
+              fontSize: 11,
+              color: "#6b8aad",
+              padding: "12px 0",
+              borderTop: "1px solid #132030",
+            }}
+          >
+            Showing {limitedVisible.length} of {filteredOwners.length} — Upgrade
+            to see all
           </div>
         )}
       </div>

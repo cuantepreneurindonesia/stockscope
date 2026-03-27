@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 
 interface PaginationProps {
   page: number;
@@ -11,6 +11,9 @@ interface PaginationProps {
   pageSizeOptions?: number[];
 }
 
+/**
+ * UI Component: Pagination
+ */
 export function Pagination({
   page,
   totalItems,
@@ -27,47 +30,47 @@ export function Pagination({
   const canNext = page < totalPages;
 
   const buttonStyle = (disabled: boolean) => ({
-    background: disabled ? '#0d1e30' : '#132030',
-    color: disabled ? '#6b8aad' : '#e8f4f8',
-    border: '1px solid #1e3a52',
+    background: disabled ? "#0d1e30" : "#132030",
+    color: disabled ? "#6b8aad" : "#e8f4f8",
+    border: "1px solid #1e3a52",
     borderRadius: 6,
-    padding: '6px 12px',
+    padding: "6px 12px",
     fontSize: 11,
-    cursor: disabled ? 'not-allowed' : 'pointer',
+    cursor: disabled ? "not-allowed" : "pointer",
     fontWeight: 600,
   });
 
   return (
     <div
       style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        display: "flex",
+        flexWrap: "wrap",
+        alignItems: "center",
+        justifyContent: "space-between",
         gap: 12,
-        padding: '12px 0',
-        borderTop: '1px solid #132030',
+        padding: "12px 0",
+        borderTop: "1px solid #132030",
       }}
     >
-      <div style={{ fontSize: 11, color: '#6b8aad' }}>
+      <div style={{ fontSize: 11, color: "#6b8aad" }}>
         Showing {totalItems === 0 ? 0 : start + 1}–{end} of {totalItems}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         {onPageSizeChange && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontSize: 11, color: '#6b8aad' }}>Per page:</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ fontSize: 11, color: "#6b8aad" }}>Per page:</span>
             <select
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
               style={{
-                background: '#060d18',
-                border: '1px solid #1e3a52',
+                background: "#060d18",
+                border: "1px solid #1e3a52",
                 borderRadius: 6,
-                padding: '6px 10px',
-                color: '#e8f4f8',
+                padding: "6px 10px",
+                color: "#e8f4f8",
                 fontSize: 11,
-                cursor: 'pointer',
+                cursor: "pointer",
               }}
             >
               {pageSizeOptions.map((opt) => (
@@ -79,7 +82,7 @@ export function Pagination({
           </div>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <button
             type="button"
             onClick={() => onPageChange(page - 1)}
@@ -90,9 +93,9 @@ export function Pagination({
           </button>
           <span
             style={{
-              padding: '6px 12px',
+              padding: "6px 12px",
               fontSize: 11,
-              color: '#a8c8e8',
+              color: "#a8c8e8",
               fontFamily: "'DM Mono', monospace",
             }}
           >

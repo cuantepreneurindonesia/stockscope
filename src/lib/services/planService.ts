@@ -2,13 +2,15 @@
  * Plan service layer
  * Separation of Concerns: Pure functions for plan/limit logic
  */
-
-import { PREMIUM_TABS } from '@/lib/auth/constants';
+import { PREMIUM_TABS } from "@/lib/auth/constants";
 
 /**
  * Split items into visible and blurred count based on limit.
  */
-export function applyLimit<T>(items: T[], limit: number): { visible: T[]; blurredCount: number } {
+export function applyLimit<T>(
+  items: T[],
+  limit: number,
+): { visible: T[]; blurredCount: number } {
   if (limit <= 0 || !Number.isFinite(limit)) {
     return { visible: items, blurredCount: 0 };
   }

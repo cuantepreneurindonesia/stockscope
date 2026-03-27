@@ -58,6 +58,9 @@ export function sma(prices: number[], period: number): number[] {
   return result;
 }
 
+/**
+ * Utility: ema
+ */
 export function ema(prices: number[], period: number): number[] {
   const k = 2 / (period + 1);
   const result = [prices[0]];
@@ -70,8 +73,8 @@ export function ema(prices: number[], period: number): number[] {
 // ─── RSI ───────────────────────────────────────────────────────────────────────
 export function rsi(prices: number[], period = 14): number[] {
   const changes = prices.slice(1).map((p, i) => p - prices[i]);
-  const gains = changes.map(c => Math.max(c, 0));
-  const losses = changes.map(c => Math.max(-c, 0));
+  const gains = changes.map((c) => Math.max(c, 0));
+  const losses = changes.map((c) => Math.max(-c, 0));
 
   let avgGain = gains.slice(0, period).reduce((a, b) => a + b) / period;
   let avgLoss = losses.slice(0, period).reduce((a, b) => a + b) / period;
@@ -101,9 +104,14 @@ export function bollingerBands(prices: number[], period = 20, stdDev = 2) {
   const middle = sma(prices, period);
   const bands = middle.map((avg, i) => {
     const slice = prices.slice(i, i + period);
-    const variance = slice.reduce((sum, p) => sum + Math.pow(p - avg, 2), 0) / period;
+    const variance =
+      slice.reduce((sum, p) => sum + Math.pow(p - avg, 2), 0) / period;
     const std = Math.sqrt(variance);
-    return { upper: avg + stdDev * std, middle: avg, lower: avg - stdDev * std };
+    return {
+      upper: avg + stdDev * std,
+      middle: avg,
+      lower: avg - stdDev * std,
+    };
   });
   return bands;
 }
@@ -119,12 +127,20 @@ export function volumeAnalysis(volumes: number[], period = 20): VolumeAnalysis {
     volumeRatio: ratio,
     isBreakout: ratio > 2.0,
     isAboveAverage: ratio > 1.2,
-    signal: ratio > 2.0 ? 'Volume Breakout' : ratio > 1.2 ? 'Above Average' : 'Normal'
+    signal:
+      ratio > 2.0
+        ? "Volume Breakout"
+        : ratio > 1.2
+          ? "Above Average"
+          : "Normal",
   };
 }
 
 // ─── Support & Resistance ──────────────────────────────────────────────────────
-export function findSupportResistance(prices: number[], lookback = 20): SupportResistance {
+export function findSupportResistance(
+  prices: number[],
+  lookback = 20,
+): SupportResistance {
   const recent = prices.slice(-lookback);
   const support = Math.min(...recent);
   const resistance = Math.max(...recent);
@@ -135,44 +151,46 @@ export function findSupportResistance(prices: number[], lookback = 20): SupportR
     support: support.toFixed(0),
     resistance: resistance.toFixed(0),
     current,
-    positionInRange: ((current - support) / range * 100).toFixed(1) + '%',
+    positionInRange: (((current - support) / range) * 100).toFixed(1) + "%",
     nearSupport: current <= support * 1.05,
-    nearResistance: current >= resistance * 0.95
+    nearResistance: current >= resistance * 0.95,
   };
 }
 
 // ─── Composite Technical Score ─────────────────────────────────────────────────
-export function calculateTechnicalScore(priceData: PriceData[]): TechnicalScore {
-  const closes = priceData.map(d => d.close);
-  const volumes = priceData.map(d => d.volume);
+export function calculateTechnicalScore(
+  priceData: PriceData[],
+): TechnicalScore {
+  const closes = priceData.map((d) => d.close);
+  const volumes = priceData.map((d) => d.volume);
 
   if (closes.length < 50) {
     return {
       score: 50,
-      currentRSI: '50.0',
-      macdHistogram: '0.0000',
-      ma20: '0',
-      ma50: '0',
-      bollingerUpper: '0',
-      bollingerLower: '0',
+      currentRSI: "50.0",
+      macdHistogram: "0.0000",
+      ma20: "0",
+      ma50: "0",
+      bollingerUpper: "0",
+      bollingerLower: "0",
       volumeAnalysis: {
         averageVolume: 0,
         currentVolume: 0,
         volumeRatio: 0,
         isBreakout: false,
         isAboveAverage: false,
-        signal: 'Insufficient Data'
+        signal: "Insufficient Data",
       },
       supportResistance: {
-        support: '0',
-        resistance: '0',
+        support: "0",
+        resistance: "0",
         current: 0,
-        positionInRange: '0%',
+        positionInRange: "0%",
         nearSupport: false,
-        nearResistance: false
+        nearResistance: false,
       },
       signals: [],
-      summary: 'Insufficient Data'
+      summary: "Insufficient Data",
     };
   }
 
@@ -196,27 +214,59 @@ export function calculateTechnicalScore(priceData: PriceData[]): TechnicalScore 
   // RSI scoring (0-20 points)
   if (currentRSI < 30) {
     score += 20;
-    signals.push({ indicator: 'RSI', signal: 'Oversold - Buy Signal', value: currentRSI.toFixed(1), positive: true });
+    signals.push({
+      indicator: "RSI",
+      signal: "Oversold - Buy Signal",
+      value: currentRSI.toFixed(1),
+      positive: true,
+    });
   } else if (currentRSI < 50) {
     score += 10;
-    signals.push({ indicator: 'RSI', signal: 'Neutral-Bearish Zone', value: currentRSI.toFixed(1), positive: true });
+    signals.push({
+      indicator: "RSI",
+      signal: "Neutral-Bearish Zone",
+      value: currentRSI.toFixed(1),
+      positive: true,
+    });
   } else if (currentRSI > 70) {
     score -= 15;
-    signals.push({ indicator: 'RSI', signal: 'Overbought - Caution', value: currentRSI.toFixed(1), positive: false });
+    signals.push({
+      indicator: "RSI",
+      signal: "Overbought - Caution",
+      value: currentRSI.toFixed(1),
+      positive: false,
+    });
   } else {
-    signals.push({ indicator: 'RSI', signal: 'Neutral', value: currentRSI.toFixed(1), positive: null });
+    signals.push({
+      indicator: "RSI",
+      signal: "Neutral",
+      value: currentRSI.toFixed(1),
+      positive: null,
+    });
   }
 
   // MACD scoring (0-15 points)
   if (currentHistogram > 0 && prevHistogram < 0) {
     score += 15;
-    signals.push({ indicator: 'MACD', signal: 'Bullish Crossover', positive: true });
+    signals.push({
+      indicator: "MACD",
+      signal: "Bullish Crossover",
+      positive: true,
+    });
   } else if (currentHistogram > 0 && currentHistogram > prevHistogram) {
     score += 10;
-    signals.push({ indicator: 'MACD', signal: 'Bullish Momentum', positive: true });
+    signals.push({
+      indicator: "MACD",
+      signal: "Bullish Momentum",
+      positive: true,
+    });
   } else if (currentHistogram < 0 && currentHistogram < prevHistogram) {
     score -= 10;
-    signals.push({ indicator: 'MACD', signal: 'Bearish Momentum', positive: false });
+    signals.push({
+      indicator: "MACD",
+      signal: "Bearish Momentum",
+      positive: false,
+    });
   }
 
   // MA positioning (0-20 points)
@@ -224,39 +274,71 @@ export function calculateTechnicalScore(priceData: PriceData[]): TechnicalScore 
   const ma50Current = ma50[ma50.length - 1];
   if (currentPrice > ma20Current) {
     score += 7;
-    signals.push({ indicator: 'MA20', signal: 'Price Above MA20', positive: true });
+    signals.push({
+      indicator: "MA20",
+      signal: "Price Above MA20",
+      positive: true,
+    });
   }
   if (currentPrice > ma50Current) {
     score += 8;
-    signals.push({ indicator: 'MA50', signal: 'Price Above MA50', positive: true });
+    signals.push({
+      indicator: "MA50",
+      signal: "Price Above MA50",
+      positive: true,
+    });
   }
   if (ma200) {
     const ma200Current = ma200[ma200.length - 1];
     if (currentPrice > ma200Current) {
       score += 5;
-      signals.push({ indicator: 'MA200', signal: 'Price Above MA200 (Uptrend)', positive: true });
+      signals.push({
+        indicator: "MA200",
+        signal: "Price Above MA200 (Uptrend)",
+        positive: true,
+      });
     } else {
       score -= 5;
-      signals.push({ indicator: 'MA200', signal: 'Price Below MA200 (Downtrend)', positive: false });
+      signals.push({
+        indicator: "MA200",
+        signal: "Price Below MA200 (Downtrend)",
+        positive: false,
+      });
     }
   }
 
   // Bollinger Band position (0-10 points)
   if (currentPrice <= currentBB.lower * 1.02) {
     score += 10;
-    signals.push({ indicator: 'Bollinger', signal: 'Near Lower Band - Potential Reversal', positive: true });
+    signals.push({
+      indicator: "Bollinger",
+      signal: "Near Lower Band - Potential Reversal",
+      positive: true,
+    });
   } else if (currentPrice >= currentBB.upper * 0.98) {
     score -= 5;
-    signals.push({ indicator: 'Bollinger', signal: 'Near Upper Band - Extended', positive: false });
+    signals.push({
+      indicator: "Bollinger",
+      signal: "Near Upper Band - Extended",
+      positive: false,
+    });
   }
 
   // Volume (0-10 points)
   if (volAnalysis.isBreakout) {
     score += 10;
-    signals.push({ indicator: 'Volume', signal: 'Volume Breakout', positive: true });
+    signals.push({
+      indicator: "Volume",
+      signal: "Volume Breakout",
+      positive: true,
+    });
   } else if (volAnalysis.isAboveAverage) {
     score += 5;
-    signals.push({ indicator: 'Volume', signal: 'Above Average Volume', positive: true });
+    signals.push({
+      indicator: "Volume",
+      signal: "Above Average Volume",
+      positive: true,
+    });
   }
 
   score = Math.max(0, Math.min(100, score));
@@ -272,6 +354,11 @@ export function calculateTechnicalScore(priceData: PriceData[]): TechnicalScore 
     volumeAnalysis: volAnalysis,
     supportResistance: sr,
     signals,
-    summary: score >= 70 ? 'Bullish Setup' : score >= 50 ? 'Neutral Setup' : 'Bearish Setup'
+    summary:
+      score >= 70
+        ? "Bullish Setup"
+        : score >= 50
+          ? "Neutral Setup"
+          : "Bearish Setup",
   };
 }

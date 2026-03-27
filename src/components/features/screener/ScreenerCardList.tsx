@@ -1,14 +1,18 @@
-'use client';
+"use client";
 
-import { ScreenerCard } from './ScreenerCard';
-import type { EnrichedStock } from '@/lib/types/unified';
+import type { EnrichedStock } from "@/types/unified";
+
+import { ScreenerCard } from "./ScreenerCard";
 
 interface ScreenerCardListProps {
   stocks: EnrichedStock[];
   onStockClick: (stock: EnrichedStock) => void;
 }
 
-export function ScreenerCardList({ stocks, onStockClick }: ScreenerCardListProps) {
+export function ScreenerCardList({
+  stocks,
+  onStockClick,
+}: ScreenerCardListProps) {
   if (stocks.length === 0) {
     return (
       <div className="text-center py-16">
@@ -28,7 +32,11 @@ export function ScreenerCardList({ stocks, onStockClick }: ScreenerCardListProps
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {stocks.map((stock) => (
-        <ScreenerCard key={stock.code} stock={stock} onClick={() => onStockClick(stock)} />
+        <ScreenerCard
+          key={stock.code}
+          stock={stock}
+          onClick={() => onStockClick(stock)}
+        />
       ))}
     </div>
   );

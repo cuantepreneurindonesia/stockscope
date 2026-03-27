@@ -2,15 +2,15 @@
  * Owner transform service layer
  * Separation of Concerns: Pure transformations for owner data display
  */
+import { OWNER_TYPE_STYLES } from "@/lib/constants";
 
-import { OWNER_TYPE_STYLES } from '@/lib/constants';
 import type {
-  OwnerWithPortfolio,
   OwnerTypeData,
+  OwnerWithPortfolio,
   TopOwnersBarData,
-} from '@/lib/types';
+} from "@/types";
 
-const OWNER_TYPE_DEFAULT = 'OT' as const;
+const OWNER_TYPE_DEFAULT = "OT" as const;
 const MAX_BAR_NAME_LENGTH = 15;
 const TOP_OWNERS_LIMIT = 5;
 
@@ -19,7 +19,7 @@ const TOP_OWNERS_LIMIT = 5;
  */
 export function filterOwnersByName(
   owners: OwnerWithPortfolio[],
-  searchTerm: string
+  searchTerm: string,
 ): OwnerWithPortfolio[] {
   const trimmed = searchTerm.trim();
   if (!trimmed || !owners.length) return owners;
@@ -32,7 +32,7 @@ export function filterOwnersByName(
  * Transform filtered owners to owner type distribution for pie chart
  */
 export function transformOwnerTypeData(
-  owners: OwnerWithPortfolio[]
+  owners: OwnerWithPortfolio[],
 ): OwnerTypeData[] {
   const counts: Record<string, number> = {};
 
@@ -46,7 +46,7 @@ export function transformOwnerTypeData(
     .map(([k, v]) => ({
       name: OWNER_TYPE_STYLES[k]?.label ?? k,
       value: v,
-      color: OWNER_TYPE_STYLES[k]?.color ?? '#8d99ae',
+      color: OWNER_TYPE_STYLES[k]?.color ?? "#8d99ae",
     }));
 }
 
@@ -55,12 +55,12 @@ export function transformOwnerTypeData(
  */
 export function transformTopOwnersBarData(
   owners: OwnerWithPortfolio[],
-  limit: number = TOP_OWNERS_LIMIT
+  limit: number = TOP_OWNERS_LIMIT,
 ): TopOwnersBarData[] {
   return owners.slice(0, limit).map((o) => ({
     name:
       o.name.length > MAX_BAR_NAME_LENGTH
-        ? o.name.substring(0, MAX_BAR_NAME_LENGTH) + '...'
+        ? o.name.substring(0, MAX_BAR_NAME_LENGTH) + "..."
         : o.name,
     fullName: o.name,
     count: o.count,
