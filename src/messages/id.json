@@ -28,7 +28,10 @@
     "hhi": "HHI",
     "flags": "Flags",
     "table": "Screener",
-    "owners": "Pemilik"
+    "owners": "Pemilik",
+    "screener": "Screener",
+    "watchlist": "Watchlist",
+    "profile": "Profil"
   },
   "header": {
     "eyebrow": "IDX · Bursa Efek Indonesia",

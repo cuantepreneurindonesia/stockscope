@@ -28,7 +28,10 @@
     "hhi": "HHI",
     "flags": "Flags",
     "table": "Screener",
-    "owners": "Owners"
+    "owners": "Owners",
+    "screener": "Screener",
+    "watchlist": "Watchlist",
+    "profile": "Profile"
   },
   "header": {
     "eyebrow": "IDX · Indonesia Stock Exchange",
