@@ -1,325 +1,42 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-:root {
-  /* Background/Surface */
-  --bg-app: #070d1f;
-  --bg-surface: #151b2d;
-  
-  /* Primary/Accent */
-  --color-primary: #4edea3;
-  
-  /* Semantic Finance Colors */
-  --color-positive: #10b981;
-  --color-negative: #ef4444;
-  --color-warning: #eab308;
-  
-  /* Text */
-  --text-primary: #dce1fb;
-  --text-secondary: #64748b;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  /* Typography */
-  --font-sans: 'DM Sans', sans-serif;
-  --font-mono: 'DM Mono', monospace;
-}
-
-/* Mandatory Tabular Numbers for Data Grids */
-.tabular-data {
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: 'tnum';
-}
-
-@theme inline {
-  --color-background: var(--bg-app);
-  --color-foreground: var(--text-primary);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-}
-
-* {
-  @apply border-[#132030];
-}
-
-html {
-  @apply scroll-smooth;
-}
-
-body {
-  @apply bg-[#070d1f] text-[#dce1fb] antialiased;
-}
-
-.app-root {
-  overflow-x: hidden;
-}
-
-/* Terminal Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: #070d1f; /* surface-container-lowest */
-}
-
-::-webkit-scrollbar-thumb {
-  background: #2e3447; /* surface-container-highest */
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #4edea3; /* primary */
-}
-
-/* Firefox scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #2e3447 #070d1f;
-}
-
-/* Material Symbols Configuration */
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
-
-/* Tabular Numbers for Financial Data */
-.font-label,
-.tabular-nums {
-  font-feature-settings: 'tnum';
-}
-
-/* Glassmorphism Effect */
-.glass-effect {
-  background: rgba(78, 222, 163, 0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(78, 222, 163, 0.2);
-}
-
-/* Ghost Border (10% opacity outline-variant) */
-.ghost-border {
-  border: 1px solid rgba(60, 74, 66, 0.1);
-}
-
-/* Terminal Glow Effect */
-.terminal-glow {
-  box-shadow: 0 0 20px rgba(78, 222, 163, 0.3);
-}
-
-/* Legacy Header Styles (keep for now) */
-.app-header {
-  padding: clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px) 14px;
-  background: linear-gradient(180deg, #0d1e30 0%, #09131f 100%);
-  border-bottom: 1px solid #132030;
-}
-
-.header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.header-title {
-  font-size: clamp(0.875rem, 5vw, 1.375rem);
-  margin: 0;
-  font-weight: 700;
-  color: #e8f4f8;
-}
-
-.header-eyebrow {
-  font-size: clamp(0.625rem, 2.5vw, 0.6875rem);
-  letter-spacing: 3px;
-  color: #457b9d;
-  font-family: 'DM Mono', monospace;
-  margin-bottom: 4px;
-}
-
-.header-right {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-/* Search */
-.search-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.search-input {
-  background: #0d1e30;
-  border-radius: 20px;
-  color: #e8f4f8;
-  padding: 8px 34px 8px 32px;
-  font-size: 0.75rem;
-  outline: none;
-  transition: border-color 0.2s;
-  width: clamp(140px, 40vw, 260px);
-}
-
-/* Hamburger button */
-.hamburger-btn {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: 1px solid #1e3a52;
-  color: #a8c8e8;
-  border-radius: 6px;
-  width: 44px;
-  height: 44px;
-  font-size: 1.25rem;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-/* Tab nav — desktop */
-.tab-nav-desktop {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid #132030;
-  padding-left: clamp(12px, 4vw, 28px);
-  background: #09131f;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-.tab-nav-desktop::-webkit-scrollbar {
-  display: none;
-}
-
-/* Content area */
-.content-area {
-  padding: clamp(12px, 4vw, 20px) clamp(12px, 4vw, 28px);
-}
-
-/* KPI cards */
-.kpi-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1px;
-  background: #132030;
-  border-bottom: 1px solid #132030;
-}
-
-/* Overview two-column grid */
-.overview-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
-/* Mobile drawer */
-.drawer-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: rgba(0, 0, 0, 0.6);
-}
-
-.drawer-overlay.open {
-  display: block;
-}
-
-.mobile-drawer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 201;
-  width: min(280px, 85vw);
-  background: #0d1e30;
-  border-right: 1px solid #1e3a52;
-  padding: 24px 0;
-  transform: translateX(-100%);
-  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-}
-
-.mobile-drawer.open {
-  transform: translateX(0);
-}
-
-.drawer-close {
-  align-self: flex-end;
-  margin-right: 20px;
-  margin-bottom: 16px;
-  background: none;
-  border: 1px solid #1e3a52;
-  color: #a8c8e8;
-  border-radius: 6px;
-  width: 44px;
-  height: 44px;
-  font-size: 1.25rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.drawer-nav-btn {
-  background: none;
-  border: none;
-  text-align: left;
-  padding: 14px 24px;
-  font-size: 0.9375rem;
-  font-family: 'Space Grotesk', monospace;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: background 0.15s;
-  min-height: 52px;
-  display: flex;
-  align-items: center;
-  border-left: 3px solid transparent;
-}
-
-.drawer-nav-btn.active {
-  color: #a8d8ea;
-  background: #132030;
-  border-left-color: #457b9d;
-}
-
-.drawer-nav-btn:not(.active) {
-  color: #6b8aad;
-}
-
-.drawer-nav-btn:hover:not(.active) {
-  background: #09131f;
-}
-
-/* Desktop overrides */
-@media (min-width: 768px) {
-  .overview-grid {
-    grid-template-columns: 1fr 1fr;
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    @apply bg-surface-base text-text-primary font-sans antialiased;
   }
-
-  .hamburger-btn {
-    display: none !important;
+  ::selection {
+    @apply bg-brand-dim text-brand;
   }
-
-  .tab-nav-desktop {
-    overflow-x: visible;
+  ::-webkit-scrollbar {
+    width: 5px; height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-base;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-border-strong;
   }
 }
 
-/* Mobile overrides */
-@media (max-width: 767px) {
-  .hamburger-btn {
-    display: flex;
+@layer components {
+  /* Financial number display */
+  .num {
+    @apply font-mono tabular-nums tracking-tight;
   }
-
-  .tab-nav-desktop {
-    display: none;
+  /* Ticker symbol */
+  .ticker {
+    @apply font-mono font-bold tracking-wider uppercase;
   }
-
-  .kpi-cards {
-    grid-template-columns: repeat(2, 1fr);
+  /* Section label */
+  .label {
+    @apply text-2xs font-semibold tracking-widest uppercase text-text-muted;
   }
 }
