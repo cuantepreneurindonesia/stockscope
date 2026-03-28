@@ -1,0 +1,50 @@
+Project Key,Issue Type,Summary,Description,Priority,Assignee,Labels,Epic Name,Epic Link,Sprint,Story Points,Issue Id,Parent Id,Depends On
+STOCK,Epic,"EPIC-01 Platform Hardening","Stabilize migrations, observability, and release safety before monetization rollout.",Highest,"Backend Lead","phase0,platform,monetization-foundation","Platform Hardening",,"Sprint 1",8,EPIC-01,,
+STOCK,Story,"SP1-01 Add migration framework and schema versioning","Implement migration runner, baseline schema version table, and rollback command.",Highest,"Backend Lead","phase0,migrations",,EPIC-01,"Sprint 1",5,SP1-01,,
+STOCK,Story,"SP1-02 Add auth/stocks/webhook smoke tests","Add smoke tests for session auth, stocks endpoint, and payment webhook signature flow.",Highest,"QA Engineer","phase0,qa,smoke-tests",,EPIC-01,"Sprint 1",5,SP1-02,,SP1-01
+STOCK,Story,"SP1-03 Add API and webhook monitoring","Create dashboards and alerts for API 5xx, webhook failures, and latency thresholds.",Highest,"DevOps Engineer","phase0,observability",,EPIC-01,"Sprint 1",3,SP1-03,,SP1-01
+STOCK,Story,"SP1-04 Freeze event taxonomy and billing status enum","Define canonical event names, categories, and billing status transitions.",High,"Product Manager","phase0,analytics,billing",,EPIC-01,"Sprint 1",3,SP1-04,,
+STOCK,Story,"SP1-05 Release checklist and rollback runbook","Document pre-release checks, rollback triggers, and incident response steps.",Medium,"QA Engineer","phase0,release",,EPIC-01,"Sprint 1",2,SP1-05,,SP1-03
+
+STOCK,Epic,"EPIC-02 Billing Ledger Core","Create auditable subscription and transaction lifecycle before strict paywall activation.",Highest,"Backend Lead","phase1,billing,monetization-core","Billing Ledger Core",,"Sprint 2",13,EPIC-02,,
+STOCK,Story,"SP2-01 Create subscriptions collection and indexes","Create subscriptions schema, status lifecycle fields, and operational indexes.",Highest,"Backend Engineer","phase1,billing,schema",,EPIC-02,"Sprint 2",5,SP2-01,,SP1-01
+STOCK,Story,"SP2-02 Create payment_transactions with idempotency","Store provider order lifecycle and enforce idempotency by order and provider transaction id.",Highest,"Backend Engineer","phase1,billing,payments",,EPIC-02,"Sprint 2",8,SP2-02,,SP1-01
+STOCK,Story,"SP2-03 Persist pending transaction at checkout start","Write pending transaction record when checkout token is created.",Highest,"Backend Engineer","phase1,billing,checkout",,EPIC-02,"Sprint 2",5,SP2-03,,SP2-02
+STOCK,Story,"SP2-04 Webhook updates transaction before plan upgrade","Update transaction status first, then apply plan change only for paid states.",Highest,"Backend Engineer","phase1,billing,webhook",,EPIC-02,"Sprint 2",8,SP2-04,,SP2-02
+STOCK,Story,"SP2-05 Add plan_change_history","Record immutable plan transitions with reason, actor, and timestamp.",High,"Backend Engineer","phase1,billing,audit",,EPIC-02,"Sprint 2",3,SP2-05,,SP2-04
+STOCK,Story,"SP2-06 Add billing admin read endpoints","Provide internal endpoints for pending, failed, settled transactions with filters.",Medium,"Backend Engineer","phase1,billing,internal-tools",,EPIC-02,"Sprint 2",5,SP2-06,,SP2-04
+
+STOCK,Epic,"EPIC-03 Product Analytics Instrumentation","Capture event and session telemetry for conversion and retention analysis.",Highest,"Data Lead","phase2,analytics,instrumentation","Product Analytics Instrumentation",,"Sprint 3",13,EPIC-03,,
+STOCK,Story,"SP3-01 Add event ingestion endpoint with validation","Create ingestion API with schema validation and dead-letter handling.",Highest,"Backend Engineer","phase2,analytics,events",,EPIC-03,"Sprint 3",8,SP3-01,,SP1-04
+STOCK,Story,"SP3-02 Add client tracking wrapper for core events","Implement reusable client tracker and emit core journey events.",Highest,"Frontend Engineer","phase2,analytics,frontend",,EPIC-03,"Sprint 3",5,SP3-02,,SP3-01
+STOCK,Story,"SP3-03 Add server-side payment outcome events","Emit payment_succeeded and payment_failed from backend lifecycle events.",Highest,"Backend Engineer","phase2,analytics,billing-events",,EPIC-03,"Sprint 3",3,SP3-03,,SP2-04
+STOCK,Story,"SP3-04 Add sessions model and identity stitching","Persist sessions and merge anonymous to authenticated identity after login.",High,"Backend Engineer","phase2,analytics,sessions",,EPIC-03,"Sprint 3",5,SP3-04,,SP3-01
+STOCK,Story,"SP3-05 Build daily funnel aggregation job","Aggregate visit, upgrade click, checkout, and paid funnel per day and segment.",High,"Data Engineer","phase2,analytics,aggregation",,EPIC-03,"Sprint 3",8,SP3-05,,SP3-01
+
+STOCK,Epic,"EPIC-04 User-Owned Data Features","Implement watchlists, saved screeners, and alerts to increase product stickiness.",Highest,"Frontend Lead","phase3,features,retention","User-Owned Data Features",,"Sprint 4",13,EPIC-04,,
+STOCK,Story,"SP4-01 Implement watchlists and watchlist_items APIs","Create CRUD APIs and data model for watchlists and items.",Highest,"Backend Engineer","phase3,watchlist,api",,EPIC-04,"Sprint 4",8,SP4-01,,SP1-01
+STOCK,Story,"SP4-02 Implement saved_screeners APIs","Create CRUD APIs for user saved filter presets and sorting preferences.",Highest,"Backend Engineer","phase3,screener,api",,EPIC-04,"Sprint 4",5,SP4-02,,SP1-01
+STOCK,Story,"SP4-03 Wire watchlist UI to persisted APIs","Replace placeholder watchlist UI with real create/add/remove interactions.",Highest,"Frontend Engineer","phase3,watchlist,frontend",,EPIC-04,"Sprint 4",8,SP4-03,,SP4-01
+STOCK,Story,"SP4-04 Implement first alert type price threshold","Support price_above and price_below alerts and trigger history records.",High,"Backend Engineer","phase3,alerts",,EPIC-04,"Sprint 4",8,SP4-04,,SP4-01
+STOCK,Story,"SP4-05 Persist profile preferences","Store and load locale and notification preferences per user.",Medium,"Frontend Engineer","phase3,profile,preferences",,EPIC-04,"Sprint 4",3,SP4-05,,SP4-02
+
+STOCK,Epic,"EPIC-05 Research Data Pipeline","Build reliable historical datasets and quality lineage for data product monetization.",Highest,"Data Lead","phase4,data-pipeline,research","Research Data Pipeline",,"Sprint 5",13,EPIC-05,,
+STOCK,Story,"SP5-01 Split master and daily fact datasets","Create stocks_master, stocks_market_daily, and stocks_governance_daily structures.",Highest,"Data Engineer","phase4,pipeline,schema",,EPIC-05,"Sprint 5",8,SP5-01,,SP1-01
+STOCK,Story,"SP5-02 Add ownership snapshot pipeline","Generate daily ownership snapshots and concentration metrics by symbol.",Highest,"Data Engineer","phase4,pipeline,ownership",,EPIC-05,"Sprint 5",5,SP5-02,,SP5-01
+STOCK,Story,"SP5-03 Persist ai_scores_daily with model versioning","Store score history with model and feature-set version metadata.",High,"Data Engineer","phase4,pipeline,ai-scores",,EPIC-05,"Sprint 5",5,SP5-03,,SP5-01
+STOCK,Story,"SP5-04 Add data lineage and quality snapshots","Track freshness, null rates, row counts, and checksums per dataset run.",High,"Data Engineer","phase4,pipeline,data-quality",,EPIC-05,"Sprint 5",5,SP5-04,,SP5-01
+STOCK,Story,"SP5-05 Run 6-12 month historical backfill","Backfill historical data and produce validation report by dataset.",Medium,"Data Engineer","phase4,pipeline,backfill",,EPIC-05,"Sprint 5",8,SP5-05,,SP5-01
+
+STOCK,Epic,"EPIC-06 API Monetization and Metering","Monetize data access with API keys, quota controls, and usage reporting.",Highest,"Backend Lead","phase5,api,monetization","API Monetization and Metering",,"Sprint 6",13,EPIC-06,,
+STOCK,Story,"SP6-01 Implement api_keys with secure hashing","Create API key issuance and revocation flow with hashed storage.",Highest,"Backend Engineer","phase5,api-keys,security",,EPIC-06,"Sprint 6",5,SP6-01,,SP1-01
+STOCK,Story,"SP6-02 Build api_usage_hourly metering","Aggregate request count, row count, errors, and latency per key/endpoint/hour.",Highest,"Data Engineer","phase5,metering,usage",,EPIC-06,"Sprint 6",8,SP6-02,,SP6-01
+STOCK,Story,"SP6-03 Add rate limit and monthly quota enforcement","Apply middleware limits by plan and expose quota response headers.",Highest,"Backend Engineer","phase5,rate-limit,quota",,EPIC-06,"Sprint 6",8,SP6-03,,SP6-02
+STOCK,Story,"SP6-04 Productize API packages by plan scope","Define and enforce endpoint package scopes for core, enriched, and historical data.",High,"Product Manager","phase5,packaging,plans",,EPIC-06,"Sprint 6",5,SP6-04,,SP6-03
+STOCK,Story,"SP6-05 Add usage dashboard and billing export","Provide internal dashboard and CSV export for invoice-ready usage.",Medium,"Frontend Engineer","phase5,reporting,internal-tools",,EPIC-06,"Sprint 6",5,SP6-05,,SP6-02
+
+STOCK,Epic,"EPIC-07 Paywall Activation and Growth","Enable plan gating and run conversion optimization safely.",Highest,"Growth Lead","phase6,paywall,growth","Paywall Activation and Growth",,"Sprint 7",13,EPIC-07,,
+STOCK,Story,"SP7-01 Re-enable backend free-tier limits","Apply server-side plan checks and enforce data access caps by plan.",Highest,"Backend Engineer","phase6,paywall,backend",,EPIC-07,"Sprint 7",5,SP7-01,,SP2-04
+STOCK,Story,"SP7-02 Re-enable frontend premium tab gating","Restore client plan gating and upgrade prompts for premium-only surfaces.",Highest,"Frontend Engineer","phase6,paywall,frontend",,EPIC-07,"Sprint 7",5,SP7-02,,SP7-01
+STOCK,Story,"SP7-03 Add pricing and CTA experiments","Ship experiment variants for upgrade CTA and pricing communication.",High,"Product Manager","phase6,growth,experiments",,EPIC-07,"Sprint 7",5,SP7-03,,SP3-05
+STOCK,Story,"SP7-04 Add cancellation and churn feedback flow","Capture cancellation reasons and emit churn feedback events.",High,"Frontend Engineer","phase6,churn,retention",,EPIC-07,"Sprint 7",3,SP7-04,,SP3-01
+STOCK,Story,"SP7-05 Run 7-day hypercare monitoring","Track launch health metrics and incident responses after paywall activation.",Highest,"DevOps Engineer","phase6,hypercare,operations",,EPIC-07,"Sprint 7",3,SP7-05,,SP7-01
