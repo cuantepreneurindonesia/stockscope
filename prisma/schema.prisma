@@ -251,3 +251,33 @@ model OwnershipSnapshot {
   @@index([holderName]) // For tracking specific holders across stocks
   @@map("ownership_snapshots")
 }
+
+// AI Score Snapshots: Track AI-generated scores with model versioning
+model AIScoreSnapshot {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  ticker       String // Stock ticker symbol
+  date         DateTime // Score generation date
+  modelVersion String // AI model version (e.g., "claude-sonnet-4.5-v1")
+
+  // Component scores (0-100 scale)
+  fundamentalScore Float? // Financial health analysis
+  technicalScore   Float? // Price/volume patterns
+  sentimentScore   Float? // News/social sentiment
+  liquidityScore   Float? // Trading volume/spread
+  governanceScore  Float? // Ownership structure
+  compositeScore   Float // Weighted average of all scores
+
+  // Score metadata
+  confidence Float? // Model confidence (0-1)
+  reasoning  String? // Brief explanation of score
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([ticker, date, modelVersion]) // One score per model per stock per day
+  @@index([ticker, date]) // Historical scores for single stock
+  @@index([date]) // Market-wide scores for specific date
+  @@index([modelVersion]) // Compare different model versions
+  @@index([compositeScore]) // Find top/bottom performers
+  @@map("ai_score_snapshots")
+}
