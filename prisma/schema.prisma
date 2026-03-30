@@ -514,3 +514,105 @@ model ConversionFunnel {
   @@index([utmSource, utmMedium, utmCampaign]) // For attribution
   @@map("conversion_funnels")
 }
+
+// =============================================================================
+// BILLING & SUBSCRIPTIONS (Sprint 5)
+// =============================================================================
+
+// User subscription tracking with Midtrans integration
+model Subscription {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+
+  // Plan details
+  planId String // "free", "premium", "pro"
+  status String // "active", "cancelled", "expired", "past_due", "trialing"
+
+  // Lifecycle timestamps
+  startDate   DateTime
+  endDate     DateTime? // Null for active subscriptions
+  trialEnd    DateTime? // For trial periods
+  cancelledAt DateTime?
+  cancelReason String? // User-provided cancellation feedback
+
+  // Billing cycle
+  billingCycle String? // "monthly", "annual"
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+
+  // Payment gateway integration
+  midtransSubscriptionId String? // Midtrans subscription ID
+  midtransCustomerId     String? // Midtrans customer ID
+
+  // Metadata
+  metadata Json? // Flexible field for additional data
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes for common queries
+  @@index([userId]) // User's subscriptions
+  @@index([status]) // Active/expired subscriptions
+  @@index([endDate]) // Expiring subscriptions
+  @@index([currentPeriodEnd]) // Upcoming renewals
+  @@unique([userId, planId, status]) // Prevent duplicate active subscriptions (also serves as compound index)
+  @@map("subscriptions")
+}
+
+// Payment transaction ledger with idempotency and audit trail
+model PaymentTransaction {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+
+  // Idempotency & deduplication
+  idempotencyKey String  @unique // Prevents duplicate charges
+  orderId        String  @unique // Midtrans order_id
+
+  // Transaction details
+  amount          Float
+  currency        String @default("IDR")
+  status          String // "pending", "success", "failed", "refunded", "expired"
+  transactionType String // "subscription", "upgrade", "renewal", "refund"
+
+  // Payment method
+  paymentMethod String? // "qris", "bank_transfer", "credit_card", "gopay", "shopeepay"
+  paymentChannel String? // Specific channel (e.g., "bca_va", "mandiri_va")
+
+  // Subscription linkage
+  subscriptionId String? @db.ObjectId // Link to subscription
+  planId         String? // "premium", "pro"
+
+  // Midtrans integration
+  midtransTransactionId String? // Midtrans transaction_id
+  midtransStatus        String? // Raw Midtrans status
+  fraudStatus           String? // "accept", "deny", "challenge"
+  settlementTime        DateTime? // When payment was settled
+
+  // Audit trail
+  metadata           Json? // Full Midtrans payload
+  ipAddress          String? // Request IP
+  userAgent          String? // Request user-agent
+  webhookReceivedAt  DateTime? // When webhook was received
+  webhookProcessedAt DateTime? // When webhook was processed
+  errorMessage       String? // Error details for failed transactions
+
+  // Refund tracking
+  refundedAt     DateTime?
+  refundAmount   Float?
+  refundReason   String?
+  refundedBy     String? // Admin user ID who processed refund
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes for queries and reconciliation
+  // Note: idempotencyKey and orderId already have @unique, no need for @@index
+  @@index([userId]) // User's transaction history
+  @@index([status]) // Transactions by status
+  @@index([subscriptionId]) // Subscription payment history
+  @@index([createdAt]) // Time-series queries
+  @@index([userId, status]) // User's pending/successful payments
+  @@index([settlementTime]) // Revenue recognition
+  @@index([fraudStatus]) // Fraud monitoring
+  @@map("payment_transactions")
+}
