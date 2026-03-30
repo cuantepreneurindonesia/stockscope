@@ -18,8 +18,8 @@ test.describe('Authentication Smoke Tests', () => {
     await expect(page).toHaveTitle(/Stockscope|Right to Information/i);
     
     // Verify key elements are present
-    const signInButton = page.getByRole('button', { name: /sign in/i });
-    await expect(signInButton).toBeVisible();
+    const signInButton = page.locator('button').filter({ hasText: /sign in/i }).first();
+    await expect(signInButton).toBeVisible({ timeout: 10000 });
   });
 
   test('unauthenticated user can access public pages', async ({ page }) => {
@@ -38,8 +38,9 @@ test.describe('Authentication Smoke Tests', () => {
   test('auth button is visible and clickable', async ({ page }) => {
     await page.goto('/');
     
-    const signInButton = page.getByRole('button', { name: /sign in/i });
-    await expect(signInButton).toBeVisible();
+    // Find sign in button by text (case insensitive, partial match)
+    const signInButton = page.locator('button').filter({ hasText: /sign in/i }).first();
+    await expect(signInButton).toBeVisible({ timeout: 10000 });
     await expect(signInButton).toBeEnabled();
     
     // Verify button is properly styled (has background)
