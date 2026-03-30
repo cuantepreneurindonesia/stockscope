@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { upgradePlan } from '@/lib/services/userService';
+import { prisma } from '@/lib/prisma';
 
 // Midtrans sends a SHA512 hash to verify the notification is authentic.
 // Formula: SHA512(order_id + status_code + gross_amount + server_key)
@@ -73,6 +74,57 @@ export async function POST(req: NextRequest) {
 
       await upgradePlan(userId);
       console.log(`User ${userId} upgraded to premium via order ${order_id}`);
+
+      // Track successful payment event
+      await prisma.analyticsEvent.create({
+        data: {
+          eventName: 'payment_completed',
+          timestamp: new Date(),
+          sessionId: 'server-payment-webhook',
+          userId: userId,
+          platform: 'web',
+          deviceType: 'desktop',
+          locale: 'id',
+          properties: {
+            orderId: order_id,
+            transactionStatus: transaction_status,
+            grossAmount: parseFloat(gross_amount),
+            currency: 'IDR',
+            paymentType: body.payment_type || 'unknown',
+            fraudStatus: fraud_status
+          },
+          processedAt: new Date()
+        }
+      });
+    } else {
+      // Payment failed or pending
+      const parts = order_id.split('-');
+      const userId = parts.slice(1, parts.length - 1).join('-');
+
+      if (userId) {
+        // Track failed payment event
+        await prisma.analyticsEvent.create({
+          data: {
+            eventName: 'payment_failed',
+            timestamp: new Date(),
+            sessionId: 'server-payment-webhook',
+            userId: userId,
+            platform: 'web',
+            deviceType: 'desktop',
+            locale: 'id',
+            properties: {
+              orderId: order_id,
+              transactionStatus: transaction_status,
+              grossAmount: parseFloat(gross_amount),
+              currency: 'IDR',
+              paymentType: body.payment_type || 'unknown',
+              fraudStatus: fraud_status,
+              statusCode: status_code
+            },
+            processedAt: new Date()
+          }
+        });
+      }
     }
 
     // Always return 200 to Midtrans — it will retry if it gets a non-2xx response
