@@ -125,3 +125,25 @@ model SavedScreener {
   @@index([userId, createdAt])
   @@map("saved_screeners")
 }
+
+// =============================================================================
+// PRICE ALERTS (Sprint 2)
+// =============================================================================
+
+model PriceAlert {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  ticker      String   // Stock ticker symbol
+  condition   String   // "above" | "below"
+  targetPrice Float
+  isActive    Boolean  @default(true)
+  triggeredAt DateTime?
+  lastCheckedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([isActive])
+  @@index([ticker, isActive])
+  @@map("price_alerts")
+}
