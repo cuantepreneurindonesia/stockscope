@@ -616,3 +616,78 @@ model PaymentTransaction {
   @@index([fraudStatus]) // Fraud monitoring
   @@map("payment_transactions")
 }
+
+// =============================================================================
+// API MONETIZATION (Sprint 6)
+// =============================================================================
+
+model ApiKey {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId // API key owner
+
+  // Key Management
+  keyHash   String  @unique // bcrypt hash of the full key (sk_live_xxx)
+  keyPrefix String // First 12 chars for display (sk_live_abcd)
+  name      String // User-provided name (e.g., "Production", "Mobile App")
+  
+  // Access Control
+  scopes   String[] // Permissions: ['read:stocks', 'read:ownership', 'write:watchlist']
+  isActive Boolean  @default(true) // Can be revoked without deletion
+  
+  // Rate Limiting
+  rateLimit Int @default(100) // Requests per hour (plan-based default)
+  
+  // Usage Tracking
+  lastUsedAt    DateTime? // Last API call timestamp
+  totalRequests Int       @default(0) // Lifetime request count
+  
+  // Metadata
+  environment String @default("production") // 'production' | 'development'
+  ipWhitelist String[] @default([]) // Optional IP restrictions
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes for lookups and filtering
+  @@index([userId]) // User's API keys list
+  @@index([isActive]) // Active keys filter
+  @@index([lastUsedAt]) // Find unused keys
+  @@map("api_keys")
+}
+
+model ApiUsageHourly {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  // Time dimension
+  hour DateTime // Rounded to hour start (e.g., 2026-03-31T01:00:00Z)
+
+  // Key dimensions
+  apiKeyId String @db.ObjectId // Which API key
+  userId   String @db.ObjectId // API key owner (denormalized for convenience)
+  endpoint String // Which endpoint (e.g., '/api/v1/stocks/search')
+  method   String // HTTP method (GET, POST, etc.)
+
+  // Metrics
+  requestCount    Int   @default(0) // Total requests
+  successCount    Int   @default(0) // 2xx responses
+  errorCount      Int   @default(0) // 4xx + 5xx responses
+  avgResponseTime Float @default(0) // Average response time in ms
+  
+  // Detailed error breakdown
+  error4xxCount Int @default(0) // Client errors
+  error5xxCount Int @default(0) // Server errors
+  
+  // Data transfer (optional, for future billing)
+  bytesTransferred Int @default(0) // Total response bytes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes for analytics queries
+  @@unique([hour, apiKeyId, endpoint, method]) // Prevent duplicate aggregations
+  @@index([apiKeyId, hour]) // Key's usage over time
+  @@index([userId, hour]) // User's total usage over time
+  @@index([hour]) // System-wide usage by hour
+  @@index([endpoint]) // Popular endpoints
+  @@map("api_usage_hourly")
+}
