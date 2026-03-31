@@ -6,6 +6,12 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { getCachedApiKey, cacheValidatedApiKey } from '@/lib/rate-limit';
+import { 
+  getRequiredScope, 
+  hasScope, 
+  getScopeDescription,
+  getUpgradeSuggestion,
+} from '@/lib/api-scopes';
 
 // =============================================================================
 // TYPES
@@ -113,12 +119,32 @@ export function checkIpWhitelist(
 
 /**
  * Check if API key has required scope for endpoint
- * Implemented in SP6-04
  */
-export function checkScope(scopes: string[], endpoint: string): boolean {
-  // TODO SP6-04: Implement scope-based authorization
-  // For now, allow all (validation added in SP6-04)
-  return true;
+export function checkScope(
+  keyScopes: string[],
+  endpoint: string,
+  method: string
+): { allowed: boolean; requiredScope: string | null; message?: string } {
+  const requiredScope = getRequiredScope(endpoint, method);
+  
+  // No scope required (public endpoint or internal)
+  if (!requiredScope) {
+    return { allowed: true, requiredScope: null };
+  }
+  
+  // Check if key has required scope
+  const allowed = hasScope(keyScopes as any, requiredScope);
+  
+  if (!allowed) {
+    const scopeDescription = getScopeDescription(requiredScope);
+    return {
+      allowed: false,
+      requiredScope,
+      message: `This endpoint requires the '${requiredScope}' scope (${scopeDescription})`,
+    };
+  }
+  
+  return { allowed: true, requiredScope };
 }
 
 // =============================================================================
@@ -267,14 +293,35 @@ export async function apiKeyMiddleware(req: NextRequest): Promise<NextResponse> 
     );
   }
 
-  // Check scopes (SP6-04: Scope-based authorization)
-  // For now, allow all. Scope validation in SP6-04.
-  const hasPermission = checkScope(validatedKey.scopes, req.nextUrl.pathname);
-  if (!hasPermission) {
+  // Check scopes (scope-based authorization)
+  const scopeCheck = checkScope(
+    validatedKey.scopes,
+    req.nextUrl.pathname,
+    req.method
+  );
+  
+  if (!scopeCheck.allowed) {
+    // Get upgrade suggestion
+    const user = await prisma.user.findUnique({
+      where: { id: validatedKey.userId },
+      select: { plan: true },
+    });
+    
+    const upgrade = user && scopeCheck.requiredScope
+      ? getUpgradeSuggestion(user.plan, scopeCheck.requiredScope as any)
+      : null;
+    
     return NextResponse.json(
       { 
         error: 'Insufficient permissions',
-        message: 'Your API key does not have the required scope for this endpoint'
+        message: scopeCheck.message,
+        requiredScope: scopeCheck.requiredScope,
+        yourScopes: validatedKey.scopes,
+        upgrade: upgrade ? {
+          message: `Upgrade to ${upgrade.suggestedPlan} plan to access this endpoint`,
+          suggestedPlan: upgrade.suggestedPlan,
+          benefits: upgrade.benefits,
+        } : undefined,
       },
       { status: 403 }
     );

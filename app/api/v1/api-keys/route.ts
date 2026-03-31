@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { invalidateCachedApiKey } from '@/lib/rate-limit';
+import { getPlanScopes, getPlanRateLimit } from '@/lib/api-scopes';
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -32,34 +33,14 @@ function getKeyPrefix(fullKey: string): string {
  * Get default rate limit based on user plan
  */
 function getDefaultRateLimit(plan: string): number {
-  switch (plan) {
-    case 'pro':
-      return 10000; // 10K requests/hour
-    case 'premium':
-      return 1000; // 1K requests/hour
-    case 'free':
-    default:
-      return 100; // 100 requests/hour
-  }
+  return getPlanRateLimit(plan);
 }
 
 /**
  * Get default scopes based on user plan
  */
 function getDefaultScopes(plan: string): string[] {
-  const baseScopes = ['read:stocks', 'read:screener'];
-  
-  if (plan === 'premium' || plan === 'pro') {
-    return [
-      ...baseScopes,
-      'read:ownership',
-      'read:financials',
-      'write:watchlist',
-      'write:alerts',
-    ];
-  }
-  
-  return baseScopes;
+  return getPlanScopes(plan);
 }
 
 // =============================================================================
