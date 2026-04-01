@@ -31,7 +31,7 @@ model ApiKey {
 
   // Key Management
   keyHash   String  @unique // bcrypt hash of the full key
-  keyPrefix String // First 12 chars for display (stk_live_abcd)
+  keyPrefix String // First 12 chars for display (sk_live_abcd)
   name      String // User-provided name
   
   // Access Control
@@ -97,7 +97,7 @@ model ApiUsageHourly {
 
 **Design Decisions:**
 1. **bcrypt hashing:** Full API key never stored in database (only hash)
-2. **keyPrefix:** First 12 chars displayed in UI (e.g., "stk_live_abcd")
+2. **keyPrefix:** First 12 chars displayed in UI (e.g., "sk_live_abcd")
 3. **Separate userId:** Denormalized for fast user-level queries
 4. **Unique constraint:** Prevents duplicate hourly aggregations
 
@@ -127,7 +127,7 @@ Generate a new API key for authenticated user.
   "message": "API key created successfully. Save it now - it will not be shown again.",
   "apiKey": {
     "id": "65f8a1b2c3d4e5f6g7h8i9j0",
-    "key": "stk_live_XXXXXXXXXXXXXXXXXXXXXXXXXXXX", // ⚠️ ONLY SHOWN ONCE
+    "key": "stk_live_XXXXXXXXXXXXXXXXXXXXXXXXXXXX", // ⚠️ ONLY SHOWN ONCE (example redacted)
     "keyPrefix": "stk_live_XXXX",
     "name": "Production API",
     "scopes": ["read:stocks", "write:watchlist"],
@@ -140,10 +140,10 @@ Generate a new API key for authenticated user.
 ```
 
 **Security:**
-- Full key (`stk_live_xxx`) returned ONLY on creation
+- Full key (`sk_live_xxx`) returned ONLY on creation
 - Key is hashed with bcrypt (cost: 12) before storing
 - Maximum 10 keys per user
-- Key format: `stk_live_<24 random bytes base64url>` (production) or `stk_test_<random>` (development)
+- Key format: `sk_live_<24 random bytes base64url>` (production) or `sk_test_<random>` (development)
 
 **Validation:**
 - `name` required (non-empty string)
@@ -178,7 +178,7 @@ Retrieve all API keys for authenticated user.
   "keys": [
     {
       "id": "65f8a1b2c3d4e5f6g7h8i9j0",
-      "keyPrefix": "stk_live_XXXX", // Only prefix shown
+      "keyPrefix": "sk_live_aB3d", // Only prefix shown
       "name": "Production API",
       "scopes": ["read:stocks", "write:watchlist"],
       "rateLimit": 1000,
@@ -236,7 +236,7 @@ Update API key properties (name, revoke/activate, scopes, rate limit).
   "message": "API key updated successfully",
   "key": {
     "id": "65f8a1b2c3d4e5f6g7h8i9j0",
-    "keyPrefix": "stk_live_XXXX",
+    "keyPrefix": "sk_live_aB3d",
     "name": "Production API v2",
     "scopes": ["read:stocks"],
     "rateLimit": 500,
@@ -372,7 +372,7 @@ function getDefaultScopes(plan: string): string[] {
 **Implementation:**
 ```typescript
 function generateApiKey(environment: 'production' | 'development'): string {
-  const prefix = environment === 'production' ? 'stk_live_' : 'stk_test_';
+  const prefix = environment === 'production' ? 'sk_live_' : 'sk_test_';
   const randomPart = crypto.randomBytes(24).toString('base64url');
   return prefix + randomPart;
 }
@@ -399,7 +399,7 @@ const keyHash = await bcrypt.hash(fullKey, 12);
 **Storage:**
 - Full key: NEVER stored (only hash)
 - Key prefix: First 12 chars stored for display
-- User sees: "stk_live_abcd****"
+- User sees: "sk_live_abcd****"
 
 ### 3. Ownership Verification
 
@@ -493,7 +493,7 @@ All key operations tracked for audit:
   "eventName": "API Key Deleted",
   "properties": {
     "apiKeyId": "65f8a1b2c3d4e5f6g7h8i9j0",
-    "keyPrefix": "stk_live_XXXX",
+    "keyPrefix": "sk_live_aB3d",
     "name": "Production API"
   }
 }
@@ -514,7 +514,7 @@ POST /api/v1/api-keys
 }
 
 Expected:
-- Key starts with stk_test_
+- Key starts with sk_test_
 - Rate limit: 100
 - Scopes: ["read:stocks", "read:screener"]
 ```
