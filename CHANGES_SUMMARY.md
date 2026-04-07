@@ -1,3 +1,27 @@
+# Sprint 3 - Real-Time Alert System Upgrade Summary
+
+## Execution Overview
+The Sprint 3 architecture successfully implements a monetizable real-time alert engine utilizing a Next.js custom server configuration, Socket.io for WebSockets, and Redis for rate-limiting.
+
+### 1. WebSocket & Polling Engine
+- **Custom Application Server**: Configured `server.ts` to boot Next.js while attaching `Socket.io` to the same HTTP port.
+- **PriceAlert Schema Modification**: Extended Prisma's `PriceAlert` schema to include new toggles: `notifyEmail` and `notifySms`.
+- **Polling Loop implementation**: Built a resilient background loop (`setInterval(..., 15000)`) in `server.ts` that safely fetches mock IDX price data, cross-references active alerts from the database, and emits tailored JSON payloads securely to authenticated users' active socket rooms (e.g., `user:<userId>`).
+
+### 2. Notification Channels (Premium Features)
+- **Twilio SMS**: Integrated `twilio@3.80.0` inside `src/lib/notifications.ts` for instantaneous text delivery using mock sandbox credentials or production env vars.
+- **Email Nodemailer**: Integrated `nodemailer@6.7.8` leveraging fallback SMTP configurations for immediate user awareness.
+- **Targeted Dispatch**: Ensured only users flagged `plan === "premium"` route to SMS/Email utility paths within the backend.
+
+### 3. Protection & Caching Strategy
+- **Redis Rate Limiting**: Built `src/lib/rateLimitAlerts.ts` tying `redis@4.3.1` (via existing implementation strategies) to track `alerts:creation:<userId>:<date>`. Safely limits `free` users to 3 alerts continuously, blocking further REST API usage iteratively with HTTP 429.
+
+### 4. Alert Form User Interface
+- **Form Component**: Deployed scalable, robust `AlertForm.tsx` leveraging `react-hook-form@7.33.0`.
+- **Socket Connectivity**: Implemented `useEffect` hook capturing `alert:triggered` WebSocket push notifications natively on the client. UI subsequently displays pulsating live DOM alerts and native browser alerts seamlessly.
+
+---
+
 # Sprint 2 - UI/UX Overhaul & Advanced Filtering Summary
 
 ## Execution Overview

@@ -143,6 +143,8 @@ model PriceAlert {
   ticker        String // Stock ticker symbol
   condition     String // "above" | "below"
   targetPrice   Float
+  notifyEmail   Boolean   @default(false)
+  notifySms     Boolean   @default(false)
   isActive      Boolean   @default(true)
   triggeredAt   DateTime?
   lastCheckedAt DateTime  @default(now())
