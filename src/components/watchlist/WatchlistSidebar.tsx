@@ -81,7 +81,7 @@ export function WatchlistSidebar({
 
   if (!session?.user) {
     return (
-      <div className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+      <div className="p-4 text-center text-sm text-text-muted">
         Sign in to create watchlists
       </div>
     );
@@ -93,7 +93,7 @@ export function WatchlistSidebar({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-20 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse"
+            className="h-20 bg-surface-elevated rounded-lg animate-pulse"
           />
         ))}
       </div>
@@ -102,7 +102,7 @@ export function WatchlistSidebar({
 
   if (error) {
     return (
-      <div className="p-4 text-center text-sm text-red-500">
+      <div className="p-4 text-center text-sm text-bear">
         Error: {error}
       </div>
     );
@@ -111,23 +111,23 @@ export function WatchlistSidebar({
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-b border-border-subtle">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <List className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <List className="w-5 h-5 text-text-secondary" />
+            <h2 className="text-lg font-semibold text-text-primary">
               Watchlists
             </h2>
           </div>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+          <span className="text-xs text-text-muted">
             {watchlists.length}
           </span>
         </div>
         <button
           onClick={onCreateNew}
           className="w-full flex items-center justify-center gap-2 px-4 py-2 
-            bg-blue-600 hover:bg-blue-700 text-white rounded-lg
-            transition-colors duration-150 text-sm font-medium"
+            bg-brand hover:opacity-90 text-white rounded-lg
+            transition-opacity text-sm font-medium"
         >
           <Plus className="w-4 h-4" />
           New Watchlist
@@ -136,7 +136,7 @@ export function WatchlistSidebar({
 
       {/* Inline error */}
       {inlineError && (
-        <div className="mx-4 mt-3 flex items-center gap-2 px-3 py-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-xs">
+        <div className="mx-4 mt-3 flex items-center gap-2 px-3 py-2 bg-bear-bg border border-bear/30 rounded-lg text-bear text-xs">
           <AlertCircle className="w-3.5 h-3.5 shrink-0" />
           <span className="flex-1">{inlineError}</span>
           <button onClick={() => setInlineError(null)}>
@@ -148,7 +148,7 @@ export function WatchlistSidebar({
       {/* Watchlist Cards */}
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
         {watchlists.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
+          <div className="text-center py-8 text-text-muted text-sm">
             <p className="mb-2">No watchlists yet</p>
             <p className="text-xs">Create one to track your favorite stocks</p>
           </div>
@@ -159,11 +159,11 @@ export function WatchlistSidebar({
               onClick={() => onSelectWatchlist(watchlist.id)}
               className={`
                 p-3 rounded-lg cursor-pointer transition-all duration-150
-                border-2
+                border
                 ${
                   selectedWatchlistId === watchlist.id
-                    ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500'
-                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                    ? 'bg-brand-dim border-brand'
+                    : 'bg-surface-card border-border-subtle hover:border-border'
                 }
               `}
             >
@@ -176,21 +176,21 @@ export function WatchlistSidebar({
                         style={{ backgroundColor: watchlist.color }}
                       />
                     )}
-                    <h3 className="font-semibold text-sm text-gray-900 dark:text-white truncate">
+                    <h3 className="font-semibold text-sm text-text-primary truncate">
                       {watchlist.name}
                     </h3>
                   </div>
                   {watchlist.description && (
-                    <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-1 mb-2">
+                    <p className="text-xs text-text-muted line-clamp-1 mb-2">
                       {watchlist.description}
                     </p>
                   )}
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-xs text-text-muted">
                       {watchlist.itemCount} {watchlist.itemCount === 1 ? 'stock' : 'stocks'}
                     </span>
                     {watchlist.tickers.length > 0 && (
-                      <span className="text-xs font-mono text-gray-600 dark:text-gray-400">
+                      <span className="text-xs font-mono text-text-muted">
                         {watchlist.tickers.slice(0, 3).join(', ')}
                         {watchlist.tickers.length > 3 && '...'}
                       </span>
@@ -201,17 +201,17 @@ export function WatchlistSidebar({
                 {/* Delete / Confirm delete */}
                 {pendingDelete === watchlist.id ? (
                   <div className="flex flex-col items-end gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Delete?</span>
+                    <span className="text-xs text-text-muted">Delete?</span>
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleConfirmDelete(watchlist.id)}
-                        className="px-2 py-0.5 text-xs bg-red-600 hover:bg-red-700 text-white rounded transition-colors"
+                        className="px-2 py-0.5 text-xs bg-bear hover:opacity-80 text-white rounded transition-opacity"
                       >
                         Yes
                       </button>
                       <button
                         onClick={() => setPendingDelete(null)}
-                        className="px-2 py-0.5 text-xs bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                        className="px-2 py-0.5 text-xs bg-surface-elevated hover:bg-border text-text-secondary rounded transition-colors"
                       >
                         No
                       </button>
@@ -220,7 +220,7 @@ export function WatchlistSidebar({
                 ) : (
                   <button
                     onClick={(e) => handleDelete(watchlist.id, e)}
-                    className="p-1 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                    className="p-1 text-text-muted hover:text-bear transition-colors flex-shrink-0"
                     title="Delete watchlist"
                   >
                     <Trash2 className="w-4 h-4" />

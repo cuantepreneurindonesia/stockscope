@@ -77,16 +77,16 @@ export function CreateWatchlistModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="bg-surface-card border border-border-subtle rounded-xl shadow-2xl w-full max-w-md">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        <div className="flex items-center justify-between p-6 border-b border-border-subtle">
+          <h2 className="text-xl font-bold text-text-primary">
             Create Watchlist
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="text-text-muted hover:text-text-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -95,14 +95,13 @@ export function CreateWatchlistModal({
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 
-              dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400">
+            <div className="p-3 bg-bear-bg border border-bear/30 rounded-lg text-sm text-bear">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Name *
             </label>
             <input
@@ -111,17 +110,17 @@ export function CreateWatchlistModal({
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Tech Leaders"
               maxLength={100}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 
-                rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-2 border border-border-subtle rounded-lg 
+                bg-surface-elevated text-text-primary
+                focus:ring-1 focus:ring-brand focus:border-brand outline-none"
             />
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <div className="text-xs text-text-muted mt-1">
               {name.length}/100
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Description (optional)
             </label>
             <textarea
@@ -130,18 +129,17 @@ export function CreateWatchlistModal({
               placeholder="What stocks are you tracking?"
               maxLength={500}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 
-                rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white
-                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none
-                resize-none"
+              className="w-full px-4 py-2 border border-border-subtle rounded-lg 
+                bg-surface-elevated text-text-primary
+                focus:ring-1 focus:ring-brand focus:border-brand outline-none resize-none"
             />
-            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <div className="text-xs text-text-muted mt-1">
               {description.length}/500
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-text-secondary mb-2">
               Color
             </label>
             <div className="flex gap-2 flex-wrap">
@@ -152,7 +150,7 @@ export function CreateWatchlistModal({
                   onClick={() => setColor(presetColor)}
                   className={`w-10 h-10 rounded-full transition-all ${
                     color === presetColor
-                      ? 'ring-2 ring-offset-2 ring-blue-500 dark:ring-offset-gray-800'
+                      ? 'ring-2 ring-offset-2 ring-brand ring-offset-surface-card'
                       : 'hover:scale-110'
                   }`}
                   style={{ backgroundColor: presetColor }}
@@ -167,17 +165,17 @@ export function CreateWatchlistModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 
-                text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 
-                dark:hover:bg-gray-700 transition-colors"
+              className="flex-1 px-4 py-2 border border-border-subtle
+                text-text-secondary rounded-lg hover:bg-surface-elevated 
+                transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !name.trim()}
-              className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white 
-                rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-brand hover:opacity-90 text-white 
+                rounded-lg transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating...' : 'Create'}
             </button>

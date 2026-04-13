@@ -26,26 +26,26 @@ export default function WatchlistsPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-surface-base">
+        <div className="text-text-muted">Loading...</div>
       </div>
     );
   }
 
   if (!session?.user) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-surface-base">
         <div className="text-center max-w-md">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-2xl font-bold text-text-primary mb-4">
             Sign in to use Watchlists
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="text-text-secondary mb-6">
             Create watchlists to track your favorite JKSE stocks and organize your research.
           </p>
           <a
             href="/api/auth/signin"
-            className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 
-              text-white rounded-lg transition-colors font-medium"
+            className="inline-block px-6 py-3 bg-brand hover:opacity-90
+              text-white rounded-lg transition-opacity font-medium"
           >
             Sign In with Google
           </a>
@@ -55,10 +55,10 @@ export default function WatchlistsPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col md:flex-row bg-gray-50 dark:bg-gray-900">
+    <div className="h-screen flex flex-col md:flex-row bg-surface-base">
       {/* Sidebar */}
-      <div className="w-full md:w-80 lg:w-96 border-r border-gray-200 dark:border-gray-700 
-        bg-white dark:bg-gray-800 overflow-hidden flex flex-col">
+      <div className="w-full md:w-80 lg:w-96 border-r border-border-subtle
+        bg-surface-card overflow-hidden flex flex-col">
         <WatchlistSidebar
           key={refreshTrigger}
           selectedWatchlistId={selectedWatchlistId}
@@ -68,7 +68,7 @@ export default function WatchlistsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden bg-surface-base">
         {selectedWatchlistId ? (
           <WatchlistDetail
             key={`${selectedWatchlistId}-${refreshTrigger}`}
@@ -76,7 +76,7 @@ export default function WatchlistsPage() {
             onAddStock={() => setIsAddStockModalOpen(true)}
           />
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
+          <div className="h-full flex items-center justify-center text-text-muted">
             <div className="text-center">
               <p className="text-lg mb-2">No watchlist selected</p>
               <p className="text-sm">Create or select a watchlist to get started</p>
