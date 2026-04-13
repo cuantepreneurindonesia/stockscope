@@ -6,6 +6,10 @@ import { Check, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { usePricingExperiment, useCTAExperiment, useLayoutExperiment } from '@/hooks/use-experiments';
 import { trackExperimentEvent } from '@/hooks/use-experiments';
 import { formatPrice } from '@/lib/experiments';
+import { loadStripe } from '@stripe/stripe-js';
+
+// Initialize Stripe
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_mock_key_for_dev');
 
 export default function PricingClient() {
   const { data: session } = useSession();
@@ -22,6 +26,12 @@ export default function PricingClient() {
   }, [pricingExpId, pricingVariant, ctaExpId, ctaVariant]);
   
   const handleCheckout = async (planId: 'premium' | 'pro', billingCycle: 'monthly' | 'annual') => {
+    // Require authentication before starting checkout
+    if (!session?.user?.id) {
+      console.warn('User must be signed in to start checkout');
+      return;
+    }
+
     // Track CTA click
     trackExperimentEvent(ctaExpId, ctaVariant, 'clicked', { 
       plan: planId,
@@ -29,10 +39,10 @@ export default function PricingClient() {
     });
     
     try {
-      const response = await fetch('/api/payment/create', {
+      const response = await fetch('/api/checkout/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId, billingCycle }),
+        body: JSON.stringify({ tierId: planId, billingCycle, userId: session.user.id }),
       });
       
       const data = await response.json();
@@ -42,20 +52,17 @@ export default function PricingClient() {
         return;
       }
       
-      // Redirect to Midtrans Snap
-      if (data.token) {
-        // @ts-ignore - Midtrans Snap loaded via script
-        window.snap.pay(data.token, {
-          onSuccess: () => {
-            trackExperimentEvent(pricingExpId, pricingVariant, 'converted', { 
-              plan: planId,
-              billingCycle,
-              amount: planId === 'premium' 
-                ? (billingCycle === 'monthly' ? pricing.premiumMonthly : pricing.premiumAnnual)
-                : (billingCycle === 'monthly' ? pricing.proMonthly : pricing.proAnnual),
-            });
-          },
-        });
+      // Redirect to Stripe Checkout
+      if (data.sessionId) {
+        const stripe = await stripePromise;
+        if (stripe) {
+          const { error } = await stripe.redirectToCheckout({
+            sessionId: data.sessionId,
+          });
+          if (error) {
+            console.error('Stripe redirect error:', error.message);
+          }
+        }
       }
     } catch (error) {
       console.error('Failed to create payment:', error);

@@ -5,22 +5,22 @@
 @tailwind utilities;
 
 :root {
-  --bg-canvas: #06131a;
-  --bg-panel: #0c1e27;
-  --bg-elevated: #112a36;
-  --text-primary: #e8f2f7;
-  --text-secondary: #9fb7c4;
-  --text-muted: #6d8794;
-  --accent-info: #2e8bc0;
-  --accent-positive: #2fa66a;
-  --accent-warning: #d7a33c;
-  --accent-danger: #d95c5c;
-  --tier-green: #34c38f;
-  --tier-amber: #f4b740;
-  --tier-red: #e16363;
-  --border-subtle: rgba(159, 183, 196, 0.22);
-  --focus-ring: #52b6e8;
-  --shadow-soft: 0 10px 30px rgba(3, 10, 14, 0.35);
+  --bg-canvas: #060d18;
+  --bg-panel: #09131f;
+  --bg-elevated: #132030;
+  --text-primary: #e8f4f8;
+  --text-secondary: #a8c8e8;
+  --text-muted: #6b8aad;
+  --accent-info: #2a9d8f;
+  --accent-positive: #2a9d8f;
+  --accent-warning: #e9c46a;
+  --accent-danger: #e76f51;
+  --tier-green: #2a9d8f;
+  --tier-amber: #e9c46a;
+  --tier-red: #e76f51;
+  --border-subtle: rgba(30, 58, 82, 0.5); /* #1e3a52 visually */
+  --focus-ring: #2a9d8f;
+  --shadow-soft: 0 10px 30px rgba(6, 13, 24, 0.35);
 }
 
 * {

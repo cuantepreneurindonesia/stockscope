@@ -1,10 +1,42 @@
 /**
  * AI Score Snapshots API
  * 
- * Track AI-generated scores with model versioning
- * Enables A/B testing of model improvements and historical score analysis
- * 
- * Sprint 3, Task SP3-03: AI/Sentiment Score Versioning
+ * @swagger
+ * /ai-scores:
+ *   get:
+ *     summary: Retrieve AI scores
+ *     description: Get AI scores with flexible filtering (ticker, date, modelVersion).
+ *     tags:
+ *       - Indicators
+ *     parameters:
+ *       - in: query
+ *         name: ticker
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: date
+ *         schema:
+ *           type: string
+ *           format: date
+ *     responses:
+ *       200:
+ *         description: Success
+ *   post:
+ *     summary: Add an AI score snapshot
+ *     description: Uses an upsert pattern to handle duplicate ticker+date+model combinations.
+ *     tags:
+ *       - Indicators
+ *     responses:
+ *       201:
+ *         description: Successfully created/upserted
+ *   delete:
+ *     summary: Delete AI scores
+ *     description: Delete AI scores for a specific ticker and date.
+ *     tags:
+ *       - Indicators
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
  */
 
 import { NextRequest, NextResponse } from 'next/server'

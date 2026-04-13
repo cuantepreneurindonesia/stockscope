@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-
 import { useTranslations } from "next-intl";
+import ReactModal from "react-modal";
 
 import { BottomTabBar } from "@/components/layout/BottomTabBar";
 import { Navbar } from "@/components/layout/Navbar";
-import { FilterPills } from "@/components/features/screener/FilterPills";
 import { FilterSidebar } from "@/components/features/screener/FilterSidebar";
 import { ResultsHeader } from "@/components/features/screener/ResultsHeader";
 import { ScreenerTable } from "@/components/features/screener/ScreenerTable";
@@ -20,48 +19,38 @@ import { StatCard } from "@/components/ui/StatCard";
 import type { EnrichedStock } from "@/types/unified";
 
 const sectors = [
-  { id: "finance", label: "Finance" },
-  { id: "energy", label: "Energy" },
-  { id: "tech", label: "Technology" },
-  { id: "consumer", label: "Consumer" },
-  { id: "industrial", label: "Industrial" },
-  { id: "property", label: "Property" },
-  { id: "healthcare", label: "Healthcare" },
-  { id: "mining", label: "Mining" },
-];
-
-const tiers = [
-  { id: "s", label: "Tier S" },
-  { id: "a", label: "Tier A" },
-  { id: "b", label: "Tier B" },
-  { id: "c", label: "Tier C" },
-  { id: "d", label: "Tier D" },
+  { id: "Finance", label: "Finance" },
+  { id: "Energy", label: "Energy" },
+  { id: "Technology", label: "Technology" },
+  { id: "Consumer", label: "Consumer" },
+  { id: "Industrial", label: "Industrial" },
+  { id: "Property", label: "Property" },
+  { id: "Infrastructure", label: "Infrastructure" },
+  { id: "Miscellaneous Industry", label: "Miscellaneous Industry" },
+  { id: "Mining", label: "Mining" },
 ];
 
 export function ScreenerWorkspace(): React.ReactElement {
   const t = useTranslations("screenerPage");
-  const loadErrorLabel = t("loadError");
 
   const [stocks, setStocks] = useState<EnrichedStock[]>([]);
+  const [totalStocks, setTotalStocks] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<"table" | "cards">("table");
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSectors, setSelectedSectors] = useState<string[]>([]);
-  const [selectedTiers, setSelectedTiers] = useState<string[]>([]);
-  const [peRange, setPeRange] = useState<[number, number]>([0, 100]);
-  const [roeRange, setRoeRange] = useState<[number, number]>([0, 100]);
-  const [marketCapRange, setMarketCapRange] = useState<[number, number]>([
-    0, 1000,
-  ]);
+  
+  const [page, setPage] = useState(1);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 15000]);
+
   const [sortBy, setSortBy] = useState("composite");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  const [selectedStock, setSelectedStock] = useState<EnrichedStock | null>(
-    null,
-  );
+  const [selectedStock, setSelectedStock] = useState<EnrichedStock | null>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   const marketData = {
     jciIndex: 7284,
@@ -72,6 +61,9 @@ export function ScreenerWorkspace(): React.ReactElement {
   };
 
   useEffect(() => {
+    // Need to set app element for react-modal to prevent screen reader warnings
+    ReactModal.setAppElement("body");
+    
     const handleResize = () => {
       setView(window.innerWidth < 1024 ? "cards" : "table");
     };
@@ -85,90 +77,67 @@ export function ScreenerWorkspace(): React.ReactElement {
     const controller = new AbortController();
     const params = new URLSearchParams();
 
-    if (searchQuery) params.append("search", searchQuery);
+    params.append("page", page.toString());
+    
     if (selectedSectors.length > 0) {
-      params.append("sectors", selectedSectors.join(","));
+      params.append("sector", selectedSectors[0]); // sending top sector
     }
-    if (selectedTiers.length > 0) {
-      params.append("tiers", selectedTiers.join(","));
-    }
-    params.append("peMin", peRange[0].toString());
-    params.append("peMax", peRange[1].toString());
-    params.append("roeMin", roeRange[0].toString());
-    params.append("roeMax", roeRange[1].toString());
+    
+    // Send price filters
+    if (priceRange[0] > 0) params.append("minPrice", priceRange[0].toString());
+    if (priceRange[1] < 15000) params.append("maxPrice", priceRange[1].toString());
+
+    if (searchQuery) params.append("search", searchQuery); // Note: Current api might skip this based on backend route implementation, but good for future expansion
 
     queueMicrotask(() => setLoading(true));
 
-    fetch(`/api/stocks/enriched?${params.toString()}`, {
+    fetch(`/api/screen?${params.toString()}`, {
       signal: controller.signal,
     })
       .then(async (res) => {
-        if (!res.ok) {
-          throw new Error(`Request failed: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`Request failed: ${res.status}`);
         return res.json();
       })
       .then((data) => {
         if (data.success) {
-          setStocks(data.data);
+          // Transform API response shape to EnrichedStock shape expected by components
+          const transformed = (data.data as any[]).map((s: any): EnrichedStock => ({
+            code: s.code,
+            issuer: s.issuer,
+            tier: s.tier,
+            sector: s.sector,
+            price: s.price,
+            change: s.change,
+            volume: s.volume,
+            marketCap: s.marketCap,
+            pe: s.pe,
+            pb: s.pb,
+            roe: s.roe,
+            dividendYield: s.dividendYield,
+            scores: s.scores,
+            aiTier: s.aiTier,
+          }));
+          setStocks(transformed);
+          setTotalStocks(data.total);
           setError(null);
         } else {
-          setError(data.error || loadErrorLabel);
+          setError(data.error || "Failed to load data");
         }
       })
       .catch((err: unknown) => {
-        if (err instanceof Error && err.name === "AbortError") {
-          return;
-        }
-        setError(loadErrorLabel);
+        if (err instanceof Error && err.name === "AbortError") return;
+        setError("Failed to load data");
       })
       .finally(() => setLoading(false));
 
     return () => controller.abort();
-  }, [searchQuery, selectedSectors, selectedTiers, peRange, roeRange, loadErrorLabel]);
+  }, [page, searchQuery, selectedSectors, priceRange]);
 
   const handleResetFilters = () => {
     setSearchQuery("");
     setSelectedSectors([]);
-    setSelectedTiers([]);
-    setPeRange([0, 100]);
-    setRoeRange([0, 100]);
-    setMarketCapRange([0, 1000]);
-  };
-
-  const activePillIds = useMemo(
-    () => [
-      ...selectedSectors.map((s) => `sector-${s}`),
-      ...selectedTiers.map((t) => `tier-${t}`),
-    ],
-    [selectedSectors, selectedTiers],
-  );
-
-  const allFilterPills = useMemo(
-    () => [
-      ...sectors.map((s) => ({ ...s, id: `sector-${s.id}` })),
-      ...tiers.map((t) => ({ ...t, id: `tier-${t.id}` })),
-    ],
-    [],
-  );
-
-  const togglePill = (id: string) => {
-    if (id.startsWith("sector-")) {
-      const sectorId = id.replace("sector-", "");
-      setSelectedSectors((prev) =>
-        prev.includes(sectorId)
-          ? prev.filter((s) => s !== sectorId)
-          : [...prev, sectorId],
-      );
-      return;
-    }
-
-    if (id.startsWith("tier-")) {
-      const tierId = id.replace("tier-", "");
-      setSelectedTiers((prev) =>
-        prev.includes(tierId) ? prev.filter((t) => t !== tierId) : [...prev, tierId],
-      );
-    }
+    setPriceRange([0, 15000]);
+    setPage(1);
   };
 
   const handleStockClick = (stock: EnrichedStock) => {
@@ -188,7 +157,19 @@ export function ScreenerWorkspace(): React.ReactElement {
       <Navbar />
 
       <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-4 md:px-6 md:pb-8 md:pt-6 lg:px-8">
-        <section className="mb-5 rounded-2xl border border-border-subtle bg-surface-card/70 p-4 backdrop-blur-sm md:p-6">
+        {/* Mobile Header / Quick Actions */}
+        <div className="md:hidden flex items-center justify-between mb-4">
+          <h1 className="text-xl font-bold">Stock Screener</h1>
+          <button 
+            onClick={() => setIsMobileFilterOpen(true)}
+            className="flex items-center gap-1 bg-surface-elevated px-3 py-1.5 rounded-lg border border-border-subtle"
+          >
+            <span className="material-symbols-outlined text-sm">tune</span>
+            <span className="text-sm font-medium">Filters</span>
+          </button>
+        </div>
+
+        <section className="hidden md:block mb-5 rounded-2xl border border-border-subtle bg-surface-card/70 p-4 backdrop-blur-sm md:p-6">
           <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="label mb-1">Indonesia Equity Intelligence</p>
@@ -200,136 +181,69 @@ export function ScreenerWorkspace(): React.ReactElement {
               </p>
             </div>
             <div className="w-full max-w-xl">
-              <SearchBar
-                onSearch={setSearchQuery}
-                placeholder="Search ticker or company"
-              />
+              <SearchBar onSearch={setSearchQuery} placeholder="Search ticker or company" />
             </div>
           </div>
-
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <StatCard
-              label="JCI Index"
-              value={marketData.jciIndex.toLocaleString("id-ID")}
-              delta={marketData.jciChange}
-              deltaType="positive"
-            />
+            <StatCard label="JCI Index" value={marketData.jciIndex.toLocaleString("id-ID")} delta={marketData.jciChange} deltaType="positive" />
             <StatCard label="Market Cap" value={marketData.marketCap} />
-            <StatCard
-              label="Advancing"
-              value={marketData.advancing}
-              deltaType="positive"
-            />
-            <StatCard
-              label="Declining"
-              value={marketData.declining}
-              deltaType="negative"
-            />
+            <StatCard label="Advancing" value={marketData.advancing} deltaType="positive" />
+            <StatCard label="Declining" value={marketData.declining} deltaType="negative" />
           </div>
         </section>
 
         <section className="grid items-start gap-4 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="rounded-2xl border border-border-subtle bg-surface-card/50 p-3 backdrop-blur-sm">
+          {/* Desktop Sidebar */}
+          <div className="hidden md:block rounded-2xl border border-border-subtle bg-surface-card/50 p-3 backdrop-blur-sm">
             <FilterSidebar
               sectors={sectors}
-              tiers={tiers}
-              onSectorChange={(id) => {
-                setSelectedSectors((prev) =>
-                  prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id],
-                );
-              }}
-              onTierChange={(id) => {
-                setSelectedTiers((prev) =>
-                  prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id],
-                );
-              }}
-              onPeRangeChange={(min, max) => setPeRange([min, max])}
-              onRoeRangeChange={(min, max) => setRoeRange([min, max])}
-              onMarketCapChange={(min, max) => setMarketCapRange([min, max])}
-              onResetFilters={handleResetFilters}
               activeSectors={selectedSectors}
-              activeTiers={selectedTiers}
-              peRange={peRange}
-              roeRange={roeRange}
-              marketCapRange={marketCapRange}
+              onSectorChange={(id) => {
+                setSelectedSectors(id ? [id] : []);
+                setPage(1);
+              }}
+              priceRange={priceRange}
+              onPriceRangeChange={(min, max) => {
+                setPriceRange([min, max]);
+                setPage(1);
+              }}
+              onResetFilters={handleResetFilters}
             />
-          </aside>
+          </div>
 
-          <main className="rounded-2xl border border-border-subtle bg-surface-card p-3 md:p-5">
-            <div className="mb-3">
-              <FilterPills
-                pills={allFilterPills}
-                active={activePillIds}
-                onToggle={togglePill}
-                onReset={handleResetFilters}
-              />
-            </div>
-
+          <main className="rounded-2xl border border-border-subtle bg-surface-card p-3 md:p-5 flex flex-col min-h-[600px]">
             <div className="mb-3 rounded-xl border border-border-subtle bg-surface-elevated/40">
-              <ResultsHeader
-                view={view}
-                onViewChange={setView}
-                totalResults={stocks.length}
-              />
+              <ResultsHeader view={view} onViewChange={setView} totalResults={totalStocks} />
             </div>
 
             {error && <EmptyState type="error" onAction={handleResetFilters} />}
 
-            {loading && view === "cards" && (
-              <div className="space-y-2 lg:hidden">
-                {Array.from({ length: 7 }).map((_, i) => (
-                  <StockCardSkeleton key={i} />
-                ))}
-              </div>
-            )}
-
-            {loading && view === "table" && (
-              <div className="hidden lg:block">
-                <table className="w-full">
-                  <tbody>
-                    {Array.from({ length: 7 }).map((_, i) => (
-                      <TableRowSkeleton key={i} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {!loading && !error && searchQuery && stocks.length === 0 && (
-              <EmptyState
-                type="search"
-                query={searchQuery}
-                onAction={() => setSearchQuery("")}
-              />
-            )}
-
-            {!loading && !error && activePillIds.length > 0 && stocks.length === 0 && (
-              <EmptyState type="filter" onAction={handleResetFilters} />
-            )}
-
-            {!loading && !error && stocks.length > 0 && view === "cards" && (
-              <div className="space-y-2 lg:hidden">
+            {loading ? (
+               <div className="flex-1 w-full bg-surface-elevated/20 animate-pulse rounded-xl" />
+            ) : stocks.length === 0 ? (
+               <EmptyState type="filter" onAction={handleResetFilters} />
+            ) : view === "cards" ? (
+              <div className="space-y-3">
                 {stocks.map((stock) => (
-                  <StockCard
-                    key={stock.code}
-                    stock={stock}
-                    onClick={() => handleStockClick(stock)}
-                  />
+                  <StockCard key={stock.code} stock={stock} onClick={() => handleStockClick(stock)} />
                 ))}
+                {/* Mobile barebones pagination */}
+                <div className="flex justify-between items-center px-2 py-4">
+                  <button disabled={page === 1} onClick={() => setPage(page-1)} className="px-3 py-1 bg-surface-elevated rounded border border-border disabled:opacity-50">Prev</button>
+                  <span className="text-sm">Page {page}</span>
+                  <button disabled={stocks.length < 50} onClick={() => setPage(page+1)} className="px-3 py-1 bg-surface-elevated rounded border border-border disabled:opacity-50">Next</button>
+                </div>
               </div>
-            )}
-
-            {!loading && !error && stocks.length > 0 && view === "table" && (
-              <div className="hidden lg:block">
+            ) : (
+              <div className="flex-1 w-full flex flex-col h-full min-h-[500px]">
                 <ScreenerTable
                   stocks={stocks}
+                  total={totalStocks}
+                  page={page}
+                  onPageChange={setPage}
                   onSort={(field) => {
-                    if (sortBy === field) {
-                      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-                    } else {
-                      setSortBy(field);
-                      setSortOrder("desc");
-                    }
+                    if (sortBy === field) setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+                    else { setSortBy(field); setSortOrder("desc"); }
                   }}
                   sortBy={sortBy}
                   sortOrder={sortOrder}
@@ -341,12 +255,41 @@ export function ScreenerWorkspace(): React.ReactElement {
         </section>
       </div>
 
-      <StockDetailPanel
-        stock={selectedStock}
-        isOpen={isPanelOpen}
-        onClose={handlePanelClose}
-      />
+      {/* Mobile Modal Filter */}
+      <ReactModal
+        isOpen={isMobileFilterOpen}
+        onRequestClose={() => setIsMobileFilterOpen(false)}
+        className="absolute top-0 right-0 h-full w-[85vw] max-w-[320px] bg-surface-card border-l border-border-subtle p-4 shadow-2xl focus:outline-none overflow-y-auto z-50 transform transition-transform"
+        overlayClassName="fixed inset-0 bg-black/60 z-40"
+        closeTimeoutMS={200}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-lg font-bold">Filters</h2>
+          <button onClick={() => setIsMobileFilterOpen(false)} className="text-text-muted hover:text-white">
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <FilterSidebar
+          isMobile={true}
+          sectors={sectors}
+          activeSectors={selectedSectors}
+          onSectorChange={(id) => {
+            setSelectedSectors(id ? [id] : []);
+            setPage(1);
+          }}
+          priceRange={priceRange}
+          onPriceRangeChange={(min, max) => {
+            setPriceRange([min, max]);
+            setPage(1);
+          }}
+          onResetFilters={handleResetFilters}
+        />
+        <div className="mt-8">
+          <button onClick={() => setIsMobileFilterOpen(false)} className="w-full bg-brand text-white py-3 rounded-xl font-bold">View {totalStocks} Results</button>
+        </div>
+      </ReactModal>
 
+      <StockDetailPanel stock={selectedStock} isOpen={isPanelOpen} onClose={handlePanelClose} />
       <BottomTabBar />
     </div>
   );

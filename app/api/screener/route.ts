@@ -1,3 +1,53 @@
+/**
+ * @swagger
+ * /screener:
+ *   get:
+ *     summary: Advanced stock screening
+ *     description: Retrieve and filter stocks based on governance, aiTier, sector, and more.
+ *     tags:
+ *       - Screen
+ *     parameters:
+ *       - in: query
+ *         name: sector
+ *         schema:
+ *           type: string
+ *         description: Sector filter (e.g., Financials)
+ *       - in: query
+ *         name: tier
+ *         schema:
+ *           type: integer
+ *         description: AI Tier level filter
+ *       - in: query
+ *         name: minScore
+ *         schema:
+ *           type: integer
+ *         description: Minimum composite AI score
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *         description: Field to sort by (composite, pe, change, dividendYield, roe)
+ *     responses:
+ *       200:
+ *         description: Returns a list of enriched stocks
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 timestamp:
+ *                   type: string
+ *                 total:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       500:
+ *         description: Internal server error
+ */
 import { NextRequest, NextResponse } from "next/server";
 
 import { enrichStocks } from "@/lib/services/enrichmentService";
@@ -23,9 +73,18 @@ function parseScreenerSort(raw: string | null): ScreenerSortKey {
     : fallback;
 }
 
+import { getCachedData, setCachedData } from "@/lib/redis-cache";
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
+    const cacheKey = `cache:screener:${searchParams.toString()}`;
+
+    // Redis Cache Injection (Phase 3)
+    const cached = await getCachedData(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
 
     // Parse query parameters (supporting both old and new param names for compatibility)
     const sector = searchParams.get("sector");
@@ -148,12 +207,17 @@ export async function GET(request: NextRequest) {
       },
     }));
 
-    return NextResponse.json({
+    const responseData = {
       success: true,
       timestamp: new Date().toISOString(),
       total: data.length,
       data,
-    });
+    };
+
+    // Save to Redis (Default TTL: 60s)
+    await setCachedData(cacheKey, responseData, 60);
+
+    return NextResponse.json(responseData);
   } catch (error) {
     return NextResponse.json(
       {

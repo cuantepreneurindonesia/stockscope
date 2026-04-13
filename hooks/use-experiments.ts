@@ -2,6 +2,11 @@
 
 import { useSession } from 'next-auth/react';
 import { useMemo, useEffect } from 'react';
+import * as optimizelySDK from '@optimizely/optimizely-sdk';
+
+const optimizelyClient = optimizelySDK.createInstance({
+  sdkKey: process.env.NEXT_PUBLIC_OPTIMIZELY_SDK_KEY || 'mock_sdk_key',
+});
 import { 
   getExperimentVariant, 
   getPricingForVariant,
@@ -69,7 +74,7 @@ export function usePricingExperiment(): {
 }
 
 /**
- * Hook for CTA experiment
+ * Hook for CTA experiment using Optimizely SDK
  * Returns CTA text based on variant
  */
 export function useCTAExperiment(): {
@@ -77,10 +82,24 @@ export function useCTAExperiment(): {
   cta: CTAConfig;
   experimentId: string;
 } {
-  const { variant, experimentId } = useExperiment('ctaWording');
+  const { data: session } = useSession();
+  const userId = session?.user?.id || 'anonymous_user';
+
+  // Implement Optimizely toggle logic — memoized so activate() is only called once per userId
+  const optimizelyVariant = useMemo(() => {
+    return optimizelyClient
+      ? optimizelyClient.activate('cta_wording_experiment', userId) as string
+      : 'control';
+  }, [userId]);
+
+  // Map optimizely string to our app variant format
+  const variant = (
+    optimizelyVariant && optimizelyVariant !== 'control' ? 'variant_a' : 'control'
+  ) as ExperimentVariant;
+
   const cta = useMemo(() => getCTAForVariant(variant), [variant]);
   
-  return { variant, cta, experimentId };
+  return { variant, cta, experimentId: 'cta_wording_experiment' };
 }
 
 /**

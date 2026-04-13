@@ -29,8 +29,8 @@ export function MicroBar({
 
   // Determine color and status based on thresholds
   let color = {
-    bg: "bg-primary",
-    text: "text-primary",
+    bg: "bg-brand",
+    text: "text-brand",
     shadow: "shadow-glow",
     label: statusLabels.green,
   };
@@ -38,15 +38,15 @@ export function MicroBar({
   if (thresholds.type === "lower-is-better") {
     if (value >= thresholds.amber) {
       color = {
-        bg: "bg-error",
-        text: "text-error",
+        bg: "bg-bear",
+        text: "text-bear",
         shadow: "shadow-[0_0_20px_rgba(231,111,81,0.3)]",
         label: statusLabels.red,
       };
     } else if (value >= thresholds.green && value < thresholds.amber) {
       color = {
-        bg: "bg-tertiary",
-        text: "text-tertiary",
+        bg: "bg-warning",
+        text: "text-warning",
         shadow: "shadow-[0_0_20px_rgba(233,196,106,0.3)]",
         label: statusLabels.amber,
       };
@@ -55,15 +55,15 @@ export function MicroBar({
     // higher-is-better
     if (value <= thresholds.amber) {
       color = {
-        bg: "bg-error",
-        text: "text-error",
+        bg: "bg-bear",
+        text: "text-bear",
         shadow: "shadow-[0_0_20px_rgba(231,111,81,0.3)]",
         label: statusLabels.red,
       };
     } else if (value <= thresholds.green && value > thresholds.amber) {
       color = {
-        bg: "bg-tertiary",
-        text: "text-tertiary",
+        bg: "bg-warning",
+        text: "text-warning",
         shadow: "shadow-[0_0_20px_rgba(233,196,106,0.3)]",
         label: statusLabels.amber,
       };

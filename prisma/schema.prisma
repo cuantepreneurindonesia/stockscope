@@ -143,6 +143,8 @@ model PriceAlert {
   ticker        String // Stock ticker symbol
   condition     String // "above" | "below"
   targetPrice   Float
+  notifyEmail   Boolean   @default(false)
+  notifySms     Boolean   @default(false)
   isActive      Boolean   @default(true)
   triggeredAt   DateTime?
   lastCheckedAt DateTime  @default(now())
@@ -152,6 +154,7 @@ model PriceAlert {
   @@index([userId])
   @@index([isActive])
   @@index([ticker, isActive])
+  @@index([isActive, targetPrice, ticker]) // Phase 3 Scalability: Accelerated alert engine sweeps
   @@map("price_alerts")
 }
 
@@ -196,6 +199,7 @@ model CompanyMaster {
   dailyFacts DailyFact[]
 
   @@index([sector])
+  @@index([sector, boardType]) // Phase 3 Scalability
   @@index([isActive])
   @@map("company_master")
 }
@@ -256,6 +260,7 @@ model OwnershipSnapshot {
   @@index([ticker, date]) // For single-stock ownership queries
   @@index([date]) // For market-wide snapshots
   @@index([holderName]) // For tracking specific holders across stocks
+  @@index([ticker, date, holderType]) // Phase 3 Scalability
   @@map("ownership_snapshots")
 }
 

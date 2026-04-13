@@ -106,9 +106,9 @@ function PanelContent({
           <div className="flex gap-2">
             <span
               className={`px-2 py-0.5 rounded text-[10px] font-label uppercase tracking-widest border
-              ${stock.tier === "Green" ? "bg-primary/10 text-primary border-primary/20" : ""}
-              ${stock.tier === "Amber" ? "bg-tertiary/10 text-tertiary border-tertiary/20" : ""}
-              ${stock.tier === "Red" ? "bg-error/10 text-error border-error/20" : ""}
+              ${stock.tier === "Green" ? "bg-brand/10 text-brand border-brand/20" : ""}
+              ${stock.tier === "Amber" ? "bg-warning/10 text-warning border-warning/20" : ""}
+              ${stock.tier === "Red" ? "bg-bear/10 text-bear border-bear/20" : ""}
             `}
             >
               {stock.tier} Tier
@@ -132,7 +132,7 @@ function PanelContent({
               {formatPrice(stock.price || stock.lastPrice)}
             </div>
             <div
-              className={`font-label text-sm ${isPositive ? "text-primary" : "text-error"}`}
+              className={`font-label text-sm ${isPositive ? "text-brand" : "text-bear"}`}
             >
               {formatPercent(stock.change)}
             </div>
@@ -227,7 +227,7 @@ function PanelContent({
               {stock.flags.map((flag) => (
                 <div
                   key={flag}
-                  className="flex items-center gap-3 bg-error/5 border border-error/10 p-3 rounded-lg"
+                  className="flex items-center gap-3 bg-bear/5 border border-bear/10 p-3 rounded-lg"
                 >
                   <span className="text-sm">🚩</span>
                   <span className="font-body text-sm text-on-surface">
