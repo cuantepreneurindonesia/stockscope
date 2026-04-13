@@ -14,7 +14,7 @@
 ## Phase 3: Stripe Monetization
 - Created checkout endpoint in Next.js backend at `POST /api/checkout/session`.
 - Migrated legacy `PricingClient.tsx` checkout handlers from Midtrans over to Stripe.
-- Intercepted Stripe signature updates natively within `server.ts` utilizing `express.raw` to maintain complete buffer integrity before parsers execute, updating `prisma.user` to strictly feature `isPremium = true`.
+- Intercepted Stripe signature updates natively within `server.ts` utilizing `express.raw` to maintain complete buffer integrity before parsers execute, updating `prisma.user.plan` to `"premium"` for the upgraded user.
 
 ## Phase 4: A/B Testing
 - Rewired `useCTAExperiment` to directly initialize and activate variations securely using an explicit reference to the `@optimizely/optimizely-sdk` framework for UI AB toggles based on IDs.

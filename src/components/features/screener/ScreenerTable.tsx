@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useRef } from "react";
 import { useTable, useSortBy, usePagination, Column } from "react-table";
 import type { EnrichedStock } from "@/types/unified";
 import { TrendBadge } from "@/components/ui/TrendBadge";
@@ -101,11 +101,12 @@ export function ScreenerTable({
     headerGroups,
     page: tablePage,
     prepareRow,
+    state: tableState,
   } = useTable(
     {
       columns,
       data: stocks,
-      initialState: { pageSize: 50 },
+      initialState: { pageSize: 50, sortBy: [{ id: sortBy, desc: sortOrder === "desc" }] },
       manualPagination: true,
       pageCount: Math.ceil(total / 50),
       manualSortBy: true,
@@ -113,6 +114,16 @@ export function ScreenerTable({
     useSortBy,
     usePagination
   );
+
+  // Propagate react-table sort state changes to parent via onSort
+  const prevSortRef = useRef(tableState.sortBy);
+  useEffect(() => {
+    const current = tableState.sortBy;
+    if (current !== prevSortRef.current && current.length > 0) {
+      prevSortRef.current = current;
+      onSort(current[0].id);
+    }
+  }, [tableState.sortBy, onSort]);
 
   if (stocks.length === 0) {
     return <EmptyState message="No stocks found" subMessage="Try adjusting filters" icon="search_off" />;

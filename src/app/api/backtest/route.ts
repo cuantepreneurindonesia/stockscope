@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     }
 
     const closes = facts.map(f => f.close);
-    let signalData: number[] = [];
+    let signalData: (number | null)[] = [];
     
     if (indicator === 'RSI') {
       signalData = await calculateRSI(closes, 14);

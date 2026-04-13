@@ -100,7 +100,24 @@ export function ScreenerWorkspace(): React.ReactElement {
       })
       .then((data) => {
         if (data.success) {
-          setStocks(data.data);
+          // Transform API response shape to EnrichedStock shape expected by components
+          const transformed = (data.data as any[]).map((s: any): EnrichedStock => ({
+            code: s.code,
+            issuer: s.issuer,
+            tier: s.tier,
+            sector: s.sector,
+            price: s.price,
+            change: s.change,
+            volume: s.volume,
+            marketCap: s.marketCap,
+            pe: s.pe,
+            pb: s.pb,
+            roe: s.roe,
+            dividendYield: s.dividendYield,
+            scores: s.scores,
+            aiTier: s.aiTier,
+          }));
+          setStocks(transformed);
           setTotalStocks(data.total);
           setError(null);
         } else {
@@ -205,7 +222,7 @@ export function ScreenerWorkspace(): React.ReactElement {
                <div className="flex-1 w-full bg-surface-elevated/20 animate-pulse rounded-xl" />
             ) : stocks.length === 0 ? (
                <EmptyState type="filter" onAction={handleResetFilters} />
-            ) : (view === "cards" || window.innerWidth < 1024) ? (
+            ) : view === "cards" ? (
               <div className="space-y-3">
                 {stocks.map((stock) => (
                   <StockCard key={stock.code} stock={stock} onClick={() => handleStockClick(stock)} />

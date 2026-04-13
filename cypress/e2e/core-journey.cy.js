@@ -2,7 +2,8 @@ describe('Core Journey: Login -> Filter Stocks -> Set Alert', () => {
   it('should successfully execute the core journey', () => {
     // 1. Mock the API setup or set up interception
     cy.intercept('POST', '/api/auth/callback/credentials', { statusCode: 200 }).as('login');
-    cy.intercept('GET', '/api/screener*', { fixture: 'screener.json' }).as('getStocks');
+    // The screener page fetches /api/screen (not /api/screener*)
+    cy.intercept('GET', '/api/screen*', { fixture: 'screener.json' }).as('getStocks');
     cy.intercept('POST', '/api/alerts', { statusCode: 201, body: { success: true } }).as('setAlert');
 
     // 1. Login
@@ -11,8 +12,8 @@ describe('Core Journey: Login -> Filter Stocks -> Set Alert', () => {
     // Using a mock UI path for NextAuth credentials
     cy.contains('Sign in').click();
 
-    // 2. Filter Stocks
-    cy.visit('/screener');
+    // 2. Filter Stocks — locale-prefixed screener route
+    cy.visit('/en/screener');
     // Assuming react-select or regular select
     cy.get('input[placeholder*="Search"]').type('BBCA');
     cy.contains('BBCA').should('be.visible');

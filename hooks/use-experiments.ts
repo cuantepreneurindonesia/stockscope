@@ -85,10 +85,12 @@ export function useCTAExperiment(): {
   const { data: session } = useSession();
   const userId = session?.user?.id || 'anonymous_user';
 
-  // Implement Optimizely toggle logic
-  const optimizelyVariant = optimizelyClient
-    ? optimizelyClient.activate('cta_wording_experiment', userId) as string
-    : 'control';
+  // Implement Optimizely toggle logic — memoized so activate() is only called once per userId
+  const optimizelyVariant = useMemo(() => {
+    return optimizelyClient
+      ? optimizelyClient.activate('cta_wording_experiment', userId) as string
+      : 'control';
+  }, [userId]);
 
   // Map optimizely string to our app variant format
   const variant = (

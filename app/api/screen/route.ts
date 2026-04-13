@@ -7,13 +7,19 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     
-    const page = parseInt(searchParams.get("page") || "1", 10);
+    // Validate and clamp page to be >= 1
+    const rawPage = parseInt(searchParams.get("page") || "1", 10);
+    const page = Number.isFinite(rawPage) && rawPage >= 1 ? rawPage : 1;
     const limit = 50;
     const skip = (page - 1) * limit;
 
     const sector = searchParams.get("sector");
-    const minPrice = searchParams.get("minPrice");
-    const maxPrice = searchParams.get("maxPrice");
+    const rawMinPrice = searchParams.get("minPrice");
+    const rawMaxPrice = searchParams.get("maxPrice");
+
+    // Only use price filter values when they are finite numbers
+    const minPrice = rawMinPrice !== null ? Number(rawMinPrice) : NaN;
+    const maxPrice = rawMaxPrice !== null ? Number(rawMaxPrice) : NaN;
 
     const matchStage: Record<string, any> = {};
 
@@ -30,10 +36,10 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (minPrice || maxPrice) {
+    if (!Number.isNaN(minPrice) || !Number.isNaN(maxPrice)) {
       matchStage.lastPrice = {};
-      if (minPrice) matchStage.lastPrice.$gte = Number(minPrice);
-      if (maxPrice) matchStage.lastPrice.$lte = Number(maxPrice);
+      if (!Number.isNaN(minPrice) && Number.isFinite(minPrice)) matchStage.lastPrice.$gte = minPrice;
+      if (!Number.isNaN(maxPrice) && Number.isFinite(maxPrice)) matchStage.lastPrice.$lte = maxPrice;
     }
 
     const database = await getDB();
@@ -62,8 +68,8 @@ export async function GET(request: NextRequest) {
     const enriched = enrichStocks(rawData);
 
     const data = enriched.map((s) => ({
-      ticker: s.code,
-      name: s.issuer,
+      code: s.code,
+      issuer: s.issuer,
       sector: s.sector,
       price: s.price,
       change: s.change,
@@ -73,6 +79,8 @@ export async function GET(request: NextRequest) {
       pb: s.pb,
       roe: s.roe,
       dividendYield: s.dividendYield,
+      // Governance tier string ("Red" | "Amber" | "Green") — kept separate from aiTier
+      tier: s.tier,
       scores: s.scores
         ? {
             composite: s.scores.composite,
@@ -88,7 +96,8 @@ export async function GET(request: NextRequest) {
             sentiment: 0,
             liquidity: 0,
           },
-      tier: s.aiTier || {
+      // AI rating tier (distinct from governance tier)
+      aiTier: s.aiTier || {
         level: 5,
         label: "N/A",
         color: "#999",

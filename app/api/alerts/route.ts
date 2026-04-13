@@ -41,26 +41,22 @@
  *         description: Internal server error
  */
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 import { checkAlertRateLimit } from '@/lib/rateLimitAlerts';
-
-const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session || !session.user) {
-      // Mock user for testing if no session
-      // return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Default to a mock userId if not authenticated for Phase 4 testing
-    const userId = session?.user?.id || '650e8a7c93e4f1a0b3f5c2b0'; // Mock valid ObjectId
+    const userId = session.user.id as string;
     
     // Check rate limit (Free Tier: 3 alerts/day)
-    // We assume default plan is 'free' if no user session
-    const plan = session?.user?.plan || 'free';
+    const plan = (session.user as any).plan || 'free';
     const isAllowed = await checkAlertRateLimit(userId, plan);
 
     if (!isAllowed) {

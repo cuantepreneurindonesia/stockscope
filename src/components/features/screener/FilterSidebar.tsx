@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
 import Select from "react-select";
 import ReactSlider from "react-slider";
 
@@ -29,7 +28,6 @@ export function FilterSidebar({
   priceRange = [0, 10000],
   isMobile = false,
 }: FilterSidebarProps): React.ReactElement {
-  const t = useTranslations("filterSidebar");
 
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     sector: true,

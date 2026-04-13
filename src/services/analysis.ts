@@ -14,7 +14,7 @@ try {
  * @param closes Array of historical close prices
  * @param period Lookback period for RSI
  */
-export function calculateRSI(closes: number[], period = 14): Promise<number[]> {
+export function calculateRSI(closes: number[], period = 14): Promise<(number | null)[]> {
   return new Promise((resolve, reject) => {
     if (closes.length === 0) return resolve([]);
     
@@ -60,7 +60,7 @@ export function calculateMACD(
   optInFastPeriod = 12, 
   optInSlowPeriod = 26, 
   optInSignalPeriod = 9
-): Promise<{ macd: number[], signal: number[], histogram: number[] }> {
+): Promise<{ macd: (number | null)[], signal: (number | null)[], histogram: (number | null)[] }> {
   return new Promise((resolve, reject) => {
     if (closes.length === 0) return resolve({ macd: [], signal: [], histogram: [] });
 

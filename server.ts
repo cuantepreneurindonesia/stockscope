@@ -2,7 +2,6 @@ import { createServer } from 'http';
 import { parse } from 'url';
 import next from 'next';
 import { Server as SocketIOServer } from 'socket.io';
-import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 import { sendSMSAlert, sendEmailAlert } from './src/lib/notifications';
 import express from 'express';
@@ -23,6 +22,12 @@ app.prepare().then(() => {
   expressApp.use(compression());
 
   // Phase 3: Stripe Webhook Flow (Must bypass JSON body-parser)
+  if (dev === false) {
+    // In production, fail fast if required Stripe env vars are missing
+    if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+      throw new Error('STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET must be set in production');
+    }
+  }
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_mock_key_for_dev', {
     apiVersion: '2022-11-15' as any,
   });
@@ -51,7 +56,7 @@ app.prepare().then(() => {
           try {
             await prisma.user.update({
               where: { id: session.client_reference_id },
-              data: { isPremium: true },
+              data: { plan: 'premium' },
             });
             console.log(`Successfully upgraded user ${session.client_reference_id} to Premium`);
           } catch (dbErr) {
@@ -87,16 +92,28 @@ app.prepare().then(() => {
 
   const server = createServer(expressApp);
 
+  const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS
+    ? process.env.CORS_ALLOWED_ORIGINS.split(',')
+    : dev
+    ? ['http://localhost:3000']
+    : [];
+
   const io = new SocketIOServer(server, { 
     path: '/socket.io', 
-    cors: { origin: '*' } 
+    cors: { origin: allowedOrigins, credentials: true } 
   });
 
   io.on('connection', (socket) => {
     console.log('Socket client connected: ', socket.id);
     
-    // User joins their specific room
-    socket.on('join_room', (userId) => {
+    // User joins their specific room — requires a non-empty userId.
+    // Full NextAuth JWT token verification should be added before production use.
+    socket.on('join_room', (data: { userId: string }) => {
+      const userId = typeof data === 'object' && data !== null ? data.userId : undefined;
+      if (!userId || typeof userId !== 'string') {
+        socket.emit('alert:error', { message: 'Unauthorized: userId required to join room' });
+        return;
+      }
       socket.join(`user:${userId}`);
       console.log(`Socket ${socket.id} joined room user:${userId}`);
       socket.emit('alert:status', { message: 'Successfully joined room' });

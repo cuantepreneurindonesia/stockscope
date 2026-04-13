@@ -26,6 +26,12 @@ export default function PricingClient() {
   }, [pricingExpId, pricingVariant, ctaExpId, ctaVariant]);
   
   const handleCheckout = async (planId: 'premium' | 'pro', billingCycle: 'monthly' | 'annual') => {
+    // Require authentication before starting checkout
+    if (!session?.user?.id) {
+      console.warn('User must be signed in to start checkout');
+      return;
+    }
+
     // Track CTA click
     trackExperimentEvent(ctaExpId, ctaVariant, 'clicked', { 
       plan: planId,
@@ -36,7 +42,7 @@ export default function PricingClient() {
       const response = await fetch('/api/checkout/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tierId: planId, userId: session?.user?.id || 'mock_user_id' }),
+        body: JSON.stringify({ tierId: planId, billingCycle, userId: session.user.id }),
       });
       
       const data = await response.json();
