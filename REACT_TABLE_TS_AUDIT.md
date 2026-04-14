@@ -128,17 +128,6 @@ All 13 TypeScript errors in `ScreenerTable.tsx` are resolved. `npx tsc --noEmit`
 | `CHANGES_SUMMARY.md` | Phase 11 entry |
 | `REACT_TABLE_TS_AUDIT.md` | This document |
 
-
-## Date
-2026-04-14
-
-## Error Reported by Vercel
-
-```
-Type error: Could not find a declaration file for module 'react-table'.
-  at ./src/components/features/screener/ScreenerTable.tsx:4:60
-```
-
 ---
 
 ## Phase 0 — Audit Findings
