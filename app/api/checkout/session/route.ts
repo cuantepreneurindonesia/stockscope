@@ -3,10 +3,8 @@ import Stripe from "stripe";
 
 export async function POST(req: NextRequest) {
   // Validate env vars and initialize Stripe at runtime, not at build time
-  if (!process.env.STRIPE_SECRET_KEY) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("STRIPE_SECRET_KEY must be set in production");
-    }
+  if (process.env.NODE_ENV === "production" && !process.env.STRIPE_SECRET_KEY) {
+    throw new Error("STRIPE_SECRET_KEY must be set in production");
   }
 
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_mock_key_for_dev", {
