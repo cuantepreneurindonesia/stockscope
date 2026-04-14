@@ -24,3 +24,9 @@
 - Chose **Path A** (legacy peer deps) to keep React 19 and unblock Vercel CI/CD.
 - Created `.npmrc` at the project root with `legacy-peer-deps=true` so npm skips strict peer-dependency enforcement during `npm install`.
 - Created `DEPENDENCY_AUDIT.md` documenting conflicting packages, both resolution paths, and future technical debt items.
+
+## Phase 6: Stripe TypeScript Build Fix & talib Warning Mitigation
+- Audited `stripe@10.17.0` type definitions: `types/2022-08-01/index.d.ts` expects `apiVersion: "2022-08-01"`.
+- Fixed `app/api/checkout/session/route.ts`: changed hardcoded `apiVersion` from `"2022-11-15"` to `"2022-08-01"` to match installed types and resolve the TypeScript compilation error on Vercel.
+- Fixed `next.config.ts`: added `serverExternalPackages: ["talib"]` so webpack/Turbopack skips bundling the native `talib` binary, eliminating the `Module not found: Can't resolve 'talib'` build warning (runtime JS fallback in `src/services/analysis.ts` is preserved).
+- Created `STRIPE_TS_AUDIT.md` documenting the version mismatch, resolution paths, and future upgrade path to `stripe@22.x`.

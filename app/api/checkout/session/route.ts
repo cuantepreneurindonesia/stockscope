@@ -6,7 +6,7 @@ if (process.env.NODE_ENV === "production" && !process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_mock_key_for_dev", {
-  apiVersion: "2022-11-15",
+  apiVersion: "2022-08-01",
 });
 
 // Server-side allowlist: maps tier+cycle to a real Stripe price ID.
