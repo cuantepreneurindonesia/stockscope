@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
 import ReactModal from "react-modal";
 
 import { BottomTabBar } from "@/components/layout/BottomTabBar";
@@ -32,12 +33,16 @@ const sectors = [
 
 export function ScreenerWorkspace(): React.ReactElement {
   const t = useTranslations("screenerPage");
+  const { data: session } = useSession();
+  const userPlan = (session?.user as { plan?: string } | undefined)?.plan ?? "free";
+  const canExport = userPlan === "premium" || userPlan === "pro";
 
   const [stocks, setStocks] = useState<EnrichedStock[]>([]);
   const [totalStocks, setTotalStocks] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [view, setView] = useState<"table" | "cards">("table");
+  const [exportLoading, setExportLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSectors, setSelectedSectors] = useState<string[]>([]);
@@ -52,13 +57,52 @@ export function ScreenerWorkspace(): React.ReactElement {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-  const marketData = {
-    jciIndex: 7284,
-    jciChange: 0.42,
-    advancing: 412,
-    declining: 318,
-    marketCap: "Rp 9.8T",
+  const handleExportCSV = async () => {
+    setExportLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (selectedSectors.length > 0) params.append("sector", selectedSectors[0]);
+      if (priceRange[0] > 0) params.append("minPrice", priceRange[0].toString());
+      if (priceRange[1] < 15000) params.append("maxPrice", priceRange[1].toString());
+      if (searchQuery) params.append("search", searchQuery);
+      params.append("sortBy", sortBy);
+      params.append("sortOrder", sortOrder);
+
+      const res = await fetch(`/api/export/csv?${params.toString()}`);
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Export failed");
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `stockscope-export-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export error:", err);
+    } finally {
+      setExportLoading(false);
+    }
   };
+
+  const [marketData, setMarketData] = useState<{
+    advancing: number;
+    declining: number;
+    marketCap: string | null;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/market-summary")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (data?.success) setMarketData(data);
+      })
+      .catch(() => null);
+  }, []);
 
   useEffect(() => {
     // Need to set app element for react-modal to prevent screen reader warnings
@@ -87,7 +131,9 @@ export function ScreenerWorkspace(): React.ReactElement {
     if (priceRange[0] > 0) params.append("minPrice", priceRange[0].toString());
     if (priceRange[1] < 15000) params.append("maxPrice", priceRange[1].toString());
 
-    if (searchQuery) params.append("search", searchQuery); // Note: Current api might skip this based on backend route implementation, but good for future expansion
+    if (searchQuery) params.append("search", searchQuery);
+    params.append("sortBy", sortBy);
+    params.append("sortOrder", sortOrder);
 
     queueMicrotask(() => setLoading(true));
 
@@ -131,7 +177,7 @@ export function ScreenerWorkspace(): React.ReactElement {
       .finally(() => setLoading(false));
 
     return () => controller.abort();
-  }, [page, searchQuery, selectedSectors, priceRange]);
+  }, [page, searchQuery, selectedSectors, priceRange, sortBy, sortOrder]);
 
   const handleResetFilters = () => {
     setSearchQuery("");
@@ -185,10 +231,10 @@ export function ScreenerWorkspace(): React.ReactElement {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <StatCard label="JCI Index" value={marketData.jciIndex.toLocaleString("id-ID")} delta={marketData.jciChange} deltaType="positive" />
-            <StatCard label="Market Cap" value={marketData.marketCap} />
-            <StatCard label="Advancing" value={marketData.advancing} deltaType="positive" />
-            <StatCard label="Declining" value={marketData.declining} deltaType="negative" />
+            <StatCard label="JCI Index" value="IDX Composite" />
+            <StatCard label="Market Cap" value={marketData?.marketCap ?? "—"} />
+            <StatCard label="Advancing" value={marketData?.advancing ?? "—"} deltaType="positive" />
+            <StatCard label="Declining" value={marketData?.declining ?? "—"} deltaType="negative" />
           </div>
         </section>
 
@@ -212,8 +258,23 @@ export function ScreenerWorkspace(): React.ReactElement {
           </div>
 
           <main className="rounded-2xl border border-border-subtle bg-surface-card p-3 md:p-5 flex flex-col min-h-[600px]">
-            <div className="mb-3 rounded-xl border border-border-subtle bg-surface-elevated/40">
-              <ResultsHeader view={view} onViewChange={setView} totalResults={totalStocks} />
+            <div className="mb-3 rounded-xl border border-border-subtle bg-surface-elevated/40 flex items-center justify-between">
+              <div className="flex-1">
+                <ResultsHeader view={view} onViewChange={setView} totalResults={totalStocks} />
+              </div>
+              {canExport && (
+                <div className="pr-4">
+                  <button
+                    onClick={handleExportCSV}
+                    disabled={exportLoading || loading}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-surface-elevated border border-border-subtle hover:border-brand hover:text-brand transition-colors disabled:opacity-50"
+                    title="Export results as CSV"
+                  >
+                    <span className="material-symbols-outlined text-sm">download</span>
+                    {exportLoading ? "Exporting…" : "CSV"}
+                  </button>
+                </div>
+              )}
             </div>
 
             {error && <EmptyState type="error" onAction={handleResetFilters} />}

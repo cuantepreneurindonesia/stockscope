@@ -16,6 +16,9 @@ export async function GET(request: NextRequest) {
     const sector = searchParams.get("sector");
     const rawMinPrice = searchParams.get("minPrice");
     const rawMaxPrice = searchParams.get("maxPrice");
+    const search = searchParams.get("search")?.trim() || "";
+    const sortBy = searchParams.get("sortBy") || "lastPrice";
+    const sortOrder = searchParams.get("sortOrder") === "asc" ? 1 : -1;
 
     // Only use price filter values when they are finite numbers
     const minPrice = rawMinPrice !== null ? Number(rawMinPrice) : NaN;
@@ -42,12 +45,32 @@ export async function GET(request: NextRequest) {
       if (!Number.isNaN(maxPrice) && Number.isFinite(maxPrice)) matchStage.lastPrice.$lte = maxPrice;
     }
 
+    if (search) {
+      const regex = { $regex: search, $options: "i" };
+      matchStage.$or = [{ code: regex }, { issuer: regex }];
+    }
+
+    // Map UI sort field names to DB field names
+    const sortFieldMap: Record<string, string> = {
+      composite: "scores.composite",
+      fundamental: "scores.fundamental",
+      technical: "scores.technical",
+      price: "lastPrice",
+      change: "changePercent",
+      volume: "volume",
+      marketCap: "marketCap",
+      pe: "pe",
+      pb: "pb",
+      roe: "roe",
+    };
+    const dbSortField = sortFieldMap[sortBy] ?? "lastPrice";
+
     const database = await getDB();
-    
+
     // Aggregation pipeline to do filtering, count total, and paginate inside the DB
     const pipeline = [
       { $match: matchStage },
-      { $sort: { lastPrice: -1 } },
+      { $sort: { [dbSortField]: sortOrder } },
       {
         $facet: {
           metadata: [{ $count: "total" }],

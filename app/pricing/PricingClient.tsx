@@ -8,14 +8,19 @@ import { trackExperimentEvent } from '@/hooks/use-experiments';
 import { formatPrice } from '@/lib/experiments';
 import { loadStripe } from '@stripe/stripe-js';
 
-// Initialize Stripe
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_mock_key_for_dev');
+// Initialize Stripe — fail early in dev if env var is missing
+const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+if (!stripePublishableKey && process.env.NODE_ENV === 'development') {
+  console.error('[PricingClient] NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set. Stripe checkout will be unavailable.');
+}
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 export default function PricingClient() {
-  const { data: session } = useSession();
+  const { data: session, status: sessionStatus } = useSession();
   const { variant: pricingVariant, pricing, experimentId: pricingExpId } = usePricingExperiment();
   const { variant: ctaVariant, cta, experimentId: ctaExpId } = useCTAExperiment();
   const { variant: layoutVariant, layout } = useLayoutExperiment();
+  const [authPrompt, setAuthPrompt] = React.useState(false);
   
   const currentPlan = (session?.user?.plan as string) || 'free';
   
@@ -28,7 +33,7 @@ export default function PricingClient() {
   const handleCheckout = async (planId: 'premium' | 'pro', billingCycle: 'monthly' | 'annual') => {
     // Require authentication before starting checkout
     if (!session?.user?.id) {
-      console.warn('User must be signed in to start checkout');
+      setAuthPrompt(true);
       return;
     }
 
@@ -68,33 +73,71 @@ export default function PricingClient() {
       console.error('Failed to create payment:', error);
     }
   };
+
+  // Render sign-in prompt overlay if unauthenticated user tries to checkout
+  const SignInPrompt = authPrompt ? (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-background border border-border rounded-2xl p-8 max-w-sm w-full mx-4 text-center shadow-2xl">
+        <h2 className="text-xl font-bold mb-2">Sign in to continue</h2>
+        <p className="text-muted-foreground text-sm mb-6">
+          Create a free account or sign in to upgrade your plan.
+        </p>
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={() => {
+              const { signIn } = require('next-auth/react');
+              signIn('google', { callbackUrl: '/pricing' });
+            }}
+            className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+          >
+            Sign in with Google
+          </button>
+          <button
+            onClick={() => setAuthPrompt(false)}
+            className="w-full py-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : null;
   
   // Render based on layout variant
   if (layout === 'comparison') {
-    return <ComparisonLayout 
-      pricing={pricing} 
-      cta={cta} 
-      currentPlan={currentPlan}
-      onCheckout={handleCheckout}
-    />;
+    return <>
+      {SignInPrompt}
+      <ComparisonLayout 
+        pricing={pricing} 
+        cta={cta} 
+        currentPlan={currentPlan}
+        onCheckout={handleCheckout}
+      />
+    </>;
   }
   
   if (layout === 'table') {
-    return <TableLayout 
+    return <>
+      {SignInPrompt}
+      <TableLayout 
+        pricing={pricing} 
+        cta={cta} 
+        currentPlan={currentPlan}
+        onCheckout={handleCheckout}
+      />
+    </>;
+  }
+  
+  // Default: Cards layout (control)
+  return <>
+    {SignInPrompt}
+    <CardsLayout 
       pricing={pricing} 
       cta={cta} 
       currentPlan={currentPlan}
       onCheckout={handleCheckout}
-    />;
-  }
-  
-  // Default: Cards layout (control)
-  return <CardsLayout 
-    pricing={pricing} 
-    cta={cta} 
-    currentPlan={currentPlan}
-    onCheckout={handleCheckout}
-  />;
+    />
+  </>;
 }
 
 // =============================================================================

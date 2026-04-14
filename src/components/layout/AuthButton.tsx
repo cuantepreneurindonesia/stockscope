@@ -169,6 +169,48 @@ export function AuthButton(): React.ReactElement {
           )}
           <button
             onClick={() => {
+              router.push("/profile");
+              setDropdownOpen(false);
+            }}
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              textAlign: "left",
+              background: "none",
+              border: "none",
+              borderBottom: "1px solid #132030",
+              color: THEME_COLORS.text,
+              fontSize: 12,
+              cursor: "pointer",
+            }}
+          >
+            Profile
+          </button>
+          {user?.plan === "pro" && (
+            <button
+              onClick={() => {
+                router.push("/developer/api-keys");
+                setDropdownOpen(false);
+              }}
+              style={{
+                width: "100%",
+                padding: "10px 14px",
+                textAlign: "left",
+                background: "none",
+                border: "none",
+                borderBottom: "1px solid #132030",
+                color: "#8b5cf6",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "DM Sans, sans-serif",
+              }}
+            >
+              API Keys
+            </button>
+          )}
+          <button
+            onClick={() => {
               signOut({ callbackUrl: localizedPath(locale, "/") });
               setDropdownOpen(false);
             }}

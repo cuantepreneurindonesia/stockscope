@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, X, Plus } from 'lucide-react';
+import { GripVertical, X, Plus, AlertCircle } from 'lucide-react';
 
 interface WatchlistItem {
   id: string;
@@ -27,9 +27,12 @@ interface WatchlistDetailProps {
 interface SortableItemProps {
   item: WatchlistItem;
   onRemove: (ticker: string) => void;
+  pendingRemove: string | null;
+  onConfirmRemove: (ticker: string) => void;
+  onCancelRemove: () => void;
 }
 
-function SortableItem({ item, onRemove }: SortableItemProps) {
+function SortableItem({ item, onRemove, pendingRemove, onConfirmRemove, onCancelRemove }: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -45,44 +48,63 @@ function SortableItem({ item, onRemove }: SortableItemProps) {
     opacity: isDragging ? 0.5 : 1,
   };
 
+  const isConfirming = pendingRemove === item.ticker;
+
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 
-        border border-gray-200 dark:border-gray-700 rounded-lg
-        hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+      className="flex items-center gap-3 p-3 bg-surface-card
+        border border-border-subtle rounded-lg
+        hover:border-border transition-colors"
     >
       {/* Drag Handle */}
       <button
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 
-          dark:hover:text-gray-300 touch-none"
+        className="cursor-grab active:cursor-grabbing text-text-muted hover:text-text-secondary touch-none"
       >
         <GripVertical className="w-5 h-5" />
       </button>
 
       {/* Stock Info */}
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-gray-900 dark:text-white font-mono">
+        <div className="font-semibold text-text-primary font-mono text-sm">
           {item.ticker}
         </div>
         {item.notes && (
-          <div className="text-xs text-gray-600 dark:text-gray-400 truncate mt-1">
+          <div className="text-xs text-text-muted truncate mt-1">
             {item.notes}
           </div>
         )}
       </div>
 
-      {/* Remove Button */}
-      <button
-        onClick={() => onRemove(item.ticker)}
-        className="p-1 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
-        title="Remove from watchlist"
-      >
-        <X className="w-4 h-4" />
-      </button>
+      {/* Remove / Confirm Remove */}
+      {isConfirming ? (
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-xs text-text-muted">Remove?</span>
+          <button
+            onClick={() => onConfirmRemove(item.ticker)}
+            className="px-2 py-0.5 text-xs bg-bear hover:opacity-80 text-white rounded transition-opacity"
+          >
+            Yes
+          </button>
+          <button
+            onClick={onCancelRemove}
+            className="px-2 py-0.5 text-xs bg-surface-elevated hover:bg-border text-text-secondary rounded transition-colors"
+          >
+            No
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => onRemove(item.ticker)}
+          className="p-1 text-text-muted hover:text-bear transition-colors flex-shrink-0"
+          title="Remove from watchlist"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      )}
     </div>
   );
 }
@@ -91,7 +113,9 @@ export function WatchlistDetail({ watchlistId, onAddStock }: WatchlistDetailProp
   const [items, setItems] = useState<WatchlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [inlineError, setInlineError] = useState<string | null>(null);
   const [watchlistName, setWatchlistName] = useState('');
+  const [pendingRemove, setPendingRemove] = useState<string | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -147,16 +171,19 @@ export function WatchlistDetail({ watchlistId, onAddStock }: WatchlistDetailProp
 
       if (!res.ok) throw new Error('Failed to update order');
     } catch (err) {
-      console.error('Reorder failed:', err);
       // Revert on error
       setItems(items);
-      alert('Failed to save new order');
+      setInlineError('Failed to save new order. Please try again.');
     }
   };
 
-  const handleRemove = async (ticker: string) => {
-    if (!confirm(`Remove ${ticker} from watchlist?`)) return;
+  const handleRemove = (ticker: string) => {
+    setPendingRemove(ticker);
+    setInlineError(null);
+  };
 
+  const handleConfirmRemove = async (ticker: string) => {
+    setPendingRemove(null);
     try {
       const res = await fetch(
         `/api/watchlists/${watchlistId}/items?ticker=${ticker}`,
@@ -166,18 +193,18 @@ export function WatchlistDetail({ watchlistId, onAddStock }: WatchlistDetailProp
       if (!res.ok) throw new Error('Failed to remove stock');
       setItems((prev) => prev.filter((item) => item.ticker !== ticker));
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Remove failed');
+      setInlineError(err instanceof Error ? err.message : 'Remove failed');
     }
   };
 
   if (loading) {
     return (
       <div className="p-6 space-y-3">
-        <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+        <div className="h-8 w-48 bg-surface-elevated rounded animate-pulse" />
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="h-16 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse"
+            className="h-16 bg-surface-elevated rounded-lg animate-pulse"
           />
         ))}
       </div>
@@ -203,34 +230,44 @@ export function WatchlistDetail({ watchlistId, onAddStock }: WatchlistDetailProp
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-6 border-b border-border-subtle">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-2xl font-bold text-text-primary">
             {watchlistName}
           </h2>
           <button
             onClick={onAddStock}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 
-              text-white rounded-lg transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-brand hover:opacity-90
+              text-white rounded-lg transition-opacity text-sm font-medium"
           >
             <Plus className="w-4 h-4" />
             Add Stock
           </button>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-text-secondary">
           {items.length} {items.length === 1 ? 'stock' : 'stocks'} • Drag to reorder
         </p>
       </div>
 
+      {/* Inline error banner */}
+      {inlineError && (
+        <div className="mx-6 mt-4 flex items-center gap-2 px-4 py-3 bg-bear-bg border border-bear/30 rounded-lg text-bear text-sm">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span className="flex-1">{inlineError}</span>
+          <button onClick={() => setInlineError(null)} className="text-bear hover:opacity-70">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       {/* Stock List */}
       <div className="flex-1 overflow-y-auto p-6">
         {items.length === 0 ? (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-12 text-text-muted">
             <p className="mb-2">No stocks in this watchlist yet</p>
             <button
               onClick={onAddStock}
-              className="text-blue-600 hover:text-blue-700 dark:text-blue-400 
-                dark:hover:text-blue-300 text-sm font-medium"
+              className="text-brand hover:opacity-80 text-sm font-medium"
             >
               Add your first stock →
             </button>
@@ -251,6 +288,9 @@ export function WatchlistDetail({ watchlistId, onAddStock }: WatchlistDetailProp
                     key={item.id}
                     item={item}
                     onRemove={handleRemove}
+                    pendingRemove={pendingRemove}
+                    onConfirmRemove={handleConfirmRemove}
+                    onCancelRemove={() => setPendingRemove(null)}
                   />
                 ))}
               </div>

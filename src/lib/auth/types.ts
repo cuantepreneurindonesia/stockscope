@@ -2,7 +2,7 @@
  * Auth types for session and plan
  */
 
-export type Plan = "free" | "premium";
+export type Plan = "free" | "premium" | "pro";
 
 export interface AuthUser {
   id: string;

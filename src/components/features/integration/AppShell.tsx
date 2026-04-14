@@ -14,7 +14,7 @@ interface AppShellProps {
 }
 
 type NavItem = {
-  href: "/" | "/screener" | "/owners" | "/watchlist" | "/profile";
+  href: "/" | "/screener" | "/owners" | "/watchlist" | "/profile" | "/alerts";
   labelKey: NavMessageKey;
 };
 
@@ -23,6 +23,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/screener", labelKey: "screener" },
   { href: "/owners", labelKey: "owners" },
   { href: "/watchlist", labelKey: "watchlist" },
+  { href: "/alerts", labelKey: "alerts" },
   { href: "/profile", labelKey: "profile" },
 ];
 
