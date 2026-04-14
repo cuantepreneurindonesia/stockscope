@@ -162,6 +162,10 @@ export function ScreenerWorkspace(): React.ReactElement {
             dividendYield: s.dividendYield,
             scores: s.scores,
             aiTier: s.aiTier,
+            hhi: s.hhi ?? 0,
+            floatPercentage: s.floatPercentage ?? 0,
+            c1: s.c1 ?? 0,
+            c3: s.c3 ?? 0,
           }));
           setStocks(transformed);
           setTotalStocks(data.total);

@@ -54,6 +54,13 @@
 - No changes needed for `talib` (already fixed in Phase 6 via `serverExternalPackages`).
 - Created `CHARTJS_TS_AUDIT.md` documenting the version API change, both resolution paths, and the chosen strategy.
 
+## Phase 13: EnrichedStock TypeScript Property Mismatch Fix (missing hhi, floatPercentage, c1, c3)
+- Audited `src/components/features/screener/ScreenerWorkspace.tsx` line 150: `.map()` transform was projecting 14 fields but omitting four required properties (`hhi`, `floatPercentage`, `c1`, `c3`) inherited from the base `Stock` interface, causing `TS2739`.
+- Path A chosen: added the four missing fields with `?? 0` fallbacks to the map expression. Fields are expected from the screener API (same MongoDB documents), and the fallback guards against partial responses.
+- After the fix, `tsc --noEmit` no longer reports `TS2739` for `ScreenerWorkspace.tsx`.
+- `talib` warning already handled via `serverExternalPackages` in `next.config.ts` — no change required.
+- Created `ENRICHEDSTOCK_TS_AUDIT.md` documenting the mismatch and chosen fix path.
+
 ## Phase 12: react-modal TypeScript Declaration Fix (missing @types package)
 - Audited `src/components/features/screener/ScreenerWorkspace.tsx`: imports `ReactModal` from `react-modal` v3, which ships no bundled TypeScript declarations. With `strict: true` in `tsconfig.json`, this caused `TS7016: Could not find a declaration file for module 'react-modal'` on Vercel.
 - Confirmed `@types/react-modal@3.16.3` exists on DefinitelyTyped with no known CVEs; installed via `npm i --save-dev @types/react-modal`.
