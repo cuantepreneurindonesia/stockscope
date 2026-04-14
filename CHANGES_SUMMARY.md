@@ -38,6 +38,13 @@
 - No changes needed for `talib` (already fixed in Phase 6 via `serverExternalPackages`).
 - Created `MONGODB_TS_AUDIT.md` documenting the type mismatch, both resolution paths, and future schema-sync recommendations.
 
+## Phase 10: react-slider TypeScript Declaration Fix (missing @types package)
+- Audited `src/components/features/screener/FilterSidebar.tsx`: imports `ReactSlider` from `react-slider`, which ships no bundled TypeScript declarations. With `strict: true` in `tsconfig.json`, this causes `Could not find a declaration file for module 'react-slider'` and a Vercel build failure.
+- Confirmed `@types/react-slider@1.3.6` exists on DefinitelyTyped with no known CVEs.
+- Chose **Path A** (install official types): added `"@types/react-slider": "^1.3.6"` to `devDependencies` in `package.json`. All props used in `FilterSidebar.tsx` (`min`, `max`, `step`, `value`, `onChange`, `pearling`, `minDistance`, `className`, `thumbClassName`, `trackClassName`) are covered by the community type definitions.
+- No changes needed for `talib` (already fixed in Phase 6 via `serverExternalPackages`).
+- Created `REACT_SLIDER_TS_AUDIT.md` documenting the missing declarations, both resolution paths, and the chosen strategy.
+
 ## Phase 9: Chart.js TypeScript Options Fix (stacked at root level)
 - Audited `src/components/analytics/StockChartOverlay.tsx`: the `options` object passed to `<Chart>` contained `stacked: false` at the root level.
 - In Chart.js v3+, `stacked` is a per-axis scale property, not a root `ChartOptions` field. TypeScript correctly rejects it with `Object literal may only specify known properties, and 'stacked' does not exist in type...`.
