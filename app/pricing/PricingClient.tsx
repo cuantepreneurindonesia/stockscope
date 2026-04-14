@@ -6,14 +6,6 @@ import { Check, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { usePricingExperiment, useCTAExperiment, useLayoutExperiment } from '@/hooks/use-experiments';
 import { trackExperimentEvent } from '@/hooks/use-experiments';
 import { formatPrice } from '@/lib/experiments';
-import { loadStripe } from '@stripe/stripe-js';
-
-// Initialize Stripe — fail early in dev if env var is missing
-const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-if (!stripePublishableKey && process.env.NODE_ENV === 'development') {
-  console.error('[PricingClient] NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set. Stripe checkout will be unavailable.');
-}
-const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 export default function PricingClient() {
   const { data: session, status: sessionStatus } = useSession();
@@ -58,16 +50,11 @@ export default function PricingClient() {
       }
       
       // Redirect to Stripe Checkout
-      if (data.sessionId) {
-        const stripe = await stripePromise;
-        if (stripe) {
-          const { error } = await stripe.redirectToCheckout({
-            sessionId: data.sessionId,
-          });
-          if (error) {
-            console.error('Stripe redirect error:', error.message);
-          }
-        }
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.sessionId) {
+        // Fallback: session ID only (e.g. local mock) — log and surface an error
+        console.warn('[PricingClient] Checkout session returned no URL. Session ID:', data.sessionId);
       }
     } catch (error) {
       console.error('Failed to create payment:', error);

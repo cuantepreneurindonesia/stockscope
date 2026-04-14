@@ -83,13 +83,13 @@ export function ScreenerTable({
         Header: "AI Score",
         id: "composite",
         accessor: (row) => row.scores?.composite,
-        Cell: ({ value }) => <ScoreBar score={value ?? 0} type="ai" />
+        Cell: ({ value }: { value: number | undefined }) => <ScoreBar score={value ?? 0} type="ai" />
       },
       {
         Header: "AI Tier",
         id: "aiTier",
         accessor: (row) => row.aiTier?.label,
-        Cell: ({ value }) => <TierBadge tier={value ?? "N/A"} />
+        Cell: ({ value }: { value: string | undefined }) => <TierBadge tier={value ?? "N/A"} />
       }
     ],
     [locale]

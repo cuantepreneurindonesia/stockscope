@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/config";
 import { getDB } from "@/lib/mongodb";
 import { enrichStocks } from "@/lib/services/enrichmentService";
+import type { Stock } from "@/types";
 
 /**
  * GET /api/export/csv
@@ -78,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     const database = await getDB();
     const rawData = await database
-      .collection("stocks")
+      .collection<Stock>("stocks")
       .find(matchStage)
       .sort({ [dbSortField]: sortOrder })
       .limit(plan === "pro" ? 5000 : 1000)
