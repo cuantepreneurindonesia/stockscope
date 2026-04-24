@@ -1,10 +1,10 @@
 import { getDB } from "@/lib/mongodb";
 import { getRedisClient } from "@/lib/redis";
 import { adaptIdxStocks } from "@/data/adapters/idx.adapter";
+import { SCREENER_CACHE_TTL } from "@/data/cache/redis.client";
 import type { ScreenerDataset } from "@/types/screener";
 
 const CACHE_KEY = "screener-v1:dataset";
-const CACHE_TTL = 300; // 5 minutes
 
 /**
  * Fetch the full screener dataset (Stock + Metrics).
@@ -57,7 +57,7 @@ export async function getScreenerDataset(): Promise<ScreenerDataset> {
   // 3. Prime Redis cache
   if (redis) {
     try {
-      await redis.set(CACHE_KEY, JSON.stringify(dataset), "EX", CACHE_TTL);
+      await redis.set(CACHE_KEY, JSON.stringify(dataset), "EX", SCREENER_CACHE_TTL);
     } catch {
       // Cache write failure is non-fatal
     }

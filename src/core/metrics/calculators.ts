@@ -4,20 +4,29 @@ import type { Metrics } from "@/types/metrics";
 /**
  * Compute precomputed financial metrics from raw financials.
  *
- * @param financials - Single-period financials for a stock
- * @param marketPrice - Current share price (for market-multiple calculations)
+ * Note: P/E and P/BV ratios require market data (share price and book value
+ * per share) that is not available in the base Financials type. Those fields
+ * are therefore accepted as explicit parameters. When the caller cannot supply
+ * them, pass 0 and the resulting metric will be set to 0 accordingly.
+ *
+ * @param financials        - Single-period financials for a stock
+ * @param sharesOutstanding - Number of shares outstanding (for EPS calculation)
+ * @param marketPrice       - Current share price
  * @param bookValuePerShare - Book value per share
+ * @param previousRevenue   - Previous period revenue for growth calculation
  * @returns Computed Metrics object; fields default to 0 when inputs are invalid
  */
 export function computeMetrics(
   financials: Financials,
+  sharesOutstanding: number,
   marketPrice: number,
   bookValuePerShare: number,
   previousRevenue?: number,
 ): Metrics {
   const { symbol, period, revenue, netIncome, totalEquity } = financials;
 
-  const eps = netIncome && revenue ? netIncome / Math.max(revenue, 1) : 0;
+  const eps =
+    sharesOutstanding > 0 ? netIncome / sharesOutstanding : 0;
   const pe = eps > 0 && marketPrice > 0 ? marketPrice / eps : 0;
   const pbv =
     bookValuePerShare > 0 && marketPrice > 0
