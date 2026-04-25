@@ -19,7 +19,12 @@ import {
 
 const GRID_STROKE = "rgba(255,255,255,0.06)";
 const TICK_FILL = "rgba(255,255,255,0.45)";
-const TOOLTIP_STYLE: React.CSSProperties = {
+const TOOLTIP_STYLE: {
+  background: string;
+  border: string;
+  borderRadius: number;
+  fontSize: number;
+} = {
   background: "#1a1b1e",
   border: "1px solid rgba(255,255,255,0.1)",
   borderRadius: 8,
