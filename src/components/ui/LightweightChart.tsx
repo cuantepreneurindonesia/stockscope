@@ -107,7 +107,7 @@ export function LightweightChart(props: LightweightChartProps) {
                     key={i}
                     fill={
                       s.color ??
-                      `rgba(99,102,241,${0.4 + (i / props.data.length) * 0.6})`
+                      `rgba(99,102,241,${0.4 + (props.data.length > 1 ? (i / (props.data.length - 1)) * 0.6 : 0.6)})`
                     }
                   />
                 ))}

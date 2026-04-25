@@ -140,6 +140,10 @@ const CSV_HEADERS: { key: keyof Row; label: string }[] = [
   { key: "debtToEquity", label: "Debt/Equity" },
 ];
 
+function csvFilename(): string {
+  return `stockscope-screener-v1-${new Date().toISOString().slice(0, 10)}.csv`;
+}
+
 // ---------------------------------------------------------------------------
 // Chart data helpers
 // ---------------------------------------------------------------------------
@@ -157,7 +161,8 @@ function buildPeDistribution(data: Row[]) {
       continue;
     }
     for (let i = 0; i < PE_BUCKETS.length - 1; i++) {
-      if (pe >= PE_BUCKETS[i]! && pe < PE_BUCKETS[i + 1]!) {
+      // Bounds are guaranteed by loop condition: i ≤ PE_BUCKETS.length - 2
+      if (pe >= (PE_BUCKETS[i] as number) && pe < (PE_BUCKETS[i + 1] as number)) {
         counts[i]++;
         break;
       }
@@ -288,7 +293,7 @@ export function ScreenerWorkspace() {
                         label: string;
                       }[]
                     }
-                    filename={`stockscope-screener-v1-${new Date().toISOString().slice(0, 10)}.csv`}
+                    filename={csvFilename()}
                     disabled={loading}
                     canExport={canExport}
                   />
