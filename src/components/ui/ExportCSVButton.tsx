@@ -1,6 +1,6 @@
 "use client";
 
-interface ExportCSVButtonProps<T extends Record<string, unknown>> {
+interface ExportCSVButtonProps<T extends object> {
   data: T[];
   headers: { key: keyof T; label: string }[];
   filename?: string;
@@ -9,13 +9,13 @@ interface ExportCSVButtonProps<T extends Record<string, unknown>> {
   canExport?: boolean;
 }
 
-function rowToCsvValues<T extends Record<string, unknown>>(
+function rowToCsvValues<T extends object>(
   row: T,
   headers: { key: keyof T; label: string }[],
 ): string {
   return headers
     .map(({ key }) => {
-      const val = row[key];
+      const val = (row as Record<keyof T, unknown>)[key];
       if (val === null || val === undefined) return "";
       const str = String(val);
       // Escape quotes and wrap in quotes if value contains comma, quote, or any line break (RFC 4180)
@@ -27,7 +27,7 @@ function rowToCsvValues<T extends Record<string, unknown>>(
     .join(",");
 }
 
-function buildCsv<T extends Record<string, unknown>>(
+function buildCsv<T extends object>(
   data: T[],
   headers: { key: keyof T; label: string }[],
 ): string {
@@ -36,7 +36,7 @@ function buildCsv<T extends Record<string, unknown>>(
   return [headerRow, ...dataRows].join("\n");
 }
 
-export function ExportCSVButton<T extends Record<string, unknown>>({
+export function ExportCSVButton<T extends object>({
   data,
   headers,
   filename = `export-${new Date().toISOString().slice(0, 10)}.csv`,

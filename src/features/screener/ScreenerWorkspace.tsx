@@ -145,6 +145,23 @@ function csvFilename(): string {
 }
 
 // ---------------------------------------------------------------------------
+// Chart filter predicates
+// ---------------------------------------------------------------------------
+
+function hasValidPE(row: Row): boolean {
+  return row.pe != null && isFinite(row.pe) && row.pe > 0;
+}
+
+function hasValidROEAndPBV(row: Row): boolean {
+  return (
+    row.roe != null &&
+    isFinite(row.roe) &&
+    row.pbv != null &&
+    isFinite(row.pbv)
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Chart data helpers
 // ---------------------------------------------------------------------------
 
@@ -205,17 +222,11 @@ export function ScreenerWorkspace() {
   const tableData = (result?.data ?? []) as Row[];
 
   const peChartData = buildPeDistribution(
-    tableData.filter((d) => d.pe != null && isFinite(d.pe) && d.pe > 0),
+    tableData.filter(hasValidPE),
   ) as Record<string, unknown>[];
 
   const scatterData = tableData
-    .filter(
-      (d) =>
-        d.roe != null &&
-        isFinite(d.roe) &&
-        d.pbv != null &&
-        isFinite(d.pbv),
-    )
+    .filter(hasValidROEAndPBV)
     .slice(0, 200)
     .map((d) => ({ x: d.pbv, y: d.roe }));
 
@@ -285,14 +296,9 @@ export function ScreenerWorkspace() {
                   </button>
 
                   {/* CSV export */}
-                  <ExportCSVButton
-                    data={tableData as unknown as Record<string, unknown>[]}
-                    headers={
-                      CSV_HEADERS as {
-                        key: string;
-                        label: string;
-                      }[]
-                    }
+                  <ExportCSVButton<Row>
+                    data={tableData}
+                    headers={CSV_HEADERS}
                     filename={csvFilename()}
                     disabled={loading}
                     canExport={canExport}

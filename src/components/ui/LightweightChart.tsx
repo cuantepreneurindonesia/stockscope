@@ -23,6 +23,15 @@ const TICK_FILL = "rgba(255,255,255,0.45)";
 const BAR_OPACITY_MIN = 0.4;
 /** Additional opacity spread applied across all bars */
 const BAR_OPACITY_RANGE = 0.6;
+
+/**
+ * Calculate the fill opacity for a bar at position `index` out of `totalBars`.
+ * Returns a value clamped to [BAR_OPACITY_MIN, BAR_OPACITY_MIN + BAR_OPACITY_RANGE].
+ */
+function calculateBarOpacity(index: number, totalBars: number): number {
+  if (totalBars <= 1) return BAR_OPACITY_MIN + BAR_OPACITY_RANGE;
+  return BAR_OPACITY_MIN + (index / (totalBars - 1)) * BAR_OPACITY_RANGE;
+}
 const TOOLTIP_STYLE: {
   background: string;
   border: string;
@@ -111,7 +120,7 @@ export function LightweightChart(props: LightweightChartProps) {
                     key={i}
                     fill={
                       s.color ??
-                      `rgba(99,102,241,${BAR_OPACITY_MIN + (props.data.length > 1 ? (i / (props.data.length - 1)) * BAR_OPACITY_RANGE : BAR_OPACITY_RANGE)})`
+                      `rgba(99,102,241,${calculateBarOpacity(i, props.data.length)})`
                     }
                   />
                 ))}
