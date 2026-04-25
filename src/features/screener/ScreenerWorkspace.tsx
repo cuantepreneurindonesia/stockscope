@@ -147,17 +147,27 @@ const CSV_HEADERS: { key: keyof Row; label: string }[] = [
 const PE_BUCKETS = [0, 5, 10, 15, 20, 30, 50, 100];
 
 function buildPeDistribution(data: Row[]) {
-  const buckets = PE_BUCKETS.slice(0, -1).map((lower, i) => {
-    const upper = PE_BUCKETS[i + 1]!;
-    return {
-      range: `${lower}–${upper}`,
-      count: data.filter((r) => r.pe >= lower && r.pe < upper).length,
-    };
-  });
-  buckets.push({
-    range: ">100",
-    count: data.filter((r) => r.pe >= 100).length,
-  });
+  const counts = new Array<number>(PE_BUCKETS.length).fill(0);
+
+  for (const row of data) {
+    const pe = row.pe;
+    if (pe >= 100) {
+      counts[PE_BUCKETS.length - 1]++;
+      continue;
+    }
+    for (let i = 0; i < PE_BUCKETS.length - 1; i++) {
+      if (pe >= PE_BUCKETS[i]! && pe < PE_BUCKETS[i + 1]!) {
+        counts[i]++;
+        break;
+      }
+    }
+  }
+
+  const buckets = PE_BUCKETS.slice(0, -1).map((lower, i) => ({
+    range: `${lower}–${PE_BUCKETS[i + 1]}`,
+    count: counts[i]!,
+  }));
+  buckets.push({ range: ">100", count: counts[PE_BUCKETS.length - 1]! });
   return buckets;
 }
 

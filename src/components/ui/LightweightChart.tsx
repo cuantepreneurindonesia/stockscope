@@ -37,7 +37,7 @@ const TOOLTIP_STYLE: {
 
 export interface BarSeries {
   dataKey: string;
-  /** Gradient opacity from 0.4 → 1 across bars when multiple bars */
+  /** When omitted, bars are colored with an indigo gradient that increases in opacity by index position */
   color?: string;
 }
 

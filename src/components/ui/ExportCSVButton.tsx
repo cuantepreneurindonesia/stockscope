@@ -18,8 +18,8 @@ function rowToCsvValues<T extends Record<string, unknown>>(
       const val = row[key];
       if (val === null || val === undefined) return "";
       const str = String(val);
-      // Escape quotes and wrap in quotes if value contains comma, quote, or newline
-      if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+      // Escape quotes and wrap in quotes if value contains comma, quote, or any line break (RFC 4180)
+      if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
         return `"${str.replace(/"/g, '""')}"`;
       }
       return str;
